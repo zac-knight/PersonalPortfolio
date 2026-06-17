@@ -36,17 +36,21 @@ export default function Hero() {
       </div>
 
       {/* Center Content */}
-      <div className="flex flex-col items-center justify-center flex-1 z-10">
+      <div className="flex flex-col items-center justify-center flex-1 z-10 px-4">
 
         {/* Large Static Circle around content */}
         <div className="relative flex flex-col items-center justify-center">
-          <div className="absolute rounded-full border border-gray-300 pointer-events-none"
-            style={{ width: 720, height: 720 }}
+          <div
+            className="absolute rounded-full border border-gray-300 pointer-events-none"
+            style={{
+              width: 'min(650px, 90vw)',
+              height: 'min(650px, 90vw)',
+            }}
           />
 
-          <div className="flex flex-col items-center justify-center gap-3 py-16">
+          <div className="flex flex-col items-center justify-center gap-3 py-16 px-8">
             {/* Profile Photo */}
-            <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-gray-300">
+            <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-gray-300">
               <img
                 src="/profile.png"
                 alt="Profile"
@@ -55,12 +59,12 @@ export default function Hero() {
             </div>
 
             {/* Subtitle */}
-            <p className="text-gray-400 tracking-[0.3em] text-sm uppercase mt-2">
+            <p className="text-gray-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-2">
               Software Engineer
             </p>
 
             {/* Typing Animation */}
-            <div className="text-4xl font-bold text-gray-900 flex items-center gap-2">
+            <div className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900 flex items-center gap-2 text-center">
               <TypeAnimation
                 sequence={[
                   "And I'm addicted to ☕",
@@ -74,16 +78,16 @@ export default function Hero() {
                 speed={50}
                 repeat={Infinity}
               />
-              <span className="w-[3px] h-10 bg-teal-500 inline-block animate-pulse" />
+              <span className="w-[2px] md:w-[3px] h-7 md:h-10 bg-teal-500 inline-block animate-pulse" />
             </div>
 
             {/* Nav Links */}
-            <nav className="flex gap-10 mt-4 text-xs tracking-widest text-gray-400 uppercase">
+            <nav className="flex flex-wrap justify-center gap-3 md:gap-10 mt-4 text-xs tracking-widest text-gray-400 uppercase">
               {['About', 'Experience', 'Skills', 'Projects'].map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
-                  className="px-4 py-2 rounded-full border border-transparent hover:border-gray-300 hover:text-gray-600 transition-all duration-300 cursor-pointer bg-transparent"
+                  className="px-3 md:px-4 py-2 rounded-full border border-transparent hover:border-gray-300 hover:text-gray-600 transition-all duration-300 cursor-pointer bg-transparent"
                 >
                   {item}
                 </button>
