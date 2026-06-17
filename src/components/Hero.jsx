@@ -11,7 +11,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative h-screen flex flex-col bg-[#f0f0f0] overflow-hidden snap-start"
+      className="relative h-screen flex flex-col bg-[#0a0a0a] overflow-hidden snap-start"
     >
       {/* Ocean Wave Circles */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -24,7 +24,7 @@ export default function Hero() {
         ].map((wave, i) => (
           <div
             key={i}
-            className="absolute rounded-full border border-gray-400"
+            className="absolute rounded-full border border-sky-500/30"
             style={{
               width: 400,
               height: 400,
@@ -37,11 +37,10 @@ export default function Hero() {
 
       {/* Center Content */}
       <div className="flex flex-col items-center justify-center flex-1 z-10 px-4">
-
         {/* Large Static Circle around content */}
         <div className="relative flex flex-col items-center justify-center">
           <div
-            className="absolute rounded-full border border-gray-300 pointer-events-none"
+            className="absolute rounded-full border border-sky-500/20 pointer-events-none"
             style={{
               width: 'min(650px, 90vw)',
               height: 'min(650px, 90vw)',
@@ -50,7 +49,7 @@ export default function Hero() {
 
           <div className="flex flex-col items-center justify-center gap-3 py-16 px-8">
             {/* Profile Photo */}
-            <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-gray-300">
+            <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-sky-400/40">
               <img
                 src="/profile.png"
                 alt="Profile"
@@ -59,12 +58,12 @@ export default function Hero() {
             </div>
 
             {/* Subtitle */}
-            <p className="text-gray-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-2">
+            <p className="text-slate-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-2">
               Software Engineer
             </p>
 
             {/* Typing Animation */}
-            <div className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900 flex items-center gap-2 text-center">
+            <div className="text-xl sm:text-2xl md:text-4xl font-bold text-slate-100 flex items-center gap-2 text-center">
               <TypeAnimation
                 sequence={[
                   "And I'm addicted to ☕",
@@ -78,16 +77,16 @@ export default function Hero() {
                 speed={50}
                 repeat={Infinity}
               />
-              <span className="w-[2px] md:w-[3px] h-7 md:h-10 bg-teal-500 inline-block animate-pulse" />
+              <span className="w-[2px] md:w-[3px] h-7 md:h-10 bg-sky-400 inline-block animate-pulse" />
             </div>
 
             {/* Nav Links */}
-            <nav className="flex flex-wrap justify-center gap-3 md:gap-10 mt-4 text-xs tracking-widest text-gray-400 uppercase">
+            <nav className="flex flex-wrap justify-center gap-3 md:gap-10 mt-4 text-xs tracking-widest text-slate-400 uppercase">
               {['About', 'Experience', 'Skills', 'Projects'].map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
-                  className="px-3 md:px-4 py-2 rounded-full border border-transparent hover:border-gray-300 hover:text-gray-600 transition-all duration-300 cursor-pointer bg-transparent"
+                  className="px-3 md:px-4 py-2 rounded-full border border-transparent hover:border-sky-400/40 hover:text-sky-300 transition-all duration-300 cursor-pointer bg-transparent"
                 >
                   {item}
                 </button>

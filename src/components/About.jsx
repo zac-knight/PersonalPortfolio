@@ -6,14 +6,13 @@ export default function About() {
   return (
     <section
       id="about"
-      className="min-h-screen flex items-center bg-[#f0f0f0] snap-start"
+      className="min-h-screen flex items-center bg-[#0a0a0a] snap-start"
     >
       {/* Main Content */}
       <div className="grid grid-cols-2 w-full h-full">
-
         {/* Left - Photo */}
         <div className="flex items-center justify-end pr-10">
-          <div className="w-[420px] h-[580px] overflow-hidden rounded-lg">
+          <div className="w-[420px] h-[580px] overflow-hidden rounded-lg border border-sky-500/20">
             <img
               src="/profile-large.png"
               alt="About"
@@ -24,13 +23,19 @@ export default function About() {
 
         {/* Right - Text */}
         <div className="flex flex-col justify-center pl-10 pr-20 max-w-2xl">
-          <p className="text-gray-400 tracking-[0.3em] text-sm uppercase mb-6">
+          <p className="text-slate-400 tracking-[0.3em] text-sm uppercase mb-6">
             A B O U T
           </p>
-          <h2 className="text-4xl font-bold text-gray-900 mb-8">
-            Here is a <span className="underline decoration-teal-500">little</span> background
+
+          <h2 className="text-4xl font-bold text-slate-100 mb-8">
+            Here is a{' '}
+            <span className="underline decoration-sky-400">
+              little
+            </span>{' '}
+            background
           </h2>
-          <p className="text-gray-700 leading-relaxed text-justify">
+
+          <p className="text-slate-300 leading-relaxed text-justify">
             Hey 👋 I am a Software Engineer based in Brisbane, Australia.
             I recently completed my degree in Computer Science and have a
             passion for building clean, efficient, and meaningful software.
