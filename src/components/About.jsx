@@ -23,17 +23,19 @@ export default function About() {
 
         {/* Right - Text */}
         <div className="flex flex-col justify-center pl-10 pr-20 max-w-2xl">
-          <p className="text-slate-400 tracking-[0.3em] text-sm uppercase mb-6">
-            A B O U T
-          </p>
+          
+          <div className="flex flex-col gap-10">
+            <p className="text-slate-400 tracking-[0.3em] text-sm uppercase">
+              A B O U T
+            </p>
 
-          <h2 className="text-4xl font-bold text-slate-100 mb-8">
-            Here is a{' '}
-            <span className="underline decoration-sky-400">
-              little
-            </span>{' '}
-            background
-          </h2>
+            <h2 className="text-4xl font-bold text-slate-100">
+              My{' '}
+              <span className="underline decoration-sky-400">
+                background
+              </span>
+            </h2>
+          </div>
 
           <p className="text-slate-300 leading-relaxed text-justify">
             I am a Computer Science graduate currently pursuing a Master of

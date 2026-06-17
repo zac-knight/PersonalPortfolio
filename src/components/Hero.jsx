@@ -26,8 +26,8 @@ export default function Hero() {
             key={i}
             className="absolute rounded-full border border-sky-500/30"
             style={{
-              width: 400,
-              height: 400,
+              width: 620,
+              height: 620,
               animation: `wave-out ${wave.duration} ease-out infinite`,
               animationDelay: wave.delay,
             }}
@@ -82,7 +82,7 @@ export default function Hero() {
 
             {/* Nav Links */}
             <nav className="flex flex-wrap justify-center gap-3 md:gap-10 mt-4 text-xs tracking-widest text-slate-400 uppercase">
-              {['About', 'Experience', 'Skills', 'Projects'].map((item) => (
+              {['About', 'Experience', 'Education', 'Projects'].map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
