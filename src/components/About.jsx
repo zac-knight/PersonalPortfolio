@@ -36,11 +36,25 @@ export default function About() {
           </h2>
 
           <p className="text-slate-300 leading-relaxed text-justify">
-            Hey 👋 I am a Software Engineer based in Brisbane, Australia.
-            I recently completed my degree in Computer Science and have a
-            passion for building clean, efficient, and meaningful software.
-            I love exploring new technologies and turning ideas into reality
-            through code.
+            I am a Computer Science graduate currently pursuing a Master of
+            Artificial Intelligence at QUT. Passionate about software development,
+            machine learning, and emerging technologies, I enjoy solving complex
+            problems and building innovative solutions that create real-world impact.
+
+            <br /><br />
+
+            My enthusiasm for AI and technology led me to found the QUT AI & ML
+            Society, where I combine my technical interests with leadership and
+            community building. Through my academic journey and extracurricular
+            involvement, I have developed strong analytical, problem-solving, and
+            communication skills while thriving in collaborative team environments.
+
+            <br /><br />
+
+            I am actively seeking opportunities to grow as a Software Engineer or
+            Machine Learning Engineer, continuously expanding my knowledge and taking
+            on new challenges. I am driven by curiosity, innovation, and a desire to
+            contribute meaningful solutions to the future of technology.
           </p>
         </div>
       </div>

@@ -1,17 +1,31 @@
 import { useRef } from 'react'
+import { FaReact } from 'react-icons/fa'
+import { SiNextdotjs } from 'react-icons/si'
+import { SiTypescript } from 'react-icons/si'
+import { SiTailwindcss } from 'react-icons/si'
+import { SiPrisma } from 'react-icons/si'
+import { SiMysql } from 'react-icons/si'
 
 const projects = [
   {
-    title: 'Project 1: Masters Dissertation',
+    title: 'QPS Post-Course Resource Hub',
     description:
-      'My Masters dissertation involved using machine learning and computer vision together with robots to determine the physical properties of objects. The aim was to bridge the gap between how humans and robots interact with their environment.',
-    skills: ['🐍', '🔥', '📦'],
-    images: [
-      'https://via.placeholder.com/300x200',
-      'https://via.placeholder.com/300x200',
-      'https://via.placeholder.com/300x200',
-      'https://via.placeholder.com/300x200',
+      'Developed as part of a QUT IT Capstone Project in collaboration with the Queensland Police Service, this platform provides a centralised post-course resource hub for Specialist Investigators and Detectives. The application includes course management, discussion forums, research resources, and an integrated e-commerce system. Built from the ground up by a team of four students, the project successfully delivered over 110 user stories using modern full-stack technologies.',
+    skills: [
+      SiNextdotjs,
+      SiTypescript,
+      SiMysql,
+      SiPrisma,
+      SiTailwindcss,
+      FaReact,
     ],
+    images: [
+      '/projects/qps-1.png',
+      '/projects/qps-2.png',
+      '/projects/qps-3.png',
+      '/projects/qps-4.png',
+    ],
+    link: '#',
   },
   {
     title: 'Project 2: Your Next Project',
@@ -87,17 +101,17 @@ function ProjectCard({ project }) {
           {project.title}
         </h2>
 
-        <div className="flex gap-4 mb-6">
-          {project.skills.map((skill, i) => (
+        <div className="flex gap-4 mb-6 flex-wrap justify-center">
+          {project.skills.map((Icon, i) => (
             <div
               key={i}
-              className="w-12 h-12 rounded-full bg-slate-900 border border-sky-500/20 shadow-lg flex items-center justify-center text-2xl"
+              className="w-12 h-12 rounded-full bg-slate-900 border border-sky-500/20 shadow-lg flex items-center justify-center"
             >
-              {skill}
+              <Icon size={24} className="text-slate-200" />
             </div>
           ))}
         </div>
-
+        
         <p className="text-slate-300 text-base leading-relaxed text-justify max-w-4xl">
           {project.description}
         </p>

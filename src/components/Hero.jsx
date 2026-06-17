@@ -59,7 +59,7 @@ export default function Hero() {
 
             {/* Subtitle */}
             <p className="text-slate-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-2">
-              Software Engineer
+              Aspiring ML Engineer
             </p>
 
             {/* Typing Animation */}
