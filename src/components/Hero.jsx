@@ -49,7 +49,7 @@ export default function Hero() {
 
           <div className="flex flex-col items-center justify-center gap-3 py-16 px-8">
             {/* Profile Photo */}
-            <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-sky-400/40">
+            <div className="w-24 h-24 mb-4 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-sky-400/40">
               <img
                 src="/profile.png"
                 alt="Profile"
@@ -58,7 +58,7 @@ export default function Hero() {
             </div>
 
             {/* Subtitle */}
-            <p className="text-slate-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-2">
+            <p className="text-slate-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-6">
               Aspiring ML Engineer
             </p>
 
@@ -67,11 +67,11 @@ export default function Hero() {
               <TypeAnimation
                 sequence={[
                   "And I'm addicted to ☕",
-                  2000,
+                  3000,
                   "And I love building things 🛠️",
-                  2000,
+                  3000,
                   "And I enjoy solving problems 🧠",
-                  2000,
+                  3000,
                 ]}
                 wrapper="span"
                 speed={50}
@@ -81,7 +81,7 @@ export default function Hero() {
             </div>
 
             {/* Nav Links */}
-            <nav className="flex flex-wrap justify-center gap-3 md:gap-10 mt-4 text-xs tracking-widest text-slate-400 uppercase">
+            <nav className="flex flex-wrap justify-center gap-3 md:gap-4 mt-4 text-xs tracking-widest text-slate-400 uppercase">
               {['About', 'Experience', 'Education', 'Projects'].map((item) => (
                 <button
                   key={item}
