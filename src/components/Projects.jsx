@@ -1,54 +1,22 @@
 import { useRef, useState, useEffect } from 'react'
-import { FaReact, FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa'
-import {
-  SiNextdotjs,
-  SiTypescript,
-  SiTailwindcss,
-  SiPrisma,
-  SiMysql,
-} from 'react-icons/si'
+import { FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa'
+import projects from '../data'
 
-const projects = [
-  {
-    title: 'QPS Post-Course Resource Hub',
-    description:
-      'Developed as part of a QUT IT Capstone Project in collaboration with the Queensland Police Service, this platform provides a centralised post-course resource hub for Specialist Investigators and Detectives. The application includes course management, discussion forums, research resources, and an integrated e-commerce system. Built from the ground up by a team of four students, the project successfully delivered over 110 user stories using modern full-stack technologies.',
-    skills: [SiNextdotjs, SiTypescript, SiMysql, SiPrisma, SiTailwindcss, FaReact],
-    images: ['/projects/qps-1.png', '/projects/qps-2.png', '/projects/qps-3.png'],
-    link: '#',
-  },
-  {
-    title: 'Project 2: Your Next Project',
-    description: 'A short description of another project you have worked on.',
-    skills: [FaReact],
-    images: ['/projects/qps-1.png', '/projects/qps-2.png', '/projects/qps-3.png'],
-    link: '#',
-  },
-  {
-    title: 'Project 3: Another Project',
-    description: 'A short description of another project you have worked on.',
-    skills: [FaReact],
-    images: ['/projects/qps-1.png', '/projects/qps-2.png', '/projects/qps-3.png'],
-    link: '#',
-  },
-]
-
-function ProjectCard({ project, isActive }) {
+function ProjectCard({ project, isActive, onMoreDetail }) {
+  const previewImages = project.images.slice(0, 3)
   const [imgIndex, setImgIndex] = useState(0)
 
-  // Reset to first image when section becomes inactive
   useEffect(() => {
     if (!isActive) setImgIndex(0)
   }, [isActive])
 
-  // Only rotate when the section is active
   useEffect(() => {
     if (!isActive) return
     const timer = setInterval(() => {
-      setImgIndex(prev => (prev + 1) % project.images.length)
+      setImgIndex(prev => (prev + 1) % previewImages.length)
     }, 3000)
     return () => clearInterval(timer)
-  }, [imgIndex, isActive, project.images.length])
+  }, [imgIndex, isActive, previewImages.length])
 
   return (
     <section
@@ -68,12 +36,12 @@ function ProjectCard({ project, isActive }) {
         <div className="flex flex-col items-center gap-2 w-full sm:hidden">
           <div className="w-full h-[200px] rounded-xl overflow-hidden border border-sky-500/20 bg-slate-900">
             <img
-              src={project.images[imgIndex]}
-              className="w-full h-full object-cover transition-opacity duration-500"
+              src={previewImages[imgIndex]}
+              className="w-full h-full object-contain transition-opacity duration-500"
             />
           </div>
           <div className="flex gap-1.5 mt-1">
-            {project.images.map((_, i) => (
+            {previewImages.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setImgIndex(i)}
@@ -87,12 +55,12 @@ function ProjectCard({ project, isActive }) {
 
         {/* Desktop: three image grid */}
         <div className="hidden sm:grid grid-cols-3 gap-3 max-w-4xl w-full">
-          {project.images.map((src, i) => (
+          {previewImages.map((src, i) => (
             <div
               key={i}
               className="col-span-1 h-[204px] rounded-xl overflow-hidden shadow-md border border-sky-500/20 bg-slate-900"
             >
-              <img src={src} className="w-full h-full object-cover" />
+              <img src={src} className="w-full h-full object-contain" />
             </div>
           ))}
         </div>
@@ -121,26 +89,25 @@ function ProjectCard({ project, isActive }) {
         </p>
 
         <div className="flex justify-start mt-4">
-          <a
-            href={project.link}
+          <button
+            onClick={() => onMoreDetail(project)}
             className="flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-sky-950/95 border border-sky-800/60 text-sky-300 text-xs sm:text-sm tracking-widest uppercase rounded-full hover:bg-sky-950 hover:border-sky-600 hover:text-sky-200 transition-all duration-300"
           >
             More Detail
             <FaArrowRight size={12} />
-          </a>
+          </button>
         </div>
       </div>
     </section>
   )
 }
 
-export default function Projects() {
+export default function Projects({ onSelectProject }) {
   const scrollRef = useRef(null)
   const sectionRef = useRef(null)
   const [index, setIndex] = useState(0)
   const [isSectionVisible, setIsSectionVisible] = useState(false)
 
-  // Watch whether the Projects section is visible on screen
   useEffect(() => {
     const el = sectionRef.current
     if (!el) return
@@ -209,7 +176,12 @@ export default function Projects() {
         className="relative z-10 flex h-full overflow-x-scroll snap-x snap-mandatory no-scrollbar"
       >
         {projects.map((project, i) => (
-          <ProjectCard key={i} project={project} isActive={isSectionVisible} />
+          <ProjectCard
+            key={i}
+            project={project}
+            isActive={isSectionVisible}
+            onMoreDetail={onSelectProject}
+          />
         ))}
       </div>
     </section>

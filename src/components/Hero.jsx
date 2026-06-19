@@ -78,6 +78,7 @@ export default function Hero() {
                 wrapper="span"
                 speed={50}
                 repeat={Infinity}
+                cursor={false}
               />
               <span className="w-[2px] md:w-[3px] h-7 md:h-10 bg-sky-400 inline-block animate-pulse flex-shrink-0" />
             </div>
