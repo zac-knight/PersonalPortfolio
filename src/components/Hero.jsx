@@ -58,30 +58,32 @@ export default function Hero() {
             </div>
 
             {/* Subtitle */}
-            <p className="text-slate-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-6">
-              Aspiring ML Engineer
+            <p className="text-slate-400 tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm uppercase mt-6 text-center">
+              Aspiring Machine Learning Engineer
             </p>
 
             {/* Typing Animation */}
-            <div className="text-xl sm:text-2xl md:text-4xl font-bold text-slate-100 flex items-center gap-2 text-center">
+            <div className="text-xl sm:text-2xl md:text-4xl font-bold text-slate-100 flex items-center justify-center gap-2 text-center w-full">
               <TypeAnimation
                 sequence={[
-                  "And I'm addicted to ☕",
+                  "And I'm passionate about Machine Learning",
                   3000,
-                  "And I love building things 🛠️",
+                  "And I build intelligent systems",
                   3000,
-                  "And I enjoy solving problems 🧠",
+                  "And I turn data into insights",
+                  3000,
+                  "And I love crafting meaningful software",
                   3000,
                 ]}
                 wrapper="span"
                 speed={50}
                 repeat={Infinity}
               />
-              <span className="w-[2px] md:w-[3px] h-7 md:h-10 bg-sky-400 inline-block animate-pulse" />
+              <span className="w-[2px] md:w-[3px] h-7 md:h-10 bg-sky-400 inline-block animate-pulse flex-shrink-0" />
             </div>
 
             {/* Nav Links */}
-            <nav className="flex flex-wrap justify-center gap-3 md:gap-4 mt-4 text-xs tracking-widest text-slate-400 uppercase">
+            <nav className="grid grid-cols-2 place-items-center gap-3 md:flex md:flex-wrap md:justify-center md:gap-4 mt-4 text-xs tracking-widest text-slate-400 uppercase w-full">
               {['About', 'Experience', 'Education', 'Projects'].map((item) => (
                 <button
                   key={item}
