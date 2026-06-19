@@ -5,30 +5,26 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="min-h-screen w-full bg-[#0a0a0a] snap-start flex flex-col items-center justify-center relative"
+      className="min-h-screen w-full snap-start flex flex-col items-center justify-center relative"
     >
       {/* Main Content */}
-      <div className="flex flex-col items-center justify-center flex-1 w-full px-8 py-24 text-center gap-8">
-
+      <div className="flex flex-col items-center justify-center flex-1 w-full px-6 py-16 text-center gap-6 sm:gap-8">
         {/* Section Label */}
         <p className="text-slate-400 tracking-[0.3em] text-sm uppercase">
           C O N T A C T
         </p>
-
         {/* Heading */}
-        <h2 className="text-4xl font-bold text-slate-100 max-w-xl leading-tight">
+        <h2 className="text-3xl sm:text-4xl font-bold text-slate-100 max-w-xl leading-tight">
           Let&apos;s build something together.
         </h2>
-
         {/* Subtext */}
-        <p className="text-slate-400 text-base max-w-md leading-relaxed">
+        <p className="text-slate-400 text-sm sm:text-base max-w-md leading-relaxed">
           Whether you have a project in mind, a question, or just want to connect, feel free to reach out.
         </p>
-
         {/* CTA Button */}
         <a
-          href="mailto:zac@example.com"
-          className="mt-2 px-8 py-3 border border-sky-500/40 text-sky-400 text-sm tracking-widest uppercase rounded-full hover:bg-sky-500/10 transition-all duration-300"
+          href="mailto:zknight03@outlook.com"
+          className="mt-2 px-6 sm:px-8 py-3 border border-sky-500/40 text-sky-400 text-sm tracking-widest uppercase rounded-full hover:bg-sky-500/10 transition-all duration-300"
         >
           Say Hello
         </a>
@@ -36,20 +32,20 @@ export default function Contact() {
 
       {/* Footer */}
       <footer className="w-full border-t border-slate-800">
-        <div className="max-w-6xl mx-auto px-12 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="max-w-6xl mx-auto px-6 sm:px-12 py-8 flex flex-col items-center gap-6 md:flex-row md:justify-between">
 
           {/* Left: Name + Role */}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col items-center md:items-start gap-1">
             <span className="text-slate-100 font-bold text-sm tracking-[0.2em] uppercase">
               Zac Knight
             </span>
-            <span className="text-slate-500 text-xs tracking-widest uppercase">
+            <span className="text-slate-500 text-xs tracking-widest uppercase text-center md:text-left">
               Machine Learning / Software Engineer
             </span>
           </div>
 
           {/* Center: Nav Links */}
-          <nav className="flex gap-6 text-slate-400 text-xs tracking-widest uppercase">
+          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-slate-400 text-xs tracking-widest uppercase">
             <a href="#hero" className="hover:text-sky-400 transition-colors duration-200">Home</a>
             <a href="#about" className="hover:text-sky-400 transition-colors duration-200">About</a>
             <a href="#experience" className="hover:text-sky-400 transition-colors duration-200">Experience</a>
@@ -94,7 +90,7 @@ export default function Contact() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-slate-800/60 px-12 py-4 max-w-6xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-2">
+        <div className="border-t border-slate-800/60 px-6 sm:px-12 py-4 max-w-6xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-2 text-center">
           <p className="text-slate-600 text-xs tracking-widest uppercase">
             &copy; 2026 Zac Knight | Brisbane, Queensland, Australia
           </p>

@@ -7,10 +7,12 @@ import Education from './components/Education'
 import Skills from './components/Skills'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
+import SnowCanvas from './components/SnowCanvas'
 
 function App() {
   return (
     <>
+      <SnowCanvas density={90} speed={3} />
       <Navbar />
       <main id="scroll-container" className="h-screen w-full overflow-y-scroll snap-y snap-mandatory">
         <Hero />
@@ -27,3 +29,9 @@ function App() {
 }
 
 export default App
+
+
+
+
+
+

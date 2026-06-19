@@ -95,46 +95,75 @@ export default function Experience() {
   const [fillPx, setFillPx] = useState(0)
   const [revealedDots, setRevealedDots] = useState(new Array(sorted.length).fill(false))
   const [orbTop, setOrbTop] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-
-    const onScroll = () => {
-      const scrollTop = el.scrollTop
-      const slotH = el.clientHeight
-
-      // Total scrollable height of all slots (excluding title slot)
-      // scrollTop 0 = on title, scrollTop slotH = on first experience, etc.
-      // We want the line to start at the top of the inner content area and
-      // grow continuously as we scroll through experiences.
-
-      // Each experience slot is slotH tall. The title slot is also slotH.
-      // So when scrollTop = slotH we're on exp[0], scrollTop = 2*slotH on exp[1], etc.
-
-      // The line lives inside the inner grid (no title slot).
-      // Its total height = sorted.length * slotH
-      // Fill = how far into the experiences we've scrolled
-      const expScrollTop = Math.max(0, scrollTop - slotH) // offset past the title
-      const totalExpHeight = sorted.length * slotH
-
-      // fill is expScrollTop + half a viewport (so orb is vertically centred on screen)
-      const filled = Math.min(totalExpHeight, expScrollTop + slotH * 0.5)
-      setFillPx(filled)
-      setOrbTop(filled)
-
-      // Reveal dots: each dot sits at (index + 0.5) * slotH within the inner grid
-      const newRevealed = sorted.map((_, i) => {
-        const dotPos = (i + 0.5) * slotH
-        return filled >= dotPos
-      })
-      setRevealedDots(newRevealed)
-    }
-
-    el.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => el.removeEventListener('scroll', onScroll)
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
   }, [])
+
+useEffect(() => {
+  const el = scrollRef.current
+  if (!el) return
+
+  const onScroll = () => {
+    const scrollTop = el.scrollTop
+    const slotH = el.clientHeight
+    const expScrollTop = Math.max(0, scrollTop - slotH)
+    const totalExpHeight = sorted.length * slotH
+    const filled = Math.min(totalExpHeight, expScrollTop + slotH * 0.5)
+    setFillPx(filled)
+    setOrbTop(filled)
+    const newRevealed = sorted.map((_, i) => {
+      const dotPos = (i + 0.5) * slotH
+      return filled >= dotPos
+    })
+    setRevealedDots(newRevealed)
+  }
+
+  // NEW: bubble scroll out of the section when at the bottom
+  const onWheel = (e) => {
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2
+    const atTop = el.scrollTop <= 2
+    if ((atBottom && e.deltaY > 0) || (atTop && e.deltaY < 0)) {
+      const outer = document.getElementById('scroll-container')
+      if (outer) outer.scrollBy({ top: e.deltaY > 0 ? window.innerHeight : -window.innerHeight, behavior: 'smooth' })
+    }
+  }
+
+  // NEW: bubble touch swipe out of the section when at the bottom
+  let touchStartY = 0
+  const onTouchStart = (e) => { touchStartY = e.touches[0].clientY }
+  const onTouchEnd = (e) => {
+    const delta = touchStartY - e.changedTouches[0].clientY
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2
+    const atTop = el.scrollTop <= 2
+    if ((atBottom && delta > 30) || (atTop && delta < -30)) {
+      const outer = document.getElementById('scroll-container')
+      if (outer) outer.scrollBy({ top: delta > 0 ? window.innerHeight : -window.innerHeight, behavior: 'smooth' })
+    }
+  }
+
+  el.addEventListener('scroll', onScroll, { passive: true })
+  el.addEventListener('wheel', onWheel, { passive: true })
+  el.addEventListener('touchstart', onTouchStart, { passive: true })
+  el.addEventListener('touchend', onTouchEnd, { passive: true })
+
+  onScroll()
+
+  return () => {
+    el.removeEventListener('scroll', onScroll)
+    el.removeEventListener('wheel', onWheel)
+    el.removeEventListener('touchstart', onTouchStart)
+    el.removeEventListener('touchend', onTouchEnd)
+  }
+}, [])
+
+  // LINE: on mobile sits at x=24px from left; on desktop sits at 50%
+  const lineLeft = isMobile ? '24px' : '50%'
+  const lineTransform = isMobile ? 'none' : 'translateX(-1px)'
 
   return (
     <section
@@ -165,14 +194,14 @@ export default function Experience() {
           </p>
         </div>
 
-        {/* All experience slots — wrapped in a single relative container so the line is one continuous element */}
+        {/* Experience slots */}
         <div ref={innerRef} style={{ position: 'relative' }}>
 
-          {/* ONE continuous faint track behind everything */}
+          {/* Track */}
           <div style={{
             position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-1px)',
+            left: lineLeft,
+            transform: lineTransform,
             top: 0,
             bottom: 0,
             width: '2px',
@@ -180,11 +209,11 @@ export default function Experience() {
             zIndex: 0,
           }} />
 
-          {/* ONE continuous glowing fill that grows as you scroll */}
+          {/* Fill */}
           <div style={{
             position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-1px)',
+            left: lineLeft,
+            transform: lineTransform,
             top: 0,
             width: '2px',
             height: `${fillPx}px`,
@@ -194,11 +223,11 @@ export default function Experience() {
             pointerEvents: 'none',
           }} />
 
-          {/* Orb riding at the tip */}
+          {/* Orb */}
           <div style={{
             position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            left: lineLeft,
+            transform: isMobile ? 'translateX(-7px)' : 'translateX(-50%)',
             top: `${orbTop - 8}px`,
             width: '16px',
             height: '16px',
@@ -215,8 +244,25 @@ export default function Experience() {
             const year = getYear(exp.dates)
             const dotRevealed = revealedDots[index]
 
-            const content = (
-              <div className={isLeft ? 'text-right pr-10' : 'text-left pl-10'}>
+            const dot = (
+              <div
+                ref={(el) => { dotRefs.current[index] = el }}
+                style={{
+                  width: '12px',
+                  height: '12px',
+                  borderRadius: '50%',
+                  background: '#38bdf8',
+                  boxShadow: '0 0 12px 5px rgba(56,189,248,0.65)',
+                  opacity: dotRevealed ? 1 : 0,
+                  transform: dotRevealed ? 'scale(1)' : 'scale(0.1)',
+                  transition: 'opacity 0.35s ease, transform 0.35s ease',
+                  flexShrink: 0,
+                }}
+              />
+            )
+
+            const textContent = (isLeftSide) => (
+              <div className={isLeftSide ? 'text-right pr-10' : 'text-left pl-10'}>
                 <span className="text-xs tracking-widest uppercase font-semibold text-sky-400">
                   {exp.type}
                 </span>
@@ -231,7 +277,7 @@ export default function Experience() {
                 </p>
                 <ul className="mt-4 flex flex-col gap-2">
                   {exp.points.map((point, i) => (
-                    <li key={i} className={`text-slate-400 text-sm leading-relaxed ${isLeft ? 'text-right' : 'text-left'}`}>
+                    <li key={i} className={`text-slate-400 text-sm leading-relaxed ${isLeftSide ? 'text-right' : 'text-left'}`}>
                       {point}
                     </li>
                   ))}
@@ -250,6 +296,57 @@ export default function Experience() {
               </span>
             )
 
+            if (isMobile) {
+              return (
+                <div
+                  key={index}
+                  style={{
+                    height: '100vh',
+                    scrollSnapAlign: 'start',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingLeft: '52px',
+                    paddingRight: '20px',
+                    position: 'relative',
+                    zIndex: 2,
+                  }}
+                >
+                  {/* Dot pinned to line */}
+                  <div style={{
+                    position: 'absolute',
+                    left: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}>
+                    {dot}
+                  </div>
+                  {/* All content to the right */}
+                  <div className="text-left w-full">
+                    <span className="text-xs tracking-widest uppercase font-semibold text-sky-400">
+                      {exp.type}
+                    </span>
+                    <h3 className="text-lg font-bold text-slate-100 mt-1 leading-snug">
+                      {exp.title}
+                    </h3>
+                    <p className="font-semibold text-sm mt-1 text-sky-400">
+                      {exp.company}
+                    </p>
+                    <p className="text-slate-500 text-xs tracking-widest uppercase mt-1">
+                      {exp.dates}
+                    </p>
+                    <ul className="mt-4 flex flex-col gap-2">
+                      {exp.points.map((point, i) => (
+                        <li key={i} className="text-slate-400 text-[13px] leading-relaxed text-left">
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )
+            }
+
+            // Desktop layout (unchanged)
             return (
               <div
                 key={index}
@@ -263,35 +360,18 @@ export default function Experience() {
                   zIndex: 2,
                 }}
               >
-                {/* LEFT */}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                   {isLeft
-                    ? content
+                    ? textContent(true)
                     : <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', paddingRight: '8px' }}>{yearLabel}</div>
                   }
                 </div>
-
-                {/* CENTER — dot only */}
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', zIndex: 5 }}>
-                  <div
-                    ref={(el) => { dotRefs.current[index] = el }}
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      borderRadius: '50%',
-                      background: '#38bdf8',
-                      boxShadow: '0 0 12px 5px rgba(56,189,248,0.65)',
-                      opacity: dotRevealed ? 1 : 0,
-                      transform: dotRevealed ? 'scale(1)' : 'scale(0.1)',
-                      transition: 'opacity 0.35s ease, transform 0.35s ease',
-                    }}
-                  />
+                  {dot}
                 </div>
-
-                {/* RIGHT */}
                 <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
                   {!isLeft
-                    ? content
+                    ? textContent(false)
                     : <div style={{ paddingLeft: '8px' }}>{yearLabel}</div>
                   }
                 </div>

@@ -11,7 +11,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative h-screen flex flex-col bg-[#0a0a0a] overflow-hidden snap-start"
+      className="relative h-screen flex flex-col overflow-hidden snap-start"
     >
       {/* Ocean Wave Circles */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
