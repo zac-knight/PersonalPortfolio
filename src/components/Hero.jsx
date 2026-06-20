@@ -87,7 +87,7 @@ export default function Hero() {
 
             {/* Nav Links */}
             <nav className="grid grid-cols-2 place-items-center gap-3 md:flex md:flex-wrap md:justify-center md:gap-4 mt-4 text-xs tracking-widest text-slate-400 uppercase w-full">
-              {['About', 'Experience', 'Education', 'Projects'].map((item) => (
+              {['About', 'Experience', 'Education', 'Projects', 'Skills', 'Contact'].map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}

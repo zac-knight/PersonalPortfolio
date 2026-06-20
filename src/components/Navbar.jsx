@@ -25,7 +25,7 @@ export default function Navbar() {
 
         {/* Right link */}
         <a
-          href="#contact"
+          href="mailto:zknight03@outlook.com"
           className="flex items-center gap-2 text-slate-400 hover:text-sky-400 transition-colors duration-300 text-base tracking-widest uppercase"
         >
           <MdEmail size={22} />
