@@ -16,13 +16,6 @@ export default function Navbar() {
           </a>
 
           <a
-            href="https://discord.gg/CqkUzVVkXX"
-            className="text-slate-400 hover:text-sky-400 transition-colors duration-300"
-          >
-            <FaDiscord size={26} />
-          </a>
-
-          <a
             href="https://github.com/zac-knight"
             className="text-slate-400 hover:text-sky-400 transition-colors duration-300"
           >

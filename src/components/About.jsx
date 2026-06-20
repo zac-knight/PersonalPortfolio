@@ -16,7 +16,7 @@ export default function About() {
             <img
               src="/profile-large.png"
               alt="About"
-              className="w-full h-full object-cover grayscale"
+              className="w-full h-full object-cover"
             />
           </div>
         </div>

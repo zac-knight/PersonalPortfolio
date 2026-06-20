@@ -66,6 +66,8 @@ export default function Hero() {
             <div className="text-xl sm:text-2xl md:text-4xl font-bold text-slate-100 flex items-center justify-center gap-2 text-center w-full">
               <TypeAnimation
                 sequence={[
+                  "Hi my name is Zac",
+                  3000,
                   "And I'm passionate about Machine Learning",
                   3000,
                   "And I build intelligent systems",

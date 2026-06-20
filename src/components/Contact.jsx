@@ -65,14 +65,6 @@ export default function Contact() {
               <FaLinkedin size={14} />
             </a>
             <a
-              href="https://discord.gg/CqkUzVVkXX"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-9 h-9 border border-slate-700 rounded flex items-center justify-center text-slate-400 hover:border-sky-500/60 hover:text-sky-400 transition-all duration-200"
-            >
-              <FaDiscord size={14} />
-            </a>
-            <a
               href="https://github.com/zac-knight"
               target="_blank"
               rel="noopener noreferrer"
