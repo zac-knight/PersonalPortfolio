@@ -37,7 +37,7 @@ export default function Hero() {
 
       {/* Center Content */}
       <div className="flex flex-col items-center justify-center flex-1 z-10 px-4">
-        {/* Large Static Circle around content */}
+        {/* Large Static Circle around content*/}
         <div className="relative flex flex-col items-center justify-center">
           <div
             className="absolute rounded-full border border-sky-500/20 pointer-events-none"
