@@ -38,7 +38,7 @@ export default function About() {
             }`}
           >
             <img
-              src="/profile-large.png"
+              src={`${import.meta.env.BASE_URL}profile-large.png`}
               alt="About"
               className="w-full h-full object-cover"
             />
