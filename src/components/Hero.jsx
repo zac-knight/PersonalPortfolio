@@ -13,7 +13,7 @@ export default function Hero() {
       id="hero"
       className="relative h-screen flex flex-col overflow-hidden snap-start"
     >
-      {/* Ocean Wave Circles */}
+      {/* Ocean Wave Circles around the center */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {[
           { delay: '0s', duration: '4.2s' },
