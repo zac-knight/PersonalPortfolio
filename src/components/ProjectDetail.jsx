@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaExternalLinkAlt, FaTimes } from 'react-icons/fa'
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// ── Modal ───
 function Modal({ onClose, children }) {
   return (
     <div
@@ -24,7 +24,7 @@ function Modal({ onClose, children }) {
   )
 }
 
-// ── Gallery ───────────────────────────────────────────────────────────────────
+// ── Gallery ──
 function Gallery({ images }) {
   const [active, setActive] = useState(0)
   const [modalOpen, setModalOpen] = useState(false)
