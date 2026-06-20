@@ -178,7 +178,7 @@ export default function Projects({ onSelectProject }) {
           style={{ clipPath: 'polygon(0 30%, 100% 0%, 100% 100%, 0% 100%)' }}
         />
       </div>
-      {/* Left button */}
+      {/* Left button  */}
       <button
         onClick={() => scrollToIndex(index - 1)}
         className={`absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-14 sm:h-14 rounded-full bg-slate-900 border border-sky-500/30 flex items-center justify-center hover:bg-slate-800 transition-opacity duration-300 ${
@@ -187,7 +187,7 @@ export default function Projects({ onSelectProject }) {
       >
         <FaChevronLeft size={16} className="text-sky-300" />
       </button>
-      {/* Right button */}
+      {/* Right button  */}
       <button
         onClick={() => scrollToIndex(index + 1)}
         className={`absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-14 sm:h-14 rounded-full bg-slate-900 border border-sky-500/30 flex items-center justify-center hover:bg-slate-800 transition-opacity duration-300 ${
@@ -196,7 +196,7 @@ export default function Projects({ onSelectProject }) {
       >
         <FaChevronRight size={16} className="text-sky-300" />
       </button>
-      {/* Scroll container */}
+      {/* Scroll container  */}
       <div
         ref={scrollRef}
         className="relative z-10 flex h-full overflow-x-scroll snap-x snap-mandatory no-scrollbar"
