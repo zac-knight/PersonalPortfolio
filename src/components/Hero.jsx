@@ -48,7 +48,7 @@ export default function Hero() {
           />
 
           <div className="flex flex-col items-center justify-center gap-3 py-16 px-8">
-            {/* Profile Photo */}
+            {/* Profile Photo  */}
             <div className="w-24 h-24 mb-4 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-sky-400/40">
               <img
                 src={`${import.meta.env.BASE_URL}profile.png`}
