@@ -1,19 +1,17 @@
 import { FaReact } from 'react-icons/fa'
 import { SiNextdotjs, SiTypescript, SiTailwindcss, SiPrisma, SiMysql } from 'react-icons/si'
 
+const base = import.meta.env.BASE_URL
+
 const qpsHub = {
   title: 'QPS Post-Course Resource Hub',
   tagline: 'Centralised learning continuity for Queensland Police investigators.',
   description:
     'Developed as part of a QUT IT Capstone Project in collaboration with the Queensland Police Service, this platform provides a centralised post-course resource hub for Specialist Investigators and Detectives. The application includes course management, discussion forums, research resources, and an integrated e-commerce system. Built from the ground up by a team of four students, the project successfully delivered over 110 user stories using modern full-stack technologies.',
   fullDescription: `As part of my QUT IT Capstone Project, Corey McCormick, Rohan Boas, Samuel Telford and I collaborated with the Queensland Police Service to design and deliver a Post-Course Resource Hub from the ground up. The platform provides a new digital environment designed to enhance the training experience for Specialist Investigators, Detectives, and other QPS personnel, giving graduates a structured space to continue learning and access resources long after their courses conclude.
-
 Prior to this system, officers had no persistent digital channel through which to revisit course content, engage in peer discussion, or access ongoing research materials once training ended. Our team of four students worked closely with QPS stakeholders over a full academic semester, following an agile methodology with fortnightly sprints and regular client demonstrations to ensure every sprint delivered working, validated software aligned to operational needs.
-
 We dedicated approximately one month to each of the four core features, working through a comprehensive product backlog of 110 user stories. The platform was built using Next.js and TypeScript, with MySQL and Prisma for data storage, and Tailwind CSS, ShadCN, and Zod for a polished, type-safe interface.`,
-
   problemStatement: `Queensland Police Service investigators completing specialist training had no persistent digital environment to continue learning after their courses ended. Course materials were fragmented, peer knowledge-sharing was informal and inconsistent, and there was no centralised mechanism to surface relevant research or procure supplementary resources. This created a tangible gap between the skills developed during training and the support available in the field.`,
-
   architecture: [
     {
       layer: 'Frontend',
@@ -36,7 +34,6 @@ We dedicated approximately one month to each of the four core features, working 
         'Role-based access control supporting officer, instructor, and administrator personas, each with scoped permissions across the platform.',
     },
   ],
-
   keyFeatures: [
     {
       title: 'Course Functionality',
@@ -63,30 +60,24 @@ We dedicated approximately one month to each of the four core features, working 
       body: 'Over 110 user stories delivered across fortnightly sprints with continuous QPS client feedback loops. Approximately one month was dedicated to the development and refinement of each core feature.',
     },
   ],
-
   businessImpact: [
     { stat: '110+', label: 'User Stories Delivered' },
     { stat: '4', label: 'Core Features Built' },
     { stat: '4', label: 'Person Student Team' },
     { stat: '8 months', label: 'Full Delivery Timeline' },
   ],
-
   skills: [SiNextdotjs, SiTypescript, SiMysql, SiPrisma, SiTailwindcss, FaReact],
   skillLabels: ['Next.js', 'TypeScript', 'MySQL', 'Prisma', 'Tailwind CSS', 'React'],
-
-  // Carousel images shown on the Projects page (first 3 used)
   images: [
-    '/projects/qpsHub/Dashboard.png',
-    '/projects/qpsHub/Course Page.png',
-    '/projects/qpsHub/Forum.png',
-    '/projects/qpsHub/Research - 1.png',
-    '/projects/qpsHub/Research - 2.png',
-    '/projects/qpsHub/Shop - 1.png',
-    '/projects/qpsHub/Shop - 2.png',
+    `${base}projects/qpsHub/Dashboard.png`,
+    `${base}projects/qpsHub/Course Page.png`,
+    `${base}projects/qpsHub/Forum.png`,
+    `${base}projects/qpsHub/Research - 1.png`,
+    `${base}projects/qpsHub/Research - 2.png`,
+    `${base}projects/qpsHub/Shop - 1.png`,
+    `${base}projects/qpsHub/Shop - 2.png`,
   ],
-
-  // Video shown as the live demo
-  link: '/projects/qpsHub/Demo.mp4',
+  link: `${base}projects/qpsHub/Demo.mp4`,
 }
 
 export default qpsHub

@@ -51,7 +51,7 @@ export default function Hero() {
             {/* Profile Photo */}
             <div className="w-24 h-24 mb-4 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-sky-400/40">
               <img
-                src="/profile.png"
+                src={`${import.meta.env.BASE_URL}profile.png`}
                 alt="Profile"
                 className="w-full h-full object-cover grayscale"
               />
