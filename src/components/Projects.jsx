@@ -5,11 +5,9 @@ import projects from '../data'
 function ProjectCard({ project, isActive, onMoreDetail }) {
   const previewImages = project.images.slice(0, 3)
   const [imgIndex, setImgIndex] = useState(0)
-
   useEffect(() => {
     if (!isActive) setImgIndex(0)
   }, [isActive])
-
   useEffect(() => {
     if (!isActive) return
     const timer = setInterval(() => {
@@ -17,7 +15,6 @@ function ProjectCard({ project, isActive, onMoreDetail }) {
     }, 3000)
     return () => clearInterval(timer)
   }, [imgIndex, isActive, previewImages.length])
-
   return (
     <section
       id="projects"
@@ -29,7 +26,6 @@ function ProjectCard({ project, isActive, onMoreDetail }) {
           P R O J E C T S
         </p>
       </div>
-
       {/* Images */}
       <div className="relative z-10 flex justify-center px-4 sm:px-16 mt-4 sm:mt-6">
         {/* Mobile: single large image with dot switcher */}
@@ -52,7 +48,6 @@ function ProjectCard({ project, isActive, onMoreDetail }) {
             ))}
           </div>
         </div>
-
         {/* Desktop: three image grid */}
         <div className="hidden sm:grid grid-cols-3 gap-3 max-w-4xl w-full">
           {previewImages.map((src, i) => (
@@ -65,7 +60,6 @@ function ProjectCard({ project, isActive, onMoreDetail }) {
           ))}
         </div>
       </div>
-
       {/* Content */}
       <div className="relative z-10 flex flex-col px-6 sm:px-16 md:px-32 mt-6 max-w-6xl w-full mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-6 mb-4">
@@ -83,11 +77,9 @@ function ProjectCard({ project, isActive, onMoreDetail }) {
             ))}
           </div>
         </div>
-
         <p className="text-slate-300 text-[13px] sm:text-sm md:text-base leading-relaxed text-justify mb-5 sm:mb-6 line-clamp-3 sm:line-clamp-none">
           {project.description}
         </p>
-
         <div className="flex justify-start mt-4">
           <button
             onClick={() => onMoreDetail(project)}
@@ -102,11 +94,48 @@ function ProjectCard({ project, isActive, onMoreDetail }) {
   )
 }
 
+function ComingSoonCard() {
+  return (
+    <section className="h-screen w-screen flex-shrink-0 snap-start flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center gap-6 px-6 text-center">
+        {/* Animated dots */}
+        <div className="flex gap-3 mb-2">
+          {[0, 1, 2].map(i => (
+            <span
+              key={i}
+              className="w-2.5 h-2.5 rounded-full bg-sky-400 opacity-70"
+              style={{ animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite` }}
+            />
+          ))}
+        </div>
+        <p className="text-slate-400 tracking-[0.3em] text-sm uppercase">
+          P R O J E C T S
+        </p>
+        <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-slate-100">
+          More projects{' '}
+          <span className="underline decoration-sky-400">coming</span>
+        </h2>
+        <p className="text-slate-400 text-sm sm:text-base max-w-md leading-relaxed">
+          Stay tuned — new work is always in progress.
+        </p>
+      </div>
+      <style>{`
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+          40% { transform: translateY(-10px); opacity: 1; }
+        }
+      `}</style>
+    </section>
+  )
+}
+
 export default function Projects({ onSelectProject }) {
   const scrollRef = useRef(null)
   const sectionRef = useRef(null)
   const [index, setIndex] = useState(0)
   const [isSectionVisible, setIsSectionVisible] = useState(false)
+
+  const totalSlides = projects.length + 1
 
   useEffect(() => {
     const el = sectionRef.current
@@ -149,7 +178,6 @@ export default function Projects({ onSelectProject }) {
           style={{ clipPath: 'polygon(0 30%, 100% 0%, 100% 100%, 0% 100%)' }}
         />
       </div>
-
       {/* Left button */}
       <button
         onClick={() => scrollToIndex(index - 1)}
@@ -159,17 +187,15 @@ export default function Projects({ onSelectProject }) {
       >
         <FaChevronLeft size={16} className="text-sky-300" />
       </button>
-
       {/* Right button */}
       <button
         onClick={() => scrollToIndex(index + 1)}
         className={`absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-14 sm:h-14 rounded-full bg-slate-900 border border-sky-500/30 flex items-center justify-center hover:bg-slate-800 transition-opacity duration-300 ${
-          index === projects.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          index === totalSlides - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
         <FaChevronRight size={16} className="text-sky-300" />
       </button>
-
       {/* Scroll container */}
       <div
         ref={scrollRef}
@@ -183,6 +209,7 @@ export default function Projects({ onSelectProject }) {
             onMoreDetail={onSelectProject}
           />
         ))}
+        <ComingSoonCard />
       </div>
     </section>
   )
