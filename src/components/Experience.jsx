@@ -5,6 +5,7 @@ import { IconBox, LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
 const experiences = [
   {
     title: 'Work Integrated Learning Student',
+    short: 'CRDC',
     company: 'Cotton Research and Development Corporation',
     dates: 'Aug 2026 – Present',
     type: 'Work',
@@ -18,6 +19,7 @@ const experiences = [
   },
   {
     title: 'Founding President',
+    short: 'AIML President',
     company: 'QUT AI & ML Society',
     dates: 'May 2025 – Present',
     type: 'Volunteer',
@@ -37,6 +39,7 @@ const experiences = [
   },
   {
     title: 'Engineering Work Integrated Learning Placement',
+    short: 'QUT Engineering',
     company: 'QUT Engineering Team',
     dates: 'Jul 2025 – Dec 2025',
     type: 'Work',
@@ -50,6 +53,7 @@ const experiences = [
   },
   {
     title: 'Vice President',
+    short: 'Code Network VP',
     company: 'Code Network',
     dates: 'Mar 2025 – May 2025',
     type: 'Volunteer',
@@ -63,6 +67,7 @@ const experiences = [
   },
   {
     title: 'Projects Officer',
+    short: 'Code Network Projects',
     company: 'Code Network',
     dates: 'Oct 2024 – Mar 2025',
     type: 'Volunteer',
@@ -75,6 +80,7 @@ const experiences = [
   },
   {
     title: 'Work Integrated Learning Student',
+    short: 'QPS',
     company: 'Queensland Police Service',
     dates: 'Apr 2024 – Oct 2024',
     type: 'Work',
@@ -88,6 +94,7 @@ const experiences = [
   },
   {
     title: 'Sales Co-worker',
+    short: 'IKEA',
     company: 'IKEA',
     dates: 'Feb 2022 – Present',
     type: 'Work',
@@ -230,7 +237,23 @@ export default function Experience() {
       <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-14 sm:pb-20">
       <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] rounded-lg border border-line overflow-hidden">
         {/* Log window */}
-        <Reveal className="order-2 lg:order-1">
+        {/* Role tabs (mobile) */}
+        <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 border-b border-line">
+          {sorted.map((e, i) => (
+            <button
+              key={e.title + e.company}
+              onClick={() => setActive(i)}
+              aria-pressed={active === i}
+              className={`shrink-0 rounded-md border px-3 py-2 text-[13px] transition-colors ${
+                active === i ? 'border-cream bg-cream text-canvas' : 'border-line text-body'
+              }`}
+            >
+              {e.short}
+            </button>
+          ))}
+        </div>
+
+        <Reveal className="min-w-0">
           <Painted variant="meadow" className="h-full px-4 sm:px-8 lg:px-10 py-6 sm:py-8">
             <Window title={`${exp.company.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.log`}>
               <div className="px-5 sm:px-8 py-6 font-mono text-[12.5px] sm:text-[14px] leading-relaxed min-h-[340px]">
@@ -260,7 +283,7 @@ export default function Experience() {
         </Reveal>
 
         {/* Role list */}
-        <div className="order-1 lg:order-2 lg:border-l border-line">
+        <div className="hidden lg:block border-l border-line">
           {sorted.map((e, i) => (
             <button
               key={e.title + e.company}

@@ -86,6 +86,8 @@ section[id] {
 }
 .painted::before {
   z-index: -2;
+  inset: -12%;
+  animation: drift 28s ease-in-out infinite alternate;
   background:
     radial-gradient(ellipse 40% 35% at 12% 92%, rgba(226, 104, 92, 0.95), transparent 70%),
     radial-gradient(ellipse 35% 30% at 88% 88%, rgba(236, 160, 64, 0.9), transparent 70%),
@@ -117,6 +119,58 @@ section[id] {
   mix-blend-mode: multiply;
 }
 
+@keyframes drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1.02); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.06); }
+}
+
+/* Staggered entrance for the hero, driven by --d */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.rise {
+  animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Case study overlay */
+@keyframes overlay-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes overlay-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(24px); }
+}
+.overlay-in { animation: overlay-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.overlay-out { animation: overlay-out 0.3s ease-in both; }
+
+/* Mobile menu */
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+.drop-in { animation: drop-in 0.3s ease-out both; }
+
+/* Hover lift for cards */
+.lift {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s, background-color 0.35s, box-shadow 0.35s;
+}
+.lift:hover {
+  transform: translateY(-3px);
+  border-color: #4a4640;
+  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* Gentle zoom for photos inside a .zoom-group */
+.zoom-group img {
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.zoom-group:hover img {
+  transform: scale(1.035);
+}
+
 @keyframes pixel-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -141,6 +195,7 @@ section[id] {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .pixel, .caret { animation: none; }
+  .pixel, .caret, .rise, .overlay-in, .overlay-out, .drop-in, .painted::before { animation: none !important; }
+  .lift:hover, .zoom-group:hover img { transform: none; }
   .reveal { transition: none !important; opacity: 1 !important; transform: none !important; translate: none !important; }
 }

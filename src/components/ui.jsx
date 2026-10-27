@@ -28,8 +28,8 @@ export function Reveal({ children, className = '', delay = 0, as: Tag = 'div' })
   return (
     <Tag
       ref={ref}
-      className={`reveal transition-all duration-700 ease-out ${
-        shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      className={`reveal transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        shown ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-6 blur-[2px]'
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -139,6 +139,50 @@ export function Painted({ variant = '', className = '', children }) {
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
+// Counts the first number in a label (e.g. "1,995", "86%", "~95%") up from zero
+// the first time it scrolls into view; non-numeric text is left untouched.
+export function CountUp({ value, duration = 1400 }) {
+  const ref = useRef(null)
+  const match = /\d[\d,]*(\.\d+)?/.exec(value)
+  const target = match ? Number(match[0].replace(/,/g, '')) : null
+  const [current, setCurrent] = useState(target)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el || target === null) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let frame
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      observer.disconnect()
+      const start = performance.now()
+      const tick = now => {
+        const t = Math.min(1, (now - start) / duration)
+        setCurrent(target * (1 - Math.pow(1 - t, 3)))
+        if (t < 1) frame = requestAnimationFrame(tick)
+      }
+      setCurrent(0)
+      frame = requestAnimationFrame(tick)
+    }, { threshold: 0.4 })
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frame)
+    }
+  }, [target, duration])
+
+  if (!match) return value
+  const decimals = match[1] ? match[1].length - 1 : 0
+  const formatted = current.toLocaleString('en-AU', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+  return (
+    <span ref={ref}>
+      {value.slice(0, match.index)}
+      {formatted}
+      {value.slice(match.index + match[0].length)}
+    </span>
+  )
+}
+
 export function StatRow({ stats, className = '' }) {
   return (
     <div className={`grid grid-cols-2 sm:grid-cols-4 ${className}`}>
@@ -150,7 +194,7 @@ export function StatRow({ stats, className = '' }) {
           } ${i >= 2 ? 'border-t sm:border-t-0' : ''}`}
         >
           <p className="text-[11px] sm:text-xs uppercase tracking-wide text-mute min-h-[2.8em]">{s.label}</p>
-          <p className="mt-2 sm:mt-4 text-2xl sm:text-3xl text-ink tabular-nums">{s.value}</p>
+          <p className="mt-2 sm:mt-4 text-2xl sm:text-3xl text-ink tabular-nums"><CountUp value={s.value} /></p>
         </div>
       ))}
     </div>

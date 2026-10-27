@@ -229,7 +229,9 @@ export default function About() {
               </div>
 
               {/* Code */}
-              <CodePane />
+              <div className="hidden md:block min-w-0">
+                <CodePane />
+              </div>
             </div>
           </Window>
         </Painted>

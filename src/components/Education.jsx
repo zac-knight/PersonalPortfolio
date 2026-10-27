@@ -101,7 +101,7 @@ const DEGREES = [
 
 function DegreeCard({ file, variant, status, live, name, dates, summary, unitsTitle, units, breadth, facts }) {
   return (
-    <article className="flex flex-col rounded-lg overflow-hidden bg-panel border border-line">
+    <article className="lift flex flex-col rounded-lg overflow-hidden bg-panel border border-line">
       <Painted variant={variant} className="px-5 pt-5">
         <Window title={file} className="rounded-b-none border-b-0 shadow-none">
           <div className="px-5 sm:px-6 py-5">
@@ -133,7 +133,7 @@ function DegreeCard({ file, variant, status, live, name, dates, summary, unitsTi
           {facts.map(([term, value], i) => (
             <div
               key={term}
-              className={`grid grid-cols-[100px_1fr] gap-4 px-4 py-2.5 font-mono text-[12px] uppercase tracking-wide ${
+              className={`grid grid-cols-[90px_1fr] gap-3 sm:gap-4 px-4 py-2.5 font-mono text-[12px] uppercase tracking-wide ${
                 i > 0 ? 'border-t border-line' : ''
               }`}
             >

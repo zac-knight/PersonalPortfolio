@@ -152,7 +152,7 @@ const CHAPTERS = [
 
 function Figure({ src, file, alt, caption, variant, position = 'object-center' }) {
   return (
-    <figure>
+    <figure className="zoom-group">
       <Painted variant={variant} className="px-4 pt-4 rounded-t-lg">
         <Window title={file} className="rounded-b-none border-b-0">
           <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] object-cover ${position}`} />
@@ -171,7 +171,7 @@ function Facts({ facts }) {
       {facts.map(([term, value], i) => (
         <div
           key={term}
-          className={`grid grid-cols-[130px_1fr] gap-4 px-4 py-3 bg-panel/50 font-mono text-[12px] uppercase tracking-wide ${
+          className={`grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-1 sm:gap-4 px-4 py-3 bg-panel/50 font-mono text-[12px] uppercase tracking-wide ${
             i > 0 ? 'border-t border-line' : ''
           }`}
         >
@@ -188,7 +188,7 @@ function FeatureCard({ href, label, title, body, cta }) {
     <a
       href={href}
       {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="group h-full rounded-lg border border-line bg-panel-2/40 hover:bg-panel-2/70 transition-colors px-5 py-5 flex flex-col gap-3"
+      className="lift group h-full rounded-lg border border-line bg-panel-2/40 hover:bg-panel-2/70 px-5 py-5 flex flex-col gap-3"
     >
       <span className="font-mono text-[11px] uppercase tracking-wide text-mute">{label}</span>
       <span className="font-serif text-2xl text-ink leading-snug">{title}</span>
@@ -228,7 +228,7 @@ function Chapter({ badge, label, name, role, where, body, facts, figures = [], f
 
   return (
     <article
-      className={`grid grid-cols-1 gap-8 lg:gap-12 px-6 sm:px-12 lg:px-20 xl:px-28 py-12 sm:py-16 border-t border-line ${
+      className={`grid grid-cols-1 gap-6 sm:gap-8 lg:gap-12 px-6 sm:px-12 lg:px-20 xl:px-28 py-10 sm:py-16 border-t border-line ${
         side ? 'lg:grid-cols-[260px_minmax(0,1fr)_minmax(0,0.85fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]'
       }`}
     >
