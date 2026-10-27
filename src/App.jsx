@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Hero from './components/Hero'
@@ -8,37 +8,45 @@ import Education from './components/Education'
 import Skills from './components/Skills'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
-import SnowCanvas from './components/SnowCanvas'
 import ProjectDetail from './components/ProjectDetail'
+import { Hatch } from './components/ui'
 
 function App() {
   const [activeProject, setActiveProject] = useState(null)
 
+  // Lock page scroll while the case study overlay is open
+  useEffect(() => {
+    document.body.style.overflow = activeProject ? 'hidden' : ''
+  }, [activeProject])
+
   return (
-    <>
-      <SnowCanvas density={90} speed={3} />
+    <div className="min-h-screen bg-canvas">
       <Navbar />
-      <main id="scroll-container" className="h-screen w-full overflow-y-scroll snap-y snap-mandatory">
+      <main>
         <Hero />
         <About />
+        <Hatch />
         <Experience />
+        <Hatch />
         <Education />
+        <Hatch />
         <Skills />
+        <Hatch />
         <Projects onSelectProject={setActiveProject} />
+        <Hatch />
         <Contact />
       </main>
       <Footer />
 
-      {/* Detail overlay — rendered outside the snap container */}
       {activeProject && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-canvas">
           <ProjectDetail
             project={activeProject}
             onBack={() => setActiveProject(null)}
           />
         </div>
       )}
-    </>
+    </div>
   )
 }
 

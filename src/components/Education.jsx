@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import { FaChevronDown } from 'react-icons/fa'
+import { LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
 
 const courses = [
   'IFB102 Introduction to Computer Systems',
@@ -34,126 +35,202 @@ const courses = [
   'MZB221 Electrical Engineering Mathematics',
 ]
 
-const education = [
+const sortedCourses = [...courses].sort((a, b) => a.localeCompare(b))
+
+const DISCIPLINES = [
+  { label: 'Computer Science', prefixes: ['CAB'] },
+  { label: 'Information Tech', prefixes: ['IFB', 'IAB'] },
+  { label: 'Mathematics', prefixes: ['MXB', 'MZB'] },
+  { label: 'Engineering', prefixes: ['EGB'] },
+].map(d => ({ ...d, count: courses.filter(c => d.prefixes.includes(c.slice(0, 3))).length }))
+
+const GPA = 6.6
+const GPA_MAX = 7
+
+// Master of AI: Feb 2026 → Jul 2027
+const MASTERS_START = new Date(2026, 1, 1)
+const MASTERS_END = new Date(2027, 6, 31)
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+function Gauge({ value, max, segments = 22 }) {
+  const filled = Math.round((value / max) * segments)
+  const cx = 150
+  const cy = 150
+  return (
+    <svg viewBox="0 0 300 175" className="w-full max-w-[300px] mx-auto" role="img" aria-label={`GPA ${value} out of ${max}`}>
+      {Array.from({ length: segments }, (_, i) => {
+        const a = Math.PI - (i + 0.5) * (Math.PI / segments)
+        const x1 = cx + Math.cos(a) * 92
+        const y1 = cy - Math.sin(a) * 92
+        const x2 = cx + Math.cos(a) * 132
+        const y2 = cy - Math.sin(a) * 132
+        return (
+          <line
+            key={i}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke={i < filled ? '#55514b' : '#2b2824'}
+            strokeWidth="14"
+            strokeLinecap="round"
+          >
+            <title>{i < filled ? 'Achieved' : 'Remaining'}</title>
+          </line>
+        )
+      })}
+      <text x={cx} y={cy - 8} textAnchor="middle" className="fill-ink font-sans" fontSize="40" fontWeight="600">
+        {value}
+      </text>
+      <text x={cx} y={cy + 16} textAnchor="middle" className="fill-body font-sans" fontSize="13">
+        GPA out of {max.toFixed(1)}
+      </text>
+    </svg>
+  )
+}
+
+function DisciplineBars() {
+  const max = Math.max(...DISCIPLINES.map(d => d.count))
+  return (
+    <div className="flex flex-col gap-3.5">
+      {DISCIPLINES.map(d => (
+        <div key={d.label} className="grid grid-cols-[110px_1fr_24px] items-center gap-3 group" title={`${d.label}: ${d.count} units`}>
+          <span className="text-[13px] text-body text-right">{d.label}</span>
+          <span className="h-8 rounded bg-panel-2 overflow-hidden">
+            <span
+              className="block h-full rounded bg-[#4a4640] group-hover:bg-[#6a655e] transition-colors"
+              style={{ width: `${(d.count / max) * 100}%` }}
+            />
+          </span>
+          <span className="text-[13px] text-ink tabular-nums">{d.count}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Progress() {
+  const now = new Date()
+  const pct = Math.max(0, Math.min(1, (now - MASTERS_START) / (MASTERS_END - MASTERS_START)))
+  const blocks = 24
+  const filled = Math.round(pct * blocks)
+  return (
+    <div className="flex flex-col gap-5">
+      <p className="text-5xl text-ink font-semibold tabular-nums">
+        {Math.round(pct * 100)}
+        <span className="text-2xl text-body">%</span>
+      </p>
+      <div className="grid grid-cols-12 gap-1.5" role="img" aria-label={`${Math.round(pct * 100)}% of the degree elapsed`}>
+        {Array.from({ length: blocks }, (_, i) => (
+          <span key={i} className={`h-6 rounded-[3px] ${i < filled ? 'bg-[#7a756e]' : 'bg-panel-2'}`} />
+        ))}
+      </div>
+      <div className="flex justify-between text-[12px] text-mute">
+        <span>Feb 2026</span>
+        <span>Jul 2027</span>
+      </div>
+    </div>
+  )
+}
+
+const CARDS = [
   {
-    degree: 'Master of Artificial Intelligence',
-    institution: 'Queensland University of Technology',
-    dates: 'Feb 2026 – Present',
-    gpa: 'TBD',
-    points: ['Expected completion July 2027'],
-    courses: [],
+    variant: 'dusk',
+    chartTitle: 'Bachelor of IT · final GPA',
+    chart: <Gauge value={GPA} max={GPA_MAX} />,
+    footer: ['Pass: 4.0', 'Max: 7.0'],
+    title: 'Bachelor of Information Technology',
+    body: 'Queensland University of Technology, Feb 2022 – Nov 2025. Major in Computer Science, minor in Engineering Foundations.',
   },
   {
-    degree: 'Bachelor of Information Technology',
-    institution: 'Queensland University of Technology',
-    dates: 'Feb 2022 – Nov 2025',
-    gpa: '6.6 / 7.0',
-    points: ['Major: Computer Science', 'Minor: Engineering Foundations'],
-    courses: courses,
+    variant: '',
+    chartTitle: 'Units by discipline',
+    chartMeta: `${courses.length} units`,
+    chart: <DisciplineBars />,
+    title: 'Breadth across the stack',
+    body: 'From microprocessors and networks to cloud, AI and machine learning — with a strong mathematics core.',
+  },
+  {
+    variant: 'meadow',
+    chartTitle: 'Master of AI · progress',
+    chartMeta: 'GPA TBD',
+    chart: <Progress />,
+    title: 'Master of Artificial Intelligence',
+    body: 'Queensland University of Technology, Feb 2026 – present. Expected completion July 2027.',
   },
 ]
 
 export default function Education() {
-  const [expandedIndex, setExpandedIndex] = useState(null)
-
-  const sortedCourses = [...courses].sort((a, b) =>
-    a.split(' ')[0].localeCompare(b.split(' ')[0])
-  )
-
-  const splitIntoColumns = (arr, columns = 2) => {
-    const perColumn = Math.ceil(arr.length / columns)
-    return Array.from({ length: columns }, (_, i) =>
-      arr.slice(i * perColumn, (i + 1) * perColumn)
-    )
-  }
-
-  const columns = splitIntoColumns(sortedCourses, 2)
+  const [open, setOpen] = useState(false)
 
   return (
-    <section
-      id="education"
-      className="min-h-screen w-full snap-start flex flex-col items-center justify-center relative py-16 px-4"
-    >
-      {/* Title */}
-      <div className="mb-10">
-        <p className="text-slate-400 tracking-[0.3em] text-sm uppercase">
-          E D U C A T I O N
-        </p>
+    <section id="education">
+      <SectionHeader
+        tag="03"
+        label="Education"
+        title="Grounded in computer science, focused on AI."
+        description="A Computer Science major from QUT, now deepening into artificial intelligence with a master's degree — theory, mathematics and plenty of shipped assignments."
+        meta={<LiveMeta label="Enrolled">QUT, Brisbane</LiveMeta>}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-6 sm:px-12 lg:px-20 xl:px-28">
+        {CARDS.map((card, i) => (
+          <Reveal key={card.title} delay={i * 100} className="flex flex-col rounded-lg overflow-hidden bg-panel border border-line">
+            <Painted variant={card.variant} className="px-5 pt-5">
+              <Window className="rounded-b-none border-b-0 shadow-none">
+                <div className="px-5 sm:px-6 pt-5 pb-6 min-h-[270px] flex flex-col">
+                  <div className="flex items-baseline justify-between gap-3 mb-6">
+                    <p className="text-ink">{card.chartTitle}</p>
+                    {card.chartMeta && <p className="text-[13px] text-body">{card.chartMeta}</p>}
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center">{card.chart}</div>
+                  {card.footer && (
+                    <div className="flex justify-between text-[13px] text-body mt-2">
+                      {card.footer.map(f => <span key={f}>{f}</span>)}
+                    </div>
+                  )}
+                </div>
+              </Window>
+            </Painted>
+            <div className="px-6 py-6">
+              <h3 className="font-serif text-2xl text-ink">{card.title}</h3>
+              <p className="mt-3 text-body leading-relaxed">{card.body}</p>
+            </div>
+          </Reveal>
+        ))}
       </div>
 
-      {/* Cards */}
-      <div className="flex flex-col gap-6 w-full max-w-3xl">
-        {education.map((edu, index) => (
-          <div
-            key={index}
-            className="bg-slate-900 border border-sky-500/20 rounded-2xl p-5 sm:p-8 flex flex-col gap-3 shadow-lg shadow-black/30 hover:border-sky-400/40 transition-all duration-300"
+      {/* Unit list */}
+      <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pt-5 pb-14 sm:pb-20">
+        <div className="rounded-lg border border-line bg-panel">
+          <button
+            onClick={() => setOpen(o => !o)}
+            aria-expanded={open}
+            className="w-full flex items-center justify-between px-6 py-4 text-left"
           >
-            
-            {/* Top row */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
-              <div className="flex flex-col gap-1">
-                <h3 className="text-lg sm:text-xl font-bold text-slate-100">
-                  {edu.degree}
-                </h3>
-                <p className="text-sky-400 font-semibold text-sm sm:text-base">
-                  {edu.institution}
-                </p>
-                {/* GPA shown under institution on mobile only */}
-                <p className="text-slate-400 text-xs mt-0.5 sm:hidden">
-                  GPA: {edu.gpa}
-                </p>
-              </div>
-              <div className="flex flex-row sm:flex-col sm:items-end gap-2 sm:gap-1 shrink-0">
-                <span className="text-slate-500 text-xs tracking-widest uppercase">
-                  {edu.dates}
-                </span>
-                {/* GPA shown on the right on desktop only */}
-                <span className="hidden sm:block text-slate-400 text-xs mt-0.5">
-                  GPA: {edu.gpa}
-                </span>
-              </div>
-            </div>
-
-            {/* Bullet points */}
-            <ul className="list-disc list-inside text-slate-300 text-sm leading-relaxed">
-              {edu.points.map((point, i) => (
-                <li key={i}>{point}</li>
-              ))}
+            <span className="flex items-center gap-3">
+              <span className="font-mono text-[13px] text-mute">~/bit/</span>
+              <span className="text-ink">All {courses.length} completed units</span>
+            </span>
+            <FaChevronDown
+              size={12}
+              className={`text-body transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {open && (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2.5 px-6 pb-6 pt-2 border-t border-line">
+              {sortedCourses.map(course => {
+                const [code, ...name] = course.split(' ')
+                return (
+                  <li key={course} className="flex gap-3 text-[13px] pt-2.5">
+                    <span className="font-mono text-flame shrink-0">{code}</span>
+                    <span className="text-body">{name.join(' ')}</span>
+                  </li>
+                )
+              })}
             </ul>
-
-            {/* Courses */}
-            {edu.courses.length > 0 && (
-              <div className="mt-2">
-                <button
-                  onClick={() =>
-                    setExpandedIndex(expandedIndex === index ? null : index)
-                  }
-                  className="flex items-center gap-2 text-sky-400 text-xs tracking-widest uppercase hover:text-sky-300 transition-colors duration-200"
-                >
-                  {expandedIndex === index ? (
-                    <>Hide Courses <FaChevronUp size={10} /></>
-                  ) : (
-                    <>View Units <FaChevronDown size={10} /></>
-                  )}
-                </button>
-
-                {expandedIndex === index && (
-                  <div className="mt-4 flex flex-col sm:flex-row gap-4 sm:gap-8 max-h-40 sm:max-h-24 overflow-y-auto no-scrollbar pr-2">
-                    {columns.map((col, colIndex) => (
-                      <div key={colIndex} className="flex flex-col gap-1 flex-1">
-                        {col.map((course, i) => (
-                          <p key={i} className="text-slate-400 text-xs leading-tight">
-                            {course}
-                          </p>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+          )}
+        </div>
       </div>
     </section>
   )

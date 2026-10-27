@@ -5,6 +5,7 @@ const base = import.meta.env.BASE_URL
 
 const qpsHub = {
   title: 'QPS Post-Course Resource Hub',
+  category: 'QUT Capstone × Queensland Police Service',
   tagline: 'Centralised learning continuity for Queensland Police investigators.',
   description:
     'Developed as part of a QUT IT Capstone Project in collaboration with the Queensland Police Service, this platform provides a centralised post-course resource hub for Specialist Investigators and Detectives. The application includes course management, discussion forums, research resources, and an integrated e-commerce system. Built from the ground up by a team of four students, the project successfully delivered over 110 user stories using modern full-stack technologies.',
