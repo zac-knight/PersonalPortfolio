@@ -1,22 +1,30 @@
-import { useState } from 'react'
-import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaExternalLinkAlt, FaTimes } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
+import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaPlay, FaRegFileImage, FaTimes } from 'react-icons/fa'
+import { Button, Eyebrow, Hatch, LiveMeta, Painted, StatRow, TabStrip, Window } from './ui'
 
-// ── Modal ───
+// Tab labels show the file name with any hyphens turned into spaces
+const fileName = (src) => decodeURIComponent(src.split('/').pop()).replace(/\s*-\s*/g, ' ')
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
 function Modal({ onClose, children }) {
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4"
       onClick={onClose}
     >
-      <div
-        className="relative w-full max-w-4xl mx-4 mt-16 mb-6"
-        onClick={e => e.stopPropagation()}
-      >
+      <div className="relative w-full max-w-5xl" onClick={e => e.stopPropagation()}>
         <button
           onClick={onClose}
-          className="absolute -top-9 right-0 w-8 h-8 rounded-full bg-slate-800 border border-sky-500/30 flex items-center justify-center hover:bg-slate-700 transition-colors z-10"
+          aria-label="Close"
+          className="absolute -top-11 right-0 w-9 h-9 rounded-md bg-panel border border-line flex items-center justify-center text-ink hover:bg-panel-2 transition-colors"
         >
-          <FaTimes size={13} className="text-sky-300" />
+          <FaTimes size={13} />
         </button>
         {children}
       </div>
@@ -24,64 +32,43 @@ function Modal({ onClose, children }) {
   )
 }
 
-// ── Gallery ──
-function Gallery({ images }) {
+// ── Gallery ───────────────────────────────────────────────────────────────────
+function Gallery({ images, title }) {
   const [active, setActive] = useState(0)
   const [modalOpen, setModalOpen] = useState(false)
   const prev = () => setActive(i => (i - 1 + images.length) % images.length)
   const next = () => setActive(i => (i + 1) % images.length)
 
+  const navButton = 'w-9 h-9 rounded-md bg-panel/90 border border-line flex items-center justify-center text-ink hover:bg-panel-2 transition-colors'
+
   return (
     <>
-      <div className="flex flex-col gap-4">
-        <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-sky-500/20 bg-slate-900 shadow-xl shadow-black/40">
+      <Window title={title} className="rounded-b-none">
+        <TabStrip items={images.map(fileName)} active={active} onSelect={setActive} icon={FaRegFileImage} />
+        <div className="relative aspect-video bg-[#0f0e0d]">
           <img
             key={active}
             src={images[active]}
             alt={`Screenshot ${active + 1}`}
-            className="w-full h-full object-contain transition-opacity duration-500 cursor-zoom-in"
+            className="pixel w-full h-full object-contain cursor-zoom-in"
             onClick={() => setModalOpen(true)}
           />
-          <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-900/80 border border-sky-500/30 flex items-center justify-center hover:bg-slate-800 transition-colors"
-          >
-            <FaChevronLeft size={13} className="text-sky-300" />
+          <button onClick={prev} aria-label="Previous screenshot" className={`absolute left-3 top-1/2 -translate-y-1/2 ${navButton}`}>
+            <FaChevronLeft size={12} />
           </button>
-          <button
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-900/80 border border-sky-500/30 flex items-center justify-center hover:bg-slate-800 transition-colors"
-          >
-            <FaChevronRight size={13} className="text-sky-300" />
+          <button onClick={next} aria-label="Next screenshot" className={`absolute right-3 top-1/2 -translate-y-1/2 ${navButton}`}>
+            <FaChevronRight size={12} />
           </button>
-          <div className="absolute bottom-3 right-3 px-2.5 py-0.5 rounded-full bg-slate-900/80 border border-sky-500/20 text-sky-300 text-xs tracking-widest">
-            {active + 1} / {images.length}
-          </div>
+          <span className="absolute bottom-3 right-3 font-mono text-[11px] px-2 py-1 rounded bg-black/60 text-body">
+            {String(active + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+          </span>
         </div>
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          {images.map((src, i) => (
-            <button
-              key={i}
-              onClick={() => setActive(i)}
-              className={`flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border transition-all duration-200 bg-slate-900 ${
-                i === active
-                  ? 'border-sky-400 scale-105'
-                  : 'border-sky-500/20 opacity-60 hover:opacity-90'
-              }`}
-            >
-              <img src={src} alt="" className="w-full h-full object-contain" />
-            </button>
-          ))}
-        </div>
-      </div>
+      </Window>
 
       {modalOpen && (
         <Modal onClose={() => setModalOpen(false)}>
           <div className="flex flex-col gap-3">
-            <div
-              className="rounded-2xl overflow-hidden border border-sky-500/20 bg-slate-900 shadow-2xl shadow-black/60"
-              style={{ maxHeight: 'calc(100vh - 160px)' }}
-            >
+            <div className="rounded-lg overflow-hidden border border-line bg-panel">
               <img
                 src={images[active]}
                 alt={`Screenshot ${active + 1}`}
@@ -90,20 +77,14 @@ function Gallery({ images }) {
               />
             </div>
             <div className="flex items-center justify-center gap-4">
-              <button
-                onClick={e => { e.stopPropagation(); prev() }}
-                className="w-9 h-9 rounded-full bg-slate-900 border border-sky-500/30 flex items-center justify-center hover:bg-slate-800 transition-colors"
-              >
-                <FaChevronLeft size={13} className="text-sky-300" />
+              <button onClick={prev} aria-label="Previous screenshot" className={navButton}>
+                <FaChevronLeft size={12} />
               </button>
-              <span className="px-2.5 py-0.5 rounded-full bg-slate-900 border border-sky-500/20 text-sky-300 text-xs tracking-widest">
+              <span className="font-mono text-[12px] text-body">
                 {active + 1} / {images.length}
               </span>
-              <button
-                onClick={e => { e.stopPropagation(); next() }}
-                className="w-9 h-9 rounded-full bg-slate-900 border border-sky-500/30 flex items-center justify-center hover:bg-slate-800 transition-colors"
-              >
-                <FaChevronRight size={13} className="text-sky-300" />
+              <button onClick={next} aria-label="Next screenshot" className={navButton}>
+                <FaChevronRight size={12} />
               </button>
             </div>
           </div>
@@ -115,222 +96,268 @@ function Gallery({ images }) {
 
 // ── Video Player ──────────────────────────────────────────────────────────────
 function VideoPlayer({ src }) {
-  const [modalOpen, setModalOpen] = useState(false)
-
   return (
-    <>
-      <div
-        className="relative w-full aspect-video rounded-2xl overflow-hidden border border-sky-500/20 bg-slate-900 shadow-xl shadow-black/40 cursor-zoom-in group"
-        onClick={e => {
-          e.preventDefault()
-          e.stopPropagation()
-          setModalOpen(true)
-        }}
-      >
-        <video
-          src={src}
-          muted
-          loop
-          autoPlay
-          playsInline
-          className="w-full h-full object-contain pointer-events-none"
-        />
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <div className="w-14 h-14 rounded-full bg-slate-900/80 border border-sky-400/50 flex items-center justify-center">
-            <svg className="text-sky-300 ml-1" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="5,3 19,12 5,21" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {modalOpen && (
-        <Modal onClose={() => setModalOpen(false)}>
-          <div
-            className="relative rounded-2xl overflow-hidden border border-sky-500/20 bg-slate-900 shadow-2xl shadow-black/60"
-            style={{ maxHeight: 'calc(100vh - 120px)' }}
-          >
-            <video
-              src={src}
-              loop
-              autoPlay
-              playsInline
-              controls
-              className="w-full object-contain"
-              style={{ maxHeight: 'calc(100vh - 120px)' }}
-            />
-          </div>
-        </Modal>
-      )}
-    </>
+    <Window title="demo.mp4">
+      <video src={src} controls playsInline className="w-full aspect-video bg-black" />
+    </Window>
   )
 }
 
-// ── Section label ─────────────────────────────────────────────────────────────
-function SectionLabel({ children }) {
+// ── Bar chart ─────────────────────────────────────────────────────────────────
+function BarChart({ title, note, rows }) {
+  const max = Math.max(...rows.map(r => r.value))
+  const baseline = rows.find(r => r.current)?.value
   return (
-    <p className="text-sky-400 tracking-[0.25em] text-xs uppercase mb-3 font-medium">
-      {children}
-    </p>
+    <figure className="mt-6 rounded-lg border border-line bg-panel/50 px-6 py-6">
+      <figcaption className="text-ink mb-5">{title}</figcaption>
+      <div className="flex flex-col gap-3">
+        {rows.map(r => (
+          <div
+            key={r.label}
+            className="grid grid-cols-1 sm:grid-cols-[260px_1fr] gap-1.5 sm:gap-4 items-center group"
+            title={`${r.label}: ${r.value.toLocaleString()} tokens`}
+          >
+            <span className={`text-[13px] ${r.current ? 'text-ink' : 'text-body'}`}>{r.label}</span>
+            <span className="flex items-center gap-3">
+              <span className="flex-1 h-6 rounded bg-panel-2 overflow-hidden">
+                <span
+                  className={`block h-full rounded transition-colors ${
+                    r.current ? 'bg-[#7a756e]' : 'bg-[#4a4640] group-hover:bg-[#5d5953]'
+                  }`}
+                  style={{ width: `${(r.value / max) * 100}%` }}
+                />
+              </span>
+              <span className="w-28 shrink-0 text-[13px] text-ink tabular-nums">
+                {r.value.toLocaleString()}
+                {baseline && !r.current && (
+                  <span className="text-live"> −{Math.round((1 - r.value / baseline) * 100)}%</span>
+                )}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+      {note && <p className="mt-5 text-[12px] text-mute">{note}</p>}
+    </figure>
+  )
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+function Block({ tag, label, title, children }) {
+  return (
+    <section className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 lg:gap-12 px-6 sm:px-12 lg:px-20 xl:px-28 py-12 sm:py-16 border-t border-line">
+      <div className="flex flex-col gap-5">
+        <div>
+          <Eyebrow tag={tag}>{label}</Eyebrow>
+        </div>
+        {title && <h2 className="font-serif text-ink text-3xl leading-tight">{title}</h2>}
+      </div>
+      <div>{children}</div>
+    </section>
   )
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ProjectDetail({ project, onBack }) {
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onBack()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onBack])
+
+  let section = 0
+  const tag = () => String(++section).padStart(2, '0')
+
   return (
-    <div className="flex flex-col h-screen w-full bg-slate-950 text-slate-100">
-      <nav className="flex-shrink-0 w-full bg-slate-950/90 backdrop-blur border-b border-sky-500/10 px-6 sm:px-12 py-4 flex items-center justify-between z-30">
+    <div className="min-h-screen bg-canvas">
+      <nav className="sticky top-0 z-30 bg-canvas/85 backdrop-blur-md dots-b flex items-center justify-between h-16 sm:h-[72px] px-6 sm:px-12 lg:px-20 xl:px-28">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-sky-300 text-sm tracking-widest uppercase hover:text-sky-200 transition-colors"
+          className="flex items-center gap-2 text-body hover:text-ink transition-colors"
         >
           <FaArrowLeft size={12} />
-          Back
+          Back to portfolio
         </button>
-        <p className="text-slate-400 tracking-[0.3em] text-xs uppercase hidden sm:block">
-          P R O J E C T S
-        </p>
-        <a
-          href={project.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 bg-sky-950/95 border border-sky-800/60 text-sky-300 text-xs tracking-widest uppercase rounded-full hover:bg-sky-950 hover:border-sky-600 hover:text-sky-200 transition-all duration-300"
-        >
-          Live Demo
-          <FaExternalLinkAlt size={10} />
-        </a>
+        {project.link && (
+          <Button href={project.link} target="_blank" rel="noopener noreferrer">
+            <FaPlay size={10} /> Watch demo
+          </Button>
+        )}
       </nav>
 
-      <div className="flex-1 overflow-y-auto">
-        <header className="relative px-6 sm:px-12 md:px-24 pt-14 pb-10 border-b border-sky-500/10 overflow-hidden">
-          <div
-            className="absolute bottom-0 left-0 w-full h-[60%] bg-sky-700/10 pointer-events-none"
-            style={{ clipPath: 'polygon(0 40%, 100% 0%, 100% 100%, 0% 100%)' }}
-          />
-          <div className="relative max-w-5xl mx-auto">
-            <SectionLabel>Case Study</SectionLabel>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-slate-100 underline decoration-sky-400 mb-4 leading-tight">
-              {project.title}
-            </h1>
-            <p className="text-slate-400 text-base sm:text-lg max-w-2xl leading-relaxed">
-              {project.tagline}
-            </p>
-            <div className="flex flex-wrap gap-2 mt-6">
-              {project.skills.map((Icon, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-sky-500/20 text-slate-300 text-xs"
-                >
-                  <Icon size={13} className="text-sky-300" />
-                  {project.skillLabels[i]}
-                </div>
-              ))}
-            </div>
+      <header className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-20 pb-12">
+        <div className="flex flex-col gap-7">
+          <div>
+            <Eyebrow tag="Case study">{project.category || 'Project'}</Eyebrow>
           </div>
-        </header>
-
-        <main className="max-w-5xl mx-auto px-6 sm:px-12 md:px-24 py-12 flex flex-col gap-16">
-          <section>
-            <SectionLabel>Screenshots</SectionLabel>
-            <Gallery images={project.images} />
-          </section>
-
-          {project.video && (
-            <section>
-              <SectionLabel>Demo Video</SectionLabel>
-              <VideoPlayer src={project.video} />
-            </section>
-          )}
-
-          <section>
-            <SectionLabel>About the Project</SectionLabel>
-            <div className="space-y-4">
-              {project.fullDescription.split('\n\n').map((para, i) => (
-                <p key={i} className="text-slate-300 text-sm sm:text-base leading-relaxed text-justify">
-                  {para}
-                </p>
-              ))}
-            </div>
-          </section>
-
-          <section className="relative pl-5 border-l-2 border-sky-500/40">
-            <SectionLabel>Problem Statement</SectionLabel>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed text-justify italic">
-              {project.problemStatement}
+          <h1 className="font-serif text-ink text-4xl sm:text-6xl leading-[1.05] tracking-tight">
+            {project.title}
+          </h1>
+          <p className="text-body text-lg leading-relaxed max-w-2xl">{project.tagline}</p>
+          {project.role && (
+            <p className="text-[13px] text-mute">
+              <span className="text-flame">Role</span> · {project.role}
             </p>
-          </section>
+          )}
+        </div>
+        <div className="flex flex-col justify-between gap-6 lg:items-end">
+          <div className="hidden lg:block">
+            <LiveMeta label={project.status ? 'Status' : 'Shipped'}>
+              {project.status || `${project.skillLabels.length} technologies`}
+            </LiveMeta>
+          </div>
+          <ul className="flex flex-wrap gap-2 lg:justify-end">
+            {project.skills.map((Icon, i) => (
+              <li
+                key={project.skillLabels[i]}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
+              >
+                <Icon size={12} className="text-body" />
+                {project.skillLabels[i]}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </header>
 
+      <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-12 sm:pb-16">
+        <div className="rounded-lg border border-line overflow-hidden">
+          <Painted variant="dusk" className="px-4 sm:px-10 lg:px-14 pt-8 sm:pt-12">
+            <Gallery images={project.images} title={project.title} />
+          </Painted>
           {project.businessImpact?.length > 0 && (
-            <section>
-              <SectionLabel>Business Impact</SectionLabel>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {project.businessImpact.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col items-center justify-center text-center px-4 py-6 rounded-2xl bg-slate-900 border border-sky-500/15 shadow-lg shadow-black/20"
-                  >
-                    <span className="text-2xl sm:text-3xl font-bold text-sky-300 mb-1">
-                      {item.stat}
-                    </span>
-                    <span className="text-slate-400 text-xs leading-snug">{item.label}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
+            <StatRow
+              stats={project.businessImpact.map(b => ({ label: b.label, value: b.stat }))}
+              className="border-t border-line"
+            />
           )}
-
-          {project.architecture?.length > 0 && (
-            <section>
-              <SectionLabel>System Architecture</SectionLabel>
-              <div className="flex flex-col gap-3">
-                {project.architecture.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col sm:flex-row gap-2 sm:gap-6 px-5 py-4 rounded-xl bg-slate-900 border border-sky-500/15"
-                  >
-                    <span className="text-sky-300 text-xs font-semibold tracking-widest uppercase min-w-[110px] pt-0.5">
-                      {item.layer}
-                    </span>
-                    <p className="text-slate-300 text-sm leading-relaxed">{item.detail}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {project.keyFeatures?.length > 0 && (
-            <section>
-              <SectionLabel>Key Features</SectionLabel>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {project.keyFeatures.map((feat, i) => (
-                  <div
-                    key={i}
-                    className="px-5 py-5 rounded-2xl bg-slate-900 border border-sky-500/15 hover:border-sky-500/35 transition-colors duration-200"
-                  >
-                    <p className="text-sky-300 text-xs font-semibold tracking-widest uppercase mb-2">
-                      {feat.title}
-                    </p>
-                    <p className="text-slate-300 text-sm leading-relaxed">{feat.body}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          <section className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-sky-500/10">
-            <p className="text-slate-400 text-sm">Want to see it in action?</p>
-            <a
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-2.5 bg-sky-950/95 border border-sky-800/60 text-sky-300 text-xs tracking-widest uppercase rounded-full hover:bg-sky-950 hover:border-sky-600 hover:text-sky-200 transition-all duration-300"
-            >
-              View Live Demo
-              <FaExternalLinkAlt size={10} />
-            </a>
-          </section>
-        </main>
+        </div>
       </div>
+
+      <Hatch />
+
+      <Block tag={tag()} label="Overview" title="About the project">
+        <div className="space-y-5">
+          {project.fullDescription.split('\n').map((para, i) => (
+            <p key={i} className="text-body leading-relaxed">{para}</p>
+          ))}
+        </div>
+      </Block>
+
+      <Block tag={tag()} label="Problem" title="What needed solving">
+        <p className="font-serif text-ink/90 text-xl sm:text-2xl leading-relaxed border-l-2 border-flame/60 pl-6">
+          {project.problemStatement}
+        </p>
+      </Block>
+
+      {project.video && (
+        <Block tag="▸" label="Demo video">
+          <VideoPlayer src={project.video} />
+        </Block>
+      )}
+
+      {project.architecture?.length > 0 && (
+        <Block tag={tag()} label="Architecture" title="System architecture">
+          <div className="rounded-lg border border-line overflow-hidden">
+            {project.architecture.map((item, i) => (
+              <div
+                key={item.layer}
+                className={`grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-2 sm:gap-6 px-6 py-5 bg-panel/50 ${
+                  i > 0 ? 'border-t border-line' : ''
+                }`}
+              >
+                <span className="font-mono text-[13px] text-flame">{item.layer}</span>
+                <p className="text-body leading-relaxed">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </Block>
+      )}
+
+      {project.optimisations?.length > 0 && (
+        <Block tag={tag()} label="Optimisation" title="Findings and fixes">
+          <div className="rounded-lg border border-line overflow-hidden">
+            {project.optimisations.map((o, i) => (
+              <div
+                key={o.area}
+                className={`grid grid-cols-1 md:grid-cols-[150px_1fr_1fr_170px] gap-3 md:gap-6 px-6 py-5 bg-panel/50 ${
+                  i > 0 ? 'border-t border-line' : ''
+                }`}
+              >
+                <span className="font-mono text-[13px] text-flame">{o.area}</span>
+                <p className="text-body leading-relaxed">
+                  <span className="md:hidden text-[11px] uppercase tracking-wide text-mute block mb-1">Found</span>
+                  {o.finding}
+                </p>
+                <p className="text-ink/90 leading-relaxed">
+                  <span className="md:hidden text-[11px] uppercase tracking-wide text-mute block mb-1">Change</span>
+                  {o.change}
+                </p>
+                <p className="text-live text-[14px] leading-snug">→ {o.impact}</p>
+              </div>
+            ))}
+          </div>
+        </Block>
+      )}
+
+      {project.comparison?.length > 0 && (
+        <Block tag={tag()} label="Target" title="Today vs target">
+          <div className="rounded-lg border border-line overflow-hidden text-[15px]">
+            <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr] gap-6 px-6 py-3 bg-panel-2/60 text-[12px] uppercase tracking-wide text-mute">
+              <span />
+              <span>Today</span>
+              <span>Target</span>
+            </div>
+            {project.comparison.map(c => (
+              <div key={c.label} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr] gap-1 sm:gap-6 px-6 py-4 bg-panel/50 border-t border-line">
+                <span className="text-ink">{c.label}</span>
+                <span className="text-mute line-through decoration-rose/50">{c.today}</span>
+                <span className="text-live">{c.target}</span>
+              </div>
+            ))}
+          </div>
+          {project.chart && <BarChart {...project.chart} />}
+        </Block>
+      )}
+
+      {project.keyFeatures?.length > 0 && (
+        <Block tag={tag()} label="Features" title={project.optimisations ? 'What we delivered' : 'Key features'}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 rounded-lg border border-line overflow-hidden">
+            {project.keyFeatures.map((feat, i) => (
+              <div
+                key={feat.title}
+                className={`px-6 py-6 bg-panel/50 border-line ${i > 0 ? 'border-t' : ''} ${
+                  i === 1 ? 'sm:border-t-0' : ''
+                } ${i % 2 === 1 ? 'sm:border-l' : ''}`}
+              >
+                <p className="flex items-center gap-3 text-ink">
+                  <span className="font-mono text-[12px] text-mute">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="font-serif text-xl">{feat.title}</span>
+                </p>
+                <p className="mt-3 text-body leading-relaxed">{feat.body}</p>
+              </div>
+            ))}
+          </div>
+        </Block>
+      )}
+
+      <section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-6 sm:px-12 lg:px-20 xl:px-28 py-12 border-t border-line">
+        <p className="font-serif text-ink text-2xl sm:text-3xl">
+          {project.link ? 'Want to see it in action?' : 'Want to talk through the details?'}
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {project.link ? (
+            <Button href={project.link} target="_blank" rel="noopener noreferrer">
+              <FaPlay size={10} /> Watch demo
+            </Button>
+          ) : (
+            <Button href="mailto:zknight03@outlook.com">Get in touch</Button>
+          )}
+          <Button variant="ghost" onClick={onBack}>
+            <FaArrowLeft size={11} /> Back to portfolio
+          </Button>
+        </div>
+      </section>
     </div>
   )
 }
