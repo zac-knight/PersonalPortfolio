@@ -2,25 +2,27 @@ import { useState } from 'react'
 import { FaRegCheckCircle, FaRegFileAlt } from 'react-icons/fa'
 import { HiOutlineSearch } from 'react-icons/hi'
 import { LiveDot, LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
+import AboutChapters from './AboutChapters'
 
 const FILES = {
   'about.ts': [
     'import { Curiosity, Leadership } from "./traits"',
+    'import { openTo } from "./goals"',
     '',
     'export const zac = {',
     '  name: "Zac Knight",',
     '  location: "Brisbane, QLD",',
-    '  role: "Software / ML Engineer",',
+    '  role: "Master of AI student",',
     '-  status: "undergrad",',
-    '+  status: "Master of AI @ QUT",',
-    '  degree: "BIT — Computer Science",',
-    '  gpa: 6.6,',
-    '+  founded: "QUT AI & ML Society",',
+    '+  status: "postgrad",',
+    '  bachelor: { major: "Comp Sci", gpa: 6.6 },',
+    '+  masters: { field: "AI", gpa: 6.5 },',
+    '+  foundingPresident: "QUT AI & ML Society",',
     '  traits: [Curiosity, Leadership],',
     '}',
     '',
     'export function nextRole(): Role {',
-    '+  return pick(["Software Engineer", "ML Engineer"])',
+    '+  return pick(openTo.roles)',
     '}',
   ],
   'goals.ts': [
@@ -33,7 +35,7 @@ const FILES = {
     ']',
     '',
     'export const openTo = {',
-    '  roles: ["SWE", "MLE"],',
+    '  roles: ["AI / ML", "Data science", "Software", "Systems"],',
     '  location: "Brisbane / Remote",',
     '+  available: true,',
     '}',
@@ -41,21 +43,27 @@ const FILES = {
 }
 
 const TIMELINE = [
-  { label: 'BIT, Computer Science', time: '2022–25', done: true },
-  { label: 'QPS developer intern', time: '2024', done: true },
-  { label: 'Founded QUT AI & ML Society', time: '2025', done: true },
+  { label: 'BIT, Computer Science (graduated)', time: '2022–25', done: true },
+  { label: 'QPS work integrated learning', time: '2024', done: true },
+  { label: 'Founding President, QUT AI & ML Society', time: '2025', done: true },
+  { label: 'CRDC industry project (team leader)', time: 'now', done: false },
   { label: 'Master of Artificial Intelligence', time: 'now', done: false },
 ]
 
 const SIDEBAR = [
   {
-    heading: 'In progress 1',
-    items: [{ title: 'Master of AI', sub: 'QUT · Expected Jul 2027', time: 'Now', live: true }],
+    heading: 'In progress 2',
+    items: [
+      { title: 'Master of AI', sub: 'GPA 6.5 · Expected Jul 2027', time: 'Now', live: true },
+      { title: 'CRDC Industry Project', sub: 'RAG optimisation · Team lead', time: 'Now', live: true },
+    ],
   },
   {
-    heading: 'Shipped 3',
+    heading: 'Milestones 5',
     items: [
-      { title: 'Bachelor of IT', sub: 'GPA 6.6 · Computer Science', time: '2025' },
+      { title: 'President of the Year', sub: 'QUT Guild Awards', time: '2026' },
+      { title: 'Top 10 AI Innovators', sub: 'Australian Business Journal', time: '2026' },
+      { title: 'Bachelor of IT', sub: 'Graduated · GPA 6.6', time: '2025' },
       { title: 'AIML Hackathon', sub: '115+ hackers · 20 teams', time: '2025' },
       { title: 'QPS Resource Hub', sub: '110 user stories', time: '2024' },
     ],
@@ -135,8 +143,8 @@ export default function About() {
       <SectionHeader
         tag="01"
         label="About"
-        title="A builder who loves the hard problems."
-        description="Computer Science graduate, AI master's student, and community founder — equally at home training a model, shipping a full-stack app, or MC-ing a hackathon."
+        title="Curious about AI, and the people who build with it."
+        description="Computer Science graduate, Master of AI postgrad and founding president of a student society — equally at home training a model, shipping a full-stack app, or MC-ing a hackathon."
         meta={<LiveMeta>Brisbane, Australia</LiveMeta>}
       />
 
@@ -147,9 +155,9 @@ export default function About() {
               {/* Sidebar */}
               <aside className="hidden xl:flex flex-col border-r border-line">
                 <img
-                  src={`${import.meta.env.BASE_URL}profile-large.png`}
+                  src={`${import.meta.env.BASE_URL}profile.png`}
                   alt="Zac Knight"
-                  className="w-full h-48 object-cover object-top grayscale"
+                  className="w-full aspect-[1.39] object-cover grayscale contrast-110"
                 />
                 {SIDEBAR.map(group => (
                   <div key={group.heading} className="py-4">
@@ -203,16 +211,16 @@ export default function About() {
                     </ul>
                   </div>
                   <p className="px-1 text-body leading-relaxed">
-                    My enthusiasm for AI led me to found the{' '}
+                    My enthusiasm for AI led me to become founding President of the{' '}
                     <span className="text-flame">QUT AI &amp; ML Society</span>, combining technical
                     depth with leadership and community building — sharpening my analytical,
                     problem-solving and communication skills along the way.
                   </p>
                   <p className="px-1 text-body leading-relaxed">
-                    I&apos;m actively seeking opportunities as a{' '}
-                    <span className="text-ink">Software Engineer</span> or{' '}
-                    <span className="text-ink">Machine Learning Engineer</span>, driven by curiosity
-                    and a desire to contribute to the future of technology.
+                    I&apos;m open to roles across{' '}
+                    <span className="text-ink">AI, machine learning and data science</span> as well as{' '}
+                    <span className="text-ink">software and systems development</span>, driven by
+                    curiosity and a desire to contribute to the future of technology.
                   </p>
                   <div className="mt-1 rounded-md border border-line px-4 py-3 text-mute">
                     Ask me anything, build anything…
@@ -226,6 +234,8 @@ export default function About() {
           </Window>
         </Painted>
       </Reveal>
+
+      <AboutChapters />
     </section>
   )
 }

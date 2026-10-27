@@ -97,7 +97,7 @@ export function Button({ variant = 'primary', className = '', children, ...props
   return (
     <Tag
       {...props}
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-[15px] transition-colors duration-200 cursor-pointer ${BUTTON[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-5 py-2.5 text-[15px] transition-colors duration-200 cursor-pointer ${BUTTON[variant]} ${className}`}
     >
       {children}
     </Tag>
@@ -149,8 +149,8 @@ export function StatRow({ stats, className = '' }) {
             i % 2 === 1 ? 'border-l' : ''
           } ${i >= 2 ? 'border-t sm:border-t-0' : ''}`}
         >
-          <p className="text-[11px] sm:text-xs uppercase tracking-wide text-mute">{s.label}</p>
-          <p className="mt-4 sm:mt-6 text-2xl sm:text-3xl text-ink tabular-nums">{s.value}</p>
+          <p className="text-[11px] sm:text-xs uppercase tracking-wide text-mute min-h-[2.8em]">{s.label}</p>
+          <p className="mt-2 sm:mt-4 text-2xl sm:text-3xl text-ink tabular-nums">{s.value}</p>
         </div>
       ))}
     </div>

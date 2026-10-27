@@ -17,7 +17,7 @@ export default function Footer() {
         <div className="flex flex-col gap-4">
           <Logo />
           <p className="text-body max-w-xs leading-relaxed">
-            Machine learning &amp; software engineer based in Brisbane, Australia.
+            Master of AI student and Computer Science graduate in Brisbane, Australia, building toward a career in AI and software.
           </p>
         </div>
         <div>

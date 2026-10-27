@@ -1,6 +1,7 @@
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { MdEmail } from 'react-icons/md'
 import { Button, Eyebrow, LiveMeta, Painted, Reveal, Window } from './ui'
+import roles from '../data/roles'
 
 const CHANNELS = [
   { key: 'email', value: 'zknight03@outlook.com', href: 'mailto:zknight03@outlook.com' },
@@ -23,7 +24,7 @@ export default function Contact() {
           Whether you have a role, a project in mind, a question, or just want to connect —
           my inbox is always open.
         </p>
-        <LiveMeta label="Open">to software &amp; ML engineering roles</LiveMeta>
+        <LiveMeta label="Open">to AI, data, software &amp; systems roles</LiveMeta>
         <div className="flex flex-wrap gap-3 sm:gap-4">
           <Button href="mailto:zknight03@outlook.com">
             <MdEmail size={15} /> Say hello
@@ -34,6 +35,26 @@ export default function Contact() {
           <Button href="https://github.com/zac-knight" target="_blank" rel="noopener noreferrer" variant="ghost">
             <FaGithub size={14} /> GitHub
           </Button>
+        </div>
+        <div className="flex flex-col gap-5 pt-2 max-w-xl">
+          {roles.map(({ group, dot, titles }) => (
+            <div key={group}>
+              <p className="flex items-center gap-2 mb-3 text-[12px] uppercase tracking-wide text-mute">
+                <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+                {group}
+              </p>
+              <ul className="flex flex-wrap gap-2">
+                {titles.map(title => (
+                  <li
+                    key={title}
+                    className="px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
+                  >
+                    {title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </Reveal>
 

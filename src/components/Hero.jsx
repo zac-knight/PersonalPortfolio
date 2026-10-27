@@ -1,43 +1,30 @@
 import { useMemo } from 'react'
 import { TypeAnimation } from 'react-type-animation'
-import { Button, Eyebrow, Painted, PixelArt, StatRow, Window } from './ui'
+import { Button, Eyebrow, Painted, PixelArt, Window } from './ui'
 import { monogram } from '../lib/pixels'
 
-const STATS = [
-  { label: 'GPA', value: '6.6/7' },
-  { label: 'Society members', value: '300+' },
-  { label: 'User stories', value: '110+' },
-  { label: 'Hackathon hackers', value: '115+' },
+const CREDENTIALS = [
+  {
+    label: 'RAG optimisation · CRDC',
+    title: 'Traced 86% of token cost to one step in a production RAG pipeline',
+    href: '#projects',
+  },
+  {
+    label: 'Postgraduate · QUT',
+    title: 'Master of Artificial Intelligence',
+    href: '#education',
+  },
+  {
+    label: 'QUT Guild Awards',
+    title: 'President of the Year',
+    href: '#about',
+  },
+  {
+    label: 'Australian Business Journal · 2026',
+    title: 'Top 10 Australian AI Innovators',
+    href: '#about',
+  },
 ]
-
-const TICKER = [
-  { live: true, name: 'qut-aiml-society', id: '#300+', tag: 'members', by: 'Founding President', when: 'now' },
-  { name: 'aiml-hackathon', id: '#115', tag: 'participants', by: '20 teams', when: '2025', tone: 'gold' },
-  { name: 'qps-resource-hub', id: '#110', tag: 'stories shipped', by: 'QPS intern', when: '2024' },
-  { name: 'bands-x-aiml', id: '#30+', tag: 'industry orgs', by: '110 students', when: '2025', tone: 'gold' },
-  { name: 'better-timetable', id: '#30+', tag: 'students', by: 'Code Network', when: '2025' },
-  { name: 'master-of-ai', id: '@QUT', tag: 'in progress', by: 'Zac K.', when: '2027', tone: 'gold' },
-]
-
-function Ticker() {
-  const items = [...TICKER, ...TICKER]
-  return (
-    <div className="dots-b overflow-hidden py-5 text-[15px] sm:text-[17px] whitespace-nowrap">
-      <div className="marquee inline-flex">
-        {items.map((t, i) => (
-          <span key={i} className="inline-flex items-center gap-2 px-5 border-r border-line">
-            {t.live && <span className="text-live">● LIVE</span>}
-            <span className="text-flame">{t.name}</span>
-            <span className="text-mute">{t.id}</span>
-            <span className={t.tone === 'gold' ? 'text-gold' : 'text-live'}>● {t.tag}</span>
-            <span className="text-ink">by {t.by}</span>
-            <span className="text-mute">· {t.when}</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 export default function Hero() {
   const art = useMemo(() => monogram(), [])
@@ -48,15 +35,15 @@ export default function Hero() {
         {/* Copy */}
         <div className="flex flex-col justify-center gap-7 sm:gap-8 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-24 pb-12 lg:pb-20">
           <div>
-            <Eyebrow tag="Now">Master of AI @ QUT — open to SWE &amp; ML roles</Eyebrow>
+            <Eyebrow tag="Now">Master of AI @ QUT — open to AI, data &amp; software roles</Eyebrow>
           </div>
           <h1 className="font-serif text-ink text-[42px] sm:text-6xl xl:text-[68px] leading-[1.05] tracking-tight max-w-3xl">
-            Software &amp; machine learning engineer building systems that learn.
+            AI student and builder, learning to make systems that learn.
           </h1>
           <p className="text-body text-base sm:text-lg leading-relaxed max-w-2xl">
-            I&apos;m Zac — a Computer Science graduate studying a Master of Artificial Intelligence
-            in Brisbane. Founder of the QUT AI &amp; ML Society, former developer intern at the
-            Queensland Police Service, and always shipping something new.
+            I&apos;m Zac — a Computer Science graduate and Master of Artificial Intelligence
+            postgrad in Brisbane. Founding President of the QUT AI &amp; ML Society, leading a RAG
+            industry project with CRDC, and always shipping something new.
           </p>
           <p className="font-mono text-sm text-mute h-5">
             <span className="text-live">$</span>{' '}
@@ -97,20 +84,38 @@ export default function Hero() {
       </div>
 
       {/* Stats + portrait */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] border-t border-line">
-        <StatRow stats={STATS} className="self-end" />
-        <Painted variant="dusk" className="lg:border-l border-line min-h-[220px] flex items-end justify-center px-8 pt-8">
-          <Window title="zac.png" className="w-full max-w-[340px] rounded-b-none border-b-0">
+      <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-10 sm:pb-14">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] rounded-lg border border-line overflow-hidden">
+        <ul className="grid grid-cols-1 sm:grid-cols-2">
+          {CREDENTIALS.map((c, i) => (
+            <li
+              key={c.title}
+              className={`border-line ${i > 0 ? 'border-t' : ''} ${i === 1 ? 'sm:border-t-0' : ''} ${
+                i % 2 === 1 ? 'sm:border-l' : ''
+              }`}
+            >
+              <a
+                href={c.href}
+                className="group h-full flex flex-col justify-between gap-6 px-6 sm:px-8 py-6 sm:py-8 hover:bg-panel/60 transition-colors"
+              >
+                <span className="text-[11px] sm:text-xs uppercase tracking-wide text-mute">{c.label}</span>
+                <span className="font-serif text-2xl sm:text-[28px] leading-snug text-ink">{c.title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8">
+          <Window title="industry-night.jpg" className="w-full max-w-[420px] rounded-b-none border-b-0">
             <img
-              src={`${import.meta.env.BASE_URL}profile.png`}
-              alt="Portrait of Zac Knight"
-              className="w-full h-40 object-cover object-[50%_35%] grayscale contrast-110"
+              src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
+              alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
+              className="w-full aspect-[3/2] object-cover"
             />
           </Window>
         </Painted>
       </div>
+      </div>
 
-      <Ticker />
     </section>
   )
 }

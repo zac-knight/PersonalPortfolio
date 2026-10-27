@@ -1,8 +1,21 @@
 import { useMemo, useState } from 'react'
-import { FaUsers, FaTools, FaCode, FaProjectDiagram, FaShieldAlt, FaStore } from 'react-icons/fa'
+import { FaUsers, FaTools, FaCode, FaProjectDiagram, FaShieldAlt, FaStore, FaSeedling } from 'react-icons/fa'
 import { IconBox, LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
 
 const experiences = [
+  {
+    title: 'Work Integrated Learning Student',
+    company: 'Cotton Research and Development Corporation',
+    dates: 'Aug 2026 – Present',
+    type: 'Work',
+    Icon: FaSeedling,
+    points: [
+      "Leading Team 16, six QUT students across AI, Data Science and Cyber Security streams, on a QUT Industry Project extending CRDC's Cotton Knowledge Hub",
+      'Led a code-level audit of the production RAG pipeline across all twelve stages, tracing about 86% of tokens read per question to a single reranking step',
+      'Designed a target architecture that cuts model calls from about 42 to 3–4 per question, at an estimated 95% lower cost per 1,000 questions',
+      'Ran the weekly client cadence and set up a local development stack on Groq so the team could build without touching production services',
+    ],
+  },
   {
     title: 'Founding President',
     company: 'QUT AI & ML Society',
@@ -10,7 +23,11 @@ const experiences = [
     type: 'Volunteer',
     Icon: FaUsers,
     points: [
-      "Founded and served as the first President, establishing the society's vision, governance, and operations to drive student engagement in AI and machine learning",
+      "Served as the society's founding President, helping establish its vision, governance, and operations to drive student engagement in AI and machine learning",
+      'Awarded President of the Year at the QUT Guild Awards for leading the society from the ground up',
+      "Featured in QUT Science, IT and Maths' Club Spotlight on the society's mission, project nights and community",
+      "Named in the Australian Business Journal's 10 Australian AI Innovators Delivering Practical Solutions in 2026",
+      'Contributed to AgentCamp 2026: Brisbane Edition, a full-day community event on building, evaluating and deploying AI agents',
       'Grew the club to 300+ active members, achieving the highest engagement among QUT technology societies and earning feature placement on the QUT front page',
       'Directed and hosted the AIML Hackathon as Master of Ceremonies and lead organiser, delivering the largest standalone club hackathon in QUT history (115+ participants, 20 teams)',
       'Led the BANDS x AIML Industry Night as co-MC and organiser, connecting 110 students with 30+ industry organisations',
@@ -57,7 +74,7 @@ const experiences = [
     ],
   },
   {
-    title: 'Software Developer Intern',
+    title: 'Work Integrated Learning Student',
     company: 'Queensland Police Service',
     dates: 'Apr 2024 – Oct 2024',
     type: 'Work',
@@ -99,13 +116,21 @@ const ranges = experiences.map(e => {
   return { start, end }
 })
 
+// Current roles first, then by most recently concluded; ties go to the newer start
 const sorted = experiences
   .map((e, i) => ({ ...e, ...ranges[i] }))
-  .sort((a, b) => b.start - a.start || (a.type === 'Volunteer' ? -1 : 1))
+  .sort((a, b) => b.end - a.end || b.start - a.start)
 
 const HEAT = ['#2a2723', '#4a4640', '#7a756e', '#b5afa7', '#e8e2d9']
 
-function Heatmap() {
+// Total span of months as "1 yr 4 mos"
+function formatSpan(months) {
+  const y = Math.floor(months / 12)
+  const m = months % 12
+  return [y && `${y} yr${y > 1 ? 's' : ''}`, m && `${m} mo${m > 1 ? 's' : ''}`].filter(Boolean).join(' ') || '< 1 mo'
+}
+
+function Heatmap({ role }) {
   const { years, max } = useMemo(() => {
     const first = Math.min(...ranges.map(r => r.start))
     const last = Math.max(...ranges.map(r => r.end))
@@ -119,23 +144,35 @@ function Heatmap() {
         if (idx < first || idx > last) return null
         const count = ranges.filter(r => idx >= r.start && idx <= r.end).length
         max = Math.max(max, count)
-        return count
+        return { idx, count }
       })
       years.push({ year: y, months })
     }
     return { years, max }
   }, [])
 
+  const length = role.end - role.start + 1
+  const overlaps = sorted.filter(r => r !== role && r.start <= role.end && r.end >= role.start).length
+
   return (
-    <div className="px-5 sm:px-8 py-6 border-t border-line">
-      <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
-        <p className="text-ink">Activity · roles held per month</p>
-        <div className="flex items-center gap-2 text-[11px] text-mute">
-          Less
-          {HEAT.slice(1).map(c => (
-            <span key={c} className="w-2.5 h-2.5 rounded-full" style={{ background: c }} />
-          ))}
-          More
+    <div className="px-6 sm:px-10 py-6 border-t border-line">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+        <div>
+          <p className="text-ink">Timeline · {role.company}</p>
+          <p className="mt-1 text-[12px] text-mute">
+            {formatSpan(length)} · alongside {overlaps} other role{overlaps === 1 ? '' : 's'}
+          </p>
+        </div>
+        <div className="flex items-center gap-4 text-[11px] text-mute">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-flame" /> This role
+          </span>
+          <span className="flex items-center gap-1.5">
+            {HEAT.slice(1).map(c => (
+              <span key={c} className="w-2.5 h-2.5 rounded-full opacity-60" style={{ background: c }} />
+            ))}
+            Other roles
+          </span>
         </div>
       </div>
       <div className="grid grid-cols-[36px_repeat(12,1fr)] gap-1">
@@ -146,18 +183,29 @@ function Heatmap() {
         {years.map(({ year, months }) => (
           <div key={year} className="contents">
             <span className="text-[11px] text-mute self-center font-mono">{year}</span>
-            {months.map((count, m) => (
-              <span
-                key={m}
-                title={count === null ? undefined : `${MONTHS[m]} ${year}: ${count} role${count === 1 ? '' : 's'}`}
-                className="h-4 sm:h-5 rounded-[3px] transition-transform hover:scale-110"
-                style={{
-                  background: count === null ? 'transparent' : HEAT[Math.round((count / max) * (HEAT.length - 1))],
-                  outline: count === null ? '1px dashed #2b2824' : undefined,
-                  outlineOffset: '-1px',
-                }}
-              />
-            ))}
+            {months.map((cell, m) => {
+              if (!cell) {
+                return (
+                  <span
+                    key={m}
+                    className="h-4 sm:h-5 rounded-[3px]"
+                    style={{ outline: '1px dashed #2b2824', outlineOffset: '-1px' }}
+                  />
+                )
+              }
+              const inRole = cell.idx >= role.start && cell.idx <= role.end
+              return (
+                <span
+                  key={m}
+                  title={`${MONTHS[m]} ${year}: ${cell.count} role${cell.count === 1 ? '' : 's'}${inRole ? ` · ${role.title}` : ''}`}
+                  className="h-4 sm:h-5 rounded-[3px] transition-[background-color,opacity] duration-300"
+                  style={{
+                    background: inRole ? 'var(--color-flame)' : HEAT[Math.round((cell.count / max) * (HEAT.length - 1))],
+                    opacity: inRole ? 1 : 0.45,
+                  }}
+                />
+              )
+            })}
           </div>
         ))}
       </div>
@@ -175,14 +223,15 @@ export default function Experience() {
         tag="02"
         label="Experience"
         title="A track record of leading, building and shipping."
-        description="From founding the largest tech society at QUT to shipping production software for the Queensland Police Service. Pick a role to read its log."
+        description="From leading a RAG industry project with CRDC and serving as founding President of one of QUT's most active tech societies, to shipping production software for the Queensland Police Service. Pick a role to read its log."
         meta={<LiveMeta label="Now">President, QUT AI &amp; ML Society</LiveMeta>}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] border-t border-line">
+      <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-14 sm:pb-20">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] rounded-lg border border-line overflow-hidden">
         {/* Log window */}
         <Reveal className="order-2 lg:order-1">
-          <Painted variant="meadow" className="h-full px-4 sm:px-12 lg:px-20 xl:px-28 py-6 sm:py-8">
+          <Painted variant="meadow" className="h-full px-4 sm:px-8 lg:px-10 py-6 sm:py-8">
             <Window title={`${exp.company.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.log`}>
               <div className="px-5 sm:px-8 py-6 font-mono text-[12.5px] sm:text-[14px] leading-relaxed min-h-[340px]">
                 <p className="text-mute">
@@ -205,7 +254,7 @@ export default function Experience() {
                 </ul>
                 <p className="text-mute mt-3">→ {exp.dates}</p>
               </div>
-              <Heatmap />
+              <Heatmap role={exp} />
             </Window>
           </Painted>
         </Reveal>
@@ -217,7 +266,7 @@ export default function Experience() {
               key={e.title + e.company}
               onClick={() => setActive(i)}
               aria-pressed={active === i}
-              className={`w-full text-left flex gap-4 sm:gap-5 px-6 sm:px-12 lg:px-20 xl:px-28 py-5 sm:py-6 dots-b transition-colors ${
+              className={`w-full text-left flex gap-4 sm:gap-5 px-5 sm:px-8 py-5 sm:py-6 dots-b transition-colors ${
                 active === i ? 'bg-panel-2/50' : 'hover:bg-panel/60'
               }`}
             >
@@ -245,6 +294,7 @@ export default function Experience() {
             </button>
           ))}
         </div>
+      </div>
       </div>
     </section>
   )

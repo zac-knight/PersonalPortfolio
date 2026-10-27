@@ -36,7 +36,7 @@ export default function Navbar() {
       <div className="flex items-center h-16 sm:h-[72px] px-6 sm:px-12 lg:px-20 xl:px-28">
         <Logo />
 
-        <nav className="hidden lg:flex items-center gap-9 ml-24 text-[15px] text-body">
+        <nav className="hidden xl:flex items-center gap-7 2xl:gap-9 ml-14 2xl:ml-24 text-[15px] text-body">
           {LINKS.map(link => (
             <a key={link} href={`#${link.toLowerCase()}`} className="hover:text-ink transition-colors">
               {link}
@@ -70,7 +70,7 @@ export default function Navbar() {
             onClick={() => setOpen(o => !o)}
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
-            className="lg:hidden w-10 h-10 rounded-md border border-line flex items-center justify-center text-ink"
+            className="xl:hidden w-10 h-10 rounded-md border border-line flex items-center justify-center text-ink"
           >
             {open ? <HiX size={18} /> : <HiMenuAlt4 size={18} />}
           </button>
@@ -78,7 +78,7 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <nav className="lg:hidden border-t border-line px-5 py-4 flex flex-col">
+        <nav className="xl:hidden border-t border-line px-5 py-4 flex flex-col">
           {LINKS.map(link => (
             <a
               key={link}

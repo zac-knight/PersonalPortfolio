@@ -5,14 +5,14 @@ const base = import.meta.env.BASE_URL
 
 const crdcHub = {
   title: 'CRDC Cotton Knowledge Hub',
-  category: 'RAG optimisation · QUT × Cotton Research and Development Corporation',
-  role: 'Team Leader, Team 16',
+  category: 'RAG optimisation · QUT Industry Project × Cotton Research and Development Corporation',
+  role: 'Work Integrated Learning Student · Team Leader, Team 16',
   status: 'Audit and target architecture delivered Oct 2026 · implementation in Semester 1, 2027',
   tagline: 'Auditing and re-architecting a production RAG system over 40 years of cotton research.',
   description:
     'A citation-grounded RAG assistant that answers questions across 1,995 research reports (80,442 passages, 1986–2025). Leading a six-person QUT team, I took over the production system and audited every stage of its retrieval pipeline. We found that one reranking step used about 86% of the tokens read for each question. We then designed a target architecture that cuts model calls from about 42 to 3–4 per question, with an estimated cost drop of roughly 95%.',
   fullDescription: `The Cotton Research and Development Corporation (CRDC) has funded about 40 years of Australian cotton research. The findings sit in roughly 2,000 dense, two-column PDF reports. The Knowledge Hub turns that archive into a natural-language assistant: it retrieves the most relevant passages, writes an answer for one of three reader personas, and footnotes every claim with a citation that opens the source PDF at the exact paragraph.
-In August 2026 my QUT team (Team 16) inherited the live system from its original student builder. As team leader I coordinated six students across AI, Data Science and Cyber Security streams, ran the weekly cadence with the client, and set up the local development stack on Groq with a mock vector store, so the team could work without touching production services.
+In August 2026, through a QUT Industry Project, my team (Team 16) inherited the live system from its original student builder. As team leader I coordinated six students across AI, Data Science and Cyber Security streams, ran the weekly cadence with the client, and set up the local development stack on Groq with a mock vector store, so the team could work without touching production services.
 Our main technical work was a code-level review of the RAG pipeline, traced through all twelve stages from question to cited answer. We modelled the token cost of each stage, found the bottlenecks and silent failure modes, compared models and rerankers on price, capability and speed, and designed a target pipeline with a prioritised, measure-first roadmap. Alongside this we built out evaluation and regression testing and a prompt-injection baseline for the retrieval path.`,
   problemStatement: `Each question triggered about 42 model calls. A per-passage LLM reranker scored about 40 candidates one at a time and accounted for about 86% of the tokens read, yet only five passages reached the answer. Settings quietly capped answers at one passage per report and five sources. The keyword search leg required every query word to match. A failed rerank request scored as "irrelevant", which could make the system decline answerable questions. With only 63 test questions and RAGAS run on 3 of them, no change could be proven better or worse.`,
   architecture: [
@@ -147,8 +147,7 @@ Our main technical work was a code-level review of the RAG pipeline, traced thro
     `${base}projects/crdcHub/Cited Answer.png`,
     `${base}projects/crdcHub/Source Viewer.png`,
     `${base}projects/crdcHub/Grower Persona.png`,
-    // "&" is encoded so the path is a valid URL; the tab label decodes it back
-    `${base}projects/crdcHub/R%26D Manager Persona.png`,
+    `${base}projects/crdcHub/Manager Persona.png`,
     `${base}projects/crdcHub/Off-topic Question.png`,
     `${base}projects/crdcHub/Research Library.png`,
     `${base}projects/crdcHub/Admin Ingestion.png`,

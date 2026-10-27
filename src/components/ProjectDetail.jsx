@@ -232,16 +232,19 @@ export default function ProjectDetail({ project, onBack }) {
         </div>
       </header>
 
-      <Painted variant="dusk" className="px-4 sm:px-12 lg:px-20 xl:px-28 pt-8 sm:pt-12">
-        <Gallery images={project.images} title={project.title} />
-      </Painted>
-
-      {project.businessImpact?.length > 0 && (
-        <StatRow
-          stats={project.businessImpact.map(b => ({ label: b.label, value: b.stat }))}
-          className="border-t border-line"
-        />
-      )}
+      <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-12 sm:pb-16">
+        <div className="rounded-lg border border-line overflow-hidden">
+          <Painted variant="dusk" className="px-4 sm:px-10 lg:px-14 pt-8 sm:pt-12">
+            <Gallery images={project.images} title={project.title} />
+          </Painted>
+          {project.businessImpact?.length > 0 && (
+            <StatRow
+              stats={project.businessImpact.map(b => ({ label: b.label, value: b.stat }))}
+              className="border-t border-line"
+            />
+          )}
+        </div>
+      </div>
 
       <Hatch />
 

@@ -57,9 +57,10 @@ function ScreenshotWindow({ project }) {
 
 function ProjectBlock({ project, onMoreDetail }) {
   return (
-    <div className="border-t border-line">
+    <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-6 sm:pb-8">
+      <div className="rounded-lg border border-line overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] 2xl:grid-cols-[1fr_1.4fr]">
-        <Reveal className="flex flex-col justify-center gap-6 px-6 sm:px-12 lg:px-20 xl:px-28 py-10 sm:py-14 lg:border-r border-line">
+        <Reveal className="flex flex-col justify-center gap-6 px-6 sm:px-10 py-10 sm:py-12 lg:border-r border-line">
           <p className="text-[13px] uppercase tracking-wide text-body">{project.category || 'Project'}</p>
           <h3 className="font-serif text-ink text-3xl sm:text-4xl leading-tight">{project.title}</h3>
           <p className="text-ink/80 text-lg leading-relaxed">{project.tagline}</p>
@@ -92,7 +93,7 @@ function ProjectBlock({ project, onMoreDetail }) {
           </div>
         </Reveal>
         <Reveal delay={120} className="min-w-0">
-          <Painted variant="dusk" className="h-full flex items-center px-4 sm:px-10 xl:px-16 py-10 sm:py-14">
+          <Painted variant="dusk" className="h-full flex items-center px-4 sm:px-8 xl:px-12 py-8 sm:py-12">
             <ScreenshotWindow project={project} />
           </Painted>
         </Reveal>
@@ -103,6 +104,7 @@ function ProjectBlock({ project, onMoreDetail }) {
           className="border-t border-line"
         />
       )}
+      </div>
     </div>
   )
 }
@@ -122,7 +124,7 @@ export default function Projects({ onSelectProject }) {
         <ProjectBlock key={project.title} project={project} onMoreDetail={onSelectProject} />
       ))}
 
-      <div className="px-6 sm:px-12 lg:px-20 xl:px-28 py-10 border-t border-line">
+      <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pt-2 pb-14 sm:pb-20">
         <div className="rounded-lg border border-dashed border-line px-6 py-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="font-serif text-2xl text-ink">More projects in the pipeline.</p>

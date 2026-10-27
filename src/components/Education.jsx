@@ -35,130 +35,117 @@ const courses = [
   'MZB221 Electrical Engineering Mathematics',
 ]
 
-const sortedCourses = [...courses].sort((a, b) => a.localeCompare(b))
+// Master of Artificial Intelligence units completed so far
+const masterCourses = [
+  'MXN500 Introduction to Statistics for Data Science',
+  'IFN500 Introduction to Data Science',
+  'INN700 Introduction to Research',
+  'IFN521 Trust and Artificial Intelligence',
+]
+
+const byCode = (a, b) => a.localeCompare(b)
+
+const UNIT_GROUPS = [
+  { path: '~/master-of-ai/', label: 'Master of Artificial Intelligence', units: [...masterCourses].sort(byCode) },
+  { path: '~/bit/', label: 'Bachelor of Information Technology', units: [...courses].sort(byCode) },
+]
+
+const totalUnits = courses.length + masterCourses.length
 
 const DISCIPLINES = [
   { label: 'Computer Science', prefixes: ['CAB'] },
-  { label: 'Information Tech', prefixes: ['IFB', 'IAB'] },
-  { label: 'Mathematics', prefixes: ['MXB', 'MZB'] },
+  { label: 'IT', prefixes: ['IFB', 'IAB'] },
+  { label: 'Maths', prefixes: ['MXB', 'MZB'] },
   { label: 'Engineering', prefixes: ['EGB'] },
 ].map(d => ({ ...d, count: courses.filter(c => d.prefixes.includes(c.slice(0, 3))).length }))
 
-const GPA = 6.6
-const GPA_MAX = 7
+const KEY_BACHELOR_UNITS = ['CAB420', 'CAB320', 'CAB301', 'CAB432', 'CAB401', 'CAB302']
 
-// Master of AI: Feb 2026 → Jul 2027
-const MASTERS_START = new Date(2026, 1, 1)
-const MASTERS_END = new Date(2027, 6, 31)
+const findUnits = codes => codes.map(code => courses.find(c => c.startsWith(code)))
 
-// ── Charts ────────────────────────────────────────────────────────────────────
-function Gauge({ value, max, segments = 22 }) {
-  const filled = Math.round((value / max) * segments)
-  const cx = 150
-  const cy = 150
-  return (
-    <svg viewBox="0 0 300 175" className="w-full max-w-[300px] mx-auto" role="img" aria-label={`GPA ${value} out of ${max}`}>
-      {Array.from({ length: segments }, (_, i) => {
-        const a = Math.PI - (i + 0.5) * (Math.PI / segments)
-        const x1 = cx + Math.cos(a) * 92
-        const y1 = cy - Math.sin(a) * 92
-        const x2 = cx + Math.cos(a) * 132
-        const y2 = cy - Math.sin(a) * 132
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke={i < filled ? '#55514b' : '#2b2824'}
-            strokeWidth="14"
-            strokeLinecap="round"
-          >
-            <title>{i < filled ? 'Achieved' : 'Remaining'}</title>
-          </line>
-        )
-      })}
-      <text x={cx} y={cy - 8} textAnchor="middle" className="fill-ink font-sans" fontSize="40" fontWeight="600">
-        {value}
-      </text>
-      <text x={cx} y={cy + 16} textAnchor="middle" className="fill-body font-sans" fontSize="13">
-        GPA out of {max.toFixed(1)}
-      </text>
-    </svg>
-  )
-}
-
-function DisciplineBars() {
-  const max = Math.max(...DISCIPLINES.map(d => d.count))
-  return (
-    <div className="flex flex-col gap-3.5">
-      {DISCIPLINES.map(d => (
-        <div key={d.label} className="grid grid-cols-[110px_1fr_24px] items-center gap-3 group" title={`${d.label}: ${d.count} units`}>
-          <span className="text-[13px] text-body text-right">{d.label}</span>
-          <span className="h-8 rounded bg-panel-2 overflow-hidden">
-            <span
-              className="block h-full rounded bg-[#4a4640] group-hover:bg-[#6a655e] transition-colors"
-              style={{ width: `${(d.count / max) * 100}%` }}
-            />
-          </span>
-          <span className="text-[13px] text-ink tabular-nums">{d.count}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function Progress() {
-  const now = new Date()
-  const pct = Math.max(0, Math.min(1, (now - MASTERS_START) / (MASTERS_END - MASTERS_START)))
-  const blocks = 24
-  const filled = Math.round(pct * blocks)
-  return (
-    <div className="flex flex-col gap-5">
-      <p className="text-5xl text-ink font-semibold tabular-nums">
-        {Math.round(pct * 100)}
-        <span className="text-2xl text-body">%</span>
-      </p>
-      <div className="grid grid-cols-12 gap-1.5" role="img" aria-label={`${Math.round(pct * 100)}% of the degree elapsed`}>
-        {Array.from({ length: blocks }, (_, i) => (
-          <span key={i} className={`h-6 rounded-[3px] ${i < filled ? 'bg-[#7a756e]' : 'bg-panel-2'}`} />
-        ))}
-      </div>
-      <div className="flex justify-between text-[12px] text-mute">
-        <span>Feb 2026</span>
-        <span>Jul 2027</span>
-      </div>
-    </div>
-  )
-}
-
-const CARDS = [
+const DEGREES = [
   {
-    variant: 'dusk',
-    chartTitle: 'Bachelor of IT · final GPA',
-    chart: <Gauge value={GPA} max={GPA_MAX} />,
-    footer: ['Pass: 4.0', 'Max: 7.0'],
-    title: 'Bachelor of Information Technology',
-    body: 'Queensland University of Technology, Feb 2022 – Nov 2025. Major in Computer Science, minor in Engineering Foundations.',
-  },
-  {
-    variant: '',
-    chartTitle: 'Units by discipline',
-    chartMeta: `${courses.length} units`,
-    chart: <DisciplineBars />,
-    title: 'Breadth across the stack',
-    body: 'From microprocessors and networks to cloud, AI and machine learning — with a strong mathematics core.',
-  },
-  {
+    file: 'master-of-ai.md',
     variant: 'meadow',
-    chartTitle: 'Master of AI · progress',
-    chartMeta: 'GPA TBD',
-    chart: <Progress />,
-    title: 'Master of Artificial Intelligence',
-    body: 'Queensland University of Technology, Feb 2026 – present. Expected completion July 2027.',
+    status: 'In progress',
+    live: true,
+    name: 'Master of Artificial Intelligence',
+    dates: 'Feb 2026 – Jul 2027 (expected)',
+    summary: 'Postgraduate study across data science, statistics, research methods and the responsible use of AI.',
+    unitsTitle: 'Units completed so far',
+    units: [...masterCourses].sort(byCode),
+    facts: [
+      ['Level', 'Postgraduate'],
+      ['Progress', `${masterCourses.length} units completed`],
+      ['GPA', '6.5 / 7.0'],
+    ],
+  },
+  {
+    file: 'bachelor-of-it.md',
+    variant: 'dusk',
+    status: 'Graduated Nov 2025',
+    name: 'Bachelor of Information Technology',
+    dates: 'Feb 2022 – Nov 2025',
+    summary: 'A Computer Science major with an Engineering Foundations minor, covering microprocessors and networks through to cloud, AI and machine learning.',
+    unitsTitle: 'Key units',
+    units: findUnits(KEY_BACHELOR_UNITS),
+    breadth: DISCIPLINES.map(d => `${d.count} ${d.label}`).join(' · '),
+    facts: [
+      ['Major', 'Computer Science'],
+      ['Minor', 'Engineering Foundations'],
+      ['Completed', `${courses.length} units`],
+      ['GPA', '6.6 / 7.0'],
+    ],
   },
 ]
+
+function DegreeCard({ file, variant, status, live, name, dates, summary, unitsTitle, units, breadth, facts }) {
+  return (
+    <article className="flex flex-col rounded-lg overflow-hidden bg-panel border border-line">
+      <Painted variant={variant} className="px-5 pt-5">
+        <Window title={file} className="rounded-b-none border-b-0 shadow-none">
+          <div className="px-5 sm:px-6 py-5">
+            <p className="mb-4 text-[12px] uppercase tracking-wide text-mute">{unitsTitle}</p>
+            <ul className="flex flex-col gap-2.5">
+              {units.map(unit => {
+                const [code, ...title] = unit.split(' ')
+                return (
+                  <li key={unit} className="grid grid-cols-[64px_1fr] gap-3 text-[14px]">
+                    <span className="font-mono text-flame">{code}</span>
+                    <span className="text-ink/90">{title.join(' ')}</span>
+                  </li>
+                )
+              })}
+            </ul>
+            {breadth && <p className="mt-5 font-mono text-[11px] uppercase tracking-wide text-mute">{breadth}</p>}
+          </div>
+        </Window>
+      </Painted>
+      <div className="flex flex-col gap-4 px-6 py-6 flex-1">
+        <p className="flex items-center gap-2 text-[13px]">
+          <span className={`w-1.5 h-1.5 rounded-full ${live ? 'bg-live' : 'bg-mute'}`} />
+          <span className={live ? 'text-live' : 'text-body'}>{status}</span>
+          <span className="text-mute">· {dates}</span>
+        </p>
+        <h3 className="font-serif text-2xl sm:text-3xl text-ink leading-tight">{name}</h3>
+        <p className="text-body leading-relaxed">{summary}</p>
+        <dl className="mt-2 rounded-lg border border-line overflow-hidden">
+          {facts.map(([term, value], i) => (
+            <div
+              key={term}
+              className={`grid grid-cols-[100px_1fr] gap-4 px-4 py-2.5 font-mono text-[12px] uppercase tracking-wide ${
+                i > 0 ? 'border-t border-line' : ''
+              }`}
+            >
+              <dt className="text-mute">{term}</dt>
+              <dd className="text-ink/90">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </article>
+  )
+}
 
 export default function Education() {
   const [open, setOpen] = useState(false)
@@ -173,29 +160,10 @@ export default function Education() {
         meta={<LiveMeta label="Enrolled">QUT, Brisbane</LiveMeta>}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-6 sm:px-12 lg:px-20 xl:px-28">
-        {CARDS.map((card, i) => (
-          <Reveal key={card.title} delay={i * 100} className="flex flex-col rounded-lg overflow-hidden bg-panel border border-line">
-            <Painted variant={card.variant} className="px-5 pt-5">
-              <Window className="rounded-b-none border-b-0 shadow-none">
-                <div className="px-5 sm:px-6 pt-5 pb-6 min-h-[270px] flex flex-col">
-                  <div className="flex items-baseline justify-between gap-3 mb-6">
-                    <p className="text-ink">{card.chartTitle}</p>
-                    {card.chartMeta && <p className="text-[13px] text-body">{card.chartMeta}</p>}
-                  </div>
-                  <div className="flex-1 flex flex-col justify-center">{card.chart}</div>
-                  {card.footer && (
-                    <div className="flex justify-between text-[13px] text-body mt-2">
-                      {card.footer.map(f => <span key={f}>{f}</span>)}
-                    </div>
-                  )}
-                </div>
-              </Window>
-            </Painted>
-            <div className="px-6 py-6">
-              <h3 className="font-serif text-2xl text-ink">{card.title}</h3>
-              <p className="mt-3 text-body leading-relaxed">{card.body}</p>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 sm:px-12 lg:px-20 xl:px-28">
+        {DEGREES.map((degree, i) => (
+          <Reveal key={degree.name} delay={i * 100} className="flex">
+            <DegreeCard {...degree} />
           </Reveal>
         ))}
       </div>
@@ -209,27 +177,37 @@ export default function Education() {
             className="w-full flex items-center justify-between px-6 py-4 text-left"
           >
             <span className="flex items-center gap-3">
-              <span className="font-mono text-[13px] text-mute">~/bit/</span>
-              <span className="text-ink">All {courses.length} completed units</span>
+              <span className="font-mono text-[13px] text-mute">~/units/</span>
+              <span className="text-ink">All {totalUnits} completed units</span>
+              <span className="hidden sm:inline text-[13px] text-mute">
+                {masterCourses.length} Master · {courses.length} Bachelor
+              </span>
             </span>
             <FaChevronDown
               size={12}
               className={`text-body transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
             />
           </button>
-          {open && (
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2.5 px-6 pb-6 pt-2 border-t border-line">
-              {sortedCourses.map(course => {
-                const [code, ...name] = course.split(' ')
-                return (
-                  <li key={course} className="flex gap-3 text-[13px] pt-2.5">
-                    <span className="font-mono text-flame shrink-0">{code}</span>
-                    <span className="text-body">{name.join(' ')}</span>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
+          {open && UNIT_GROUPS.map(group => (
+            <div key={group.path} className="px-6 pb-6 pt-4 border-t border-line">
+              <p className="flex items-baseline gap-3 text-[13px]">
+                <span className="font-mono text-mute">{group.path}</span>
+                <span className="text-ink">{group.label}</span>
+                <span className="text-mute">· {group.units.length} units</span>
+              </p>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2.5 pt-2">
+                {group.units.map(course => {
+                  const [code, ...name] = course.split(' ')
+                  return (
+                    <li key={course} className="flex gap-3 text-[13px] pt-2.5">
+                      <span className="font-mono text-flame shrink-0">{code}</span>
+                      <span className="text-body">{name.join(' ')}</span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </section>
