@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import useCompact from '../lib/useCompact'
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 export function Hatch({ className = 'h-10 sm:h-14' }) {
@@ -35,6 +36,58 @@ export function Reveal({ children, className = '', delay = 0, as: Tag = 'div' })
     >
       {children}
     </Tag>
+  )
+}
+
+// ── Responsive helpers ────────────────────────────────────────────────────────
+// On compact screens, clips long content to `collapsed` px with a fade and a toggle.
+// On wide screens it renders its children untouched (display: contents).
+export function Expandable({ children, collapsed = 260, more = 'Read more', less = 'Show less', className = '' }) {
+  const compact = useCompact()
+  const inner = useRef(null)
+  const [open, setOpen] = useState(false)
+  const [full, setFull] = useState(0)
+
+  useEffect(() => {
+    const el = inner.current
+    if (!el || !compact) return
+    const measure = () => setFull(el.scrollHeight)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [compact])
+
+  if (!compact) return <div className={`contents ${className}`}>{children}</div>
+
+  const clips = full > collapsed + 40
+  return (
+    <div className={className}>
+      <div
+        className="relative overflow-hidden transition-[max-height] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        style={{ maxHeight: !clips ? 'none' : open ? full : collapsed }}
+      >
+        <div ref={inner} className="flex flex-col gap-6">{children}</div>
+        {clips && (
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-canvas to-transparent transition-opacity duration-500 ${
+              open ? 'opacity-0' : 'opacity-100'
+            }`}
+          />
+        )}
+      </div>
+      {clips && (
+        <button
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          className="mt-4 inline-flex items-center gap-2 rounded-md border border-line px-4 py-2 text-[14px] text-ink hover:bg-panel-2/60 transition-colors"
+        >
+          {open ? less : more}
+          <span className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>↓</span>
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -123,13 +176,98 @@ export function Window({ title, right, children, className = '' }) {
           ))}
         </div>
         {title && (
-          <p className="absolute left-1/2 -translate-x-1/2 text-[13px] text-body truncate max-w-[60%]">
+          <p className="ml-4 min-w-0 truncate text-[13px] text-body sm:ml-0 sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[60%]">
             {title}
           </p>
         )}
         {right && <div className="ml-auto">{right}</div>}
       </div>
       {children}
+    </div>
+  )
+}
+
+// A horizontally scrolling row of tabs that shows fades and arrow buttons
+// whenever there are more tabs off either edge, and keeps the active tab in view.
+export function TabStrip({ items, active, onSelect, icon: Icon, onMouseEnter, onMouseLeave }) {
+  const row = useRef(null)
+  const tabs = useRef([])
+  const [edges, setEdges] = useState({ left: false, right: false })
+
+  const measure = () => {
+    const el = row.current
+    if (!el) return
+    setEdges({
+      left: el.scrollLeft > 4,
+      right: el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
+    })
+  }
+
+  useEffect(() => {
+    const el = row.current
+    if (!el) return
+    measure()
+    el.addEventListener('scroll', measure, { passive: true })
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => {
+      el.removeEventListener('scroll', measure)
+      ro.disconnect()
+    }
+  }, [])
+
+  // Scroll only the strip (not the page) so the active tab is fully visible
+  useEffect(() => {
+    const el = row.current
+    const tab = tabs.current[active]
+    if (!el || !tab) return
+    const left = tab.offsetLeft
+    const right = left + tab.offsetWidth
+    if (left < el.scrollLeft) el.scrollTo({ left: left - 40, behavior: 'smooth' })
+    else if (right > el.scrollLeft + el.clientWidth) el.scrollTo({ left: right - el.clientWidth + 40, behavior: 'smooth' })
+    // Re-check the edges once the smooth scroll has settled
+    const t = setTimeout(measure, 450)
+    return () => clearTimeout(t)
+  }, [active])
+
+  const nudge = dir => row.current?.scrollBy({ left: dir * row.current.clientWidth * 0.7, behavior: 'smooth' })
+
+  const arrow = (dir, show) => (
+    <div
+      className={`absolute inset-y-0 ${dir < 0 ? 'left-0 bg-gradient-to-r' : 'right-0 bg-gradient-to-l'} from-panel via-panel/90 to-transparent w-16 flex items-center ${
+        dir < 0 ? 'justify-start pl-1.5' : 'justify-end pr-1.5'
+      } transition-opacity duration-300 ${show ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+    >
+      <button
+        onClick={() => nudge(dir)}
+        aria-label={dir < 0 ? 'Scroll tabs left' : 'Scroll tabs right'}
+        tabIndex={show ? 0 : -1}
+        className="w-7 h-7 rounded-md border border-line bg-panel-2 text-ink flex items-center justify-center text-[15px] leading-none hover:bg-[#2e2a25]"
+      >
+        {dir < 0 ? '‹' : '›'}
+      </button>
+    </div>
+  )
+
+  return (
+    <div className="relative border-b border-line" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <div ref={row} className="flex overflow-x-auto no-scrollbar text-[13px]">
+        {items.map((label, i) => (
+          <button
+            key={label + i}
+            ref={el => { tabs.current[i] = el }}
+            onClick={() => onSelect(i)}
+            className={`flex items-center gap-2 px-4 h-10 shrink-0 border-r border-line transition-colors ${
+              i === active ? 'text-ink bg-panel-2/60' : 'text-mute hover:text-body'
+            }`}
+          >
+            {Icon && <Icon size={11} />}
+            {label}
+          </button>
+        ))}
+      </div>
+      {arrow(-1, edges.left)}
+      {arrow(1, edges.right)}
     </div>
   )
 }

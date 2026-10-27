@@ -197,5 +197,5 @@ section[id] {
   html { scroll-behavior: auto; }
   .pixel, .caret, .rise, .overlay-in, .overlay-out, .drop-in, .painted::before { animation: none !important; }
   .lift:hover, .zoom-group:hover img { transform: none; }
-  .reveal { transition: none !important; opacity: 1 !important; transform: none !important; translate: none !important; }
+  .reveal { transition: none !important; opacity: 1 !important; transform: none !important; translate: none !important; filter: none !important; }
 }

@@ -1,5 +1,5 @@
 import { FaArrowRight } from 'react-icons/fa'
-import { Painted, Reveal, Window } from './ui'
+import { Expandable, Painted, Reveal, Window } from './ui'
 
 const base = import.meta.env.BASE_URL
 
@@ -9,11 +9,11 @@ const CHAPTERS = [
     label: '01 / Currently',
     name: 'QUT AI & Machine Learning Society',
     role: 'Founding President',
-    where: 'Queensland University of Technology · May 2025 – present',
+    where: 'Queensland University of Technology · May 2025 to present',
     body: [
-      "The society was set up to give students earlier exposure to artificial intelligence and machine learning. As its founding President, I helped build its vision, governance and operations from the ground up. In less than a year it grew to 300+ members and became one of the largest and most active student clubs on campus. Members get hands-on with AI through weekly project nights, industry workshops, hackathons and networking events.",
-      "As lead organiser and MC I ran the AIML Hackathon: 115+ participants across 20 teams, and QUT's biggest standalone student club hackathon to date. With QUT BANDS (the Business Analysis and Data Science Club), we co-hosted an Industry Night with presentations, panels and open networking. It connected 110 students with professionals from organisations including NTI, Microsoft, Suncorp, Deloitte and PwC.",
-      "Beyond campus, I contributed to AgentCamp 2026: Brisbane Edition, a full day of building with Microsoft Foundry, MCP, Azure AI and multi-agent systems alongside Brisbane's wider AI community.",
+      "The society was set up to give students earlier exposure to artificial intelligence and machine learning. As its founding President, I helped build its vision, governance and operations from the ground up. In less than a year it grew to 300+ members and became one of the largest and most active student clubs on campus. Members get hands on with AI through weekly project nights, industry workshops, hackathons and networking events.",
+      "As lead organiser and MC I ran the AIML Hackathon: 115+ participants across 20 teams, and QUT's biggest standalone student club hackathon to date. With QUT BANDS (the Business Analysis and Data Science Club), we cohosted an Industry Night with presentations, panels and open networking. It connected 110 students with professionals from organisations including NTI, Microsoft, Suncorp, Deloitte and PwC.",
+      "Beyond campus, I contributed to AgentCamp 2026: Brisbane Edition, a full day of building with Microsoft Foundry, MCP, Azure AI and multiagent systems alongside Brisbane's wider AI community.",
       "I was named President of the Year at the QUT Guild Awards and featured in the Australian Business Journal's 10 Australian AI Innovators Delivering Practical Solutions in 2026, and the society made the QUT front page. The recognition has my name on it, but it belongs just as much to the executive team and the members who kept showing up.",
     ],
     facts: [
@@ -25,16 +25,16 @@ const CHAPTERS = [
     figures: [
       {
         src: `${base}community/hackathon-presenting.jpg`,
-        file: 'aiml-hackathon.jpg',
+        file: 'aiml_hackathon.jpg',
         alt: 'Zac presenting the hackathon summary on stage at the QUT AI & ML Society hackathon',
         caption: 'Presenting the hackathon summary to a full atrium.',
         variant: 'dusk',
       },
       {
         src: `${base}community/hackathon-audience.jpg`,
-        file: 'hackathon-crowd.jpg',
+        file: 'hackathon_crowd.jpg',
         alt: 'Students filling the tiered seating at the QUT AI & ML Society hackathon',
-        caption: '115+ hackers, 20 teams, one weekend.',
+        caption: '115+ participants, 20 teams, one weekend.',
         variant: 'meadow',
       },
     ],
@@ -50,7 +50,7 @@ const CHAPTERS = [
         href: 'https://lnkd.in/gEdUy5Pi',
         label: 'Australian Business Journal · 2026',
         title: '10 Australian AI Innovators Delivering Practical Solutions',
-        body: "Zac was named among 10 Australian AI innovators for the society's work giving students hands-on AI and machine learning experience earlier in their studies.",
+        body: "Zac was named among 10 Australian AI innovators for the society's work giving students hands on AI and machine learning experience earlier in their studies.",
         cta: 'Read the article',
       },
     ],
@@ -60,10 +60,10 @@ const CHAPTERS = [
     label: '02 / Industry project',
     name: 'Cotton Research and Development Corporation',
     role: 'Work Integrated Learning Student · Team Leader',
-    where: 'QUT Industry Project · Aug 2026 – present',
+    where: 'QUT Industry Project · Aug 2026 to present',
     body: [
-      "Through a QUT Industry Project, I lead Team 16: six students across AI, Data Science and Cyber Security streams. We're extending CRDC's Cotton Knowledge Hub, a citation-grounded RAG assistant over 1,995 cotton research reports from 1986 to 2025.",
-      'We audited the production retrieval pipeline end to end and traced about 86% of the tokens read per question to a single reranking step. Our target architecture cuts model calls from about 42 to 3–4 per question, at an estimated 95% lower cost. Implementation is planned for Semester 1, 2027.',
+      "Through a QUT Industry Project, I lead Team 16: six students across AI, Data Science and Cyber Security streams. We're extending CRDC's Cotton Knowledge Hub, a citation grounded RAG assistant over 1,995 cotton research reports from 1986 to 2025.",
+      'We audited the production retrieval pipeline end to end and traced about 86% of the tokens read per question to a single reranking step. Our target architecture cuts model calls from about 42 to 3 to 4 per question, at an estimated 95% lower cost. Implementation is planned for Semester 1, 2027.',
     ],
     facts: [
       ['Program', 'QUT Industry Project · WIL'],
@@ -84,7 +84,7 @@ const CHAPTERS = [
       {
         href: '#projects',
         label: 'Case study',
-        title: 'Auditing and re-architecting a production RAG system',
+        title: 'Auditing and rearchitecting a production RAG system',
         body: 'Findings, the target pipeline and the cost model, in the Projects section.',
         cta: 'See the project',
       },
@@ -95,7 +95,7 @@ const CHAPTERS = [
     label: '03 / The degrees',
     name: 'Queensland University of Technology',
     role: 'Master of Artificial Intelligence · Bachelor of IT (Computer Science), graduated',
-    where: 'Brisbane, Australia · 2022 – present',
+    where: 'Brisbane, Australia · 2022 to present',
     body: [
       'I graduated with a Bachelor of Information Technology majoring in Computer Science, with a minor in Engineering Foundations, and a 6.6 GPA. The degree covered microprocessors and networks, cloud computing, AI and machine learning.',
       "Now I'm a postgrad going deeper into AI with a Master of Artificial Intelligence, holding a 6.5 GPA, due in July 2027. Along the way, a capstone with the Queensland Police Service and an industry project with CRDC put coursework in front of real users.",
@@ -112,10 +112,10 @@ const CHAPTERS = [
     label: '04 / First production team',
     name: 'Queensland Police Service',
     role: 'Work Integrated Learning Student',
-    where: 'Brisbane, Australia · Apr – Oct 2024',
+    where: 'Brisbane, Australia · Apr to Oct 2024',
     body: [
-      'I joined a multi-skilled agile team building a large web application for Specialist Investigators training, using Next.js, TypeScript and SQL. Over six months we planned and delivered 110 user stories across 6 release plans and 12 sprint plans.',
-      'We delivered a communication platform, a library system and a revamped learning management system with role-based access. The work did not stop at code: I led user training with written guides, a 56-minute demo and fortnightly client showcases.',
+      'I joined a multiskilled agile team building a large web application for Specialist Investigators training, using Next.js, TypeScript and SQL. Over six months we planned and delivered 110 user stories across 6 release plans and 12 sprint plans.',
+      'We delivered a communication platform, a library system and a revamped learning management system with role based access. The work did not stop at code: I led user training with written guides, a 56 minute demo and fortnightly client showcases.',
     ],
     facts: [
       ['Stack', 'Next.js · TypeScript · SQL'],
@@ -126,8 +126,8 @@ const CHAPTERS = [
       {
         src: `${base}projects/qpsHub/Dashboard.png`,
         file: 'Dashboard.png',
-        alt: 'Dashboard of the QPS Post-Course Resource Hub',
-        caption: 'The Post-Course Resource Hub dashboard.',
+        alt: 'Dashboard of the QPS Post Course Resource Hub',
+        caption: 'The Post Course Resource Hub dashboard.',
         variant: 'dusk',
         position: 'object-left-top',
       },
@@ -137,10 +137,10 @@ const CHAPTERS = [
     badge: 'IKEA',
     label: '05 / The shop floor',
     name: 'IKEA',
-    role: 'Sales Co-worker',
-    where: 'Feb 2022 – present',
+    role: 'Sales Coworker',
+    where: 'Feb 2022 to present',
     body: [
-      "Alongside every degree and role above, I've worked the IKEA showroom floor. I help customers find tailored solutions, check stock with IKEA's sales and inventory tools, and guide people through self-serve technology, online ordering and delivery.",
+      "Alongside every degree and role above, I've worked the IKEA showroom floor. I help customers find tailored solutions, check stock with IKEA's sales and inventory tools, and guide people through self serve technology, online ordering and delivery.",
       'It keeps me close to the people technology is meant to serve, and it is regular practice at explaining things clearly.',
     ],
     facts: [
@@ -234,40 +234,43 @@ function Chapter({ badge, label, name, role, where, body, facts, figures = [], f
     >
       {header}
 
-      {wide ? (
-        <div className="flex flex-col gap-8 min-w-0">
-          <Reveal delay={80} className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-8 xl:gap-10">
-            <div className="flex flex-col gap-5">{paragraphs}</div>
-            <div className="xl:sticky xl:top-24 xl:self-start">
+      <Expandable collapsed={230} more={`Read more about ${badge}`}>
+
+        {wide ? (
+          <div className="flex flex-col gap-8 min-w-0">
+            <Reveal delay={80} className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-8 xl:gap-10">
+              <div className="flex flex-col gap-5">{paragraphs}</div>
+              <div className="xl:sticky xl:top-24 xl:self-start">
+                <Facts facts={facts} />
+              </div>
+            </Reveal>
+            {figures.length > 0 && (
+              <Reveal delay={120} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {figures.map(fig => <Figure key={fig.file} {...fig} />)}
+              </Reveal>
+            )}
+            {features.length > 0 && (
+              <Reveal delay={160} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {features.map(feature => <FeatureCard key={feature.title} {...feature} />)}
+              </Reveal>
+            )}
+          </div>
+        ) : (
+          <Reveal delay={80} className={`flex flex-col gap-5 ${side ? '' : 'max-w-3xl'}`}>
+            {paragraphs}
+            <div className="mt-2">
               <Facts facts={facts} />
             </div>
           </Reveal>
-          {figures.length > 0 && (
-            <Reveal delay={120} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {figures.map(fig => <Figure key={fig.file} {...fig} />)}
-            </Reveal>
-          )}
-          {features.length > 0 && (
-            <Reveal delay={160} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {features.map(feature => <FeatureCard key={feature.title} {...feature} />)}
-            </Reveal>
-          )}
-        </div>
-      ) : (
-        <Reveal delay={80} className={`flex flex-col gap-5 ${side ? '' : 'max-w-3xl'}`}>
-          {paragraphs}
-          <div className="mt-2">
-            <Facts facts={facts} />
-          </div>
-        </Reveal>
-      )}
+        )}
 
-      {side && (
-        <Reveal delay={160} className="flex flex-col gap-5 min-w-0">
-          {figures.map(fig => <Figure key={fig.file} {...fig} />)}
-          {features.map(feature => <FeatureCard key={feature.title} {...feature} />)}
-        </Reveal>
-      )}
+        {side && (
+          <Reveal delay={160} className="flex flex-col gap-5 min-w-0">
+            {figures.map(fig => <Figure key={fig.file} {...fig} />)}
+            {features.map(feature => <FeatureCard key={feature.title} {...feature} />)}
+          </Reveal>
+        )}
+      </Expandable>
     </article>
   )
 }

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { FaArrowRight, FaPlay, FaRegFileImage } from 'react-icons/fa'
 import projects from '../data'
-import { Button, LiveMeta, Painted, Reveal, SectionHeader, StatRow, Window } from './ui'
+import { Button, Expandable, LiveMeta, Painted, Reveal, SectionHeader, StatRow, TabStrip, Window } from './ui'
 
-const fileName = (src) => decodeURIComponent(src.split('/').pop())
+// Tab labels show the file name with any hyphens turned into spaces
+const fileName = (src) => decodeURIComponent(src.split('/').pop()).replace(/\s*-\s*/g, ' ')
 
 function ScreenshotWindow({ project }) {
   const [active, setActive] = useState(0)
@@ -17,30 +18,20 @@ function ScreenshotWindow({ project }) {
 
   return (
     <Window title={project.title} className="w-full min-w-0">
-      <div
-        className="flex overflow-x-auto no-scrollbar border-b border-line text-[13px]"
+      <TabStrip
+        items={project.images.map(fileName)}
+        active={active}
+        onSelect={i => { setActive(i); setPaused(true) }}
+        icon={FaRegFileImage}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
-      >
-        {project.images.map((src, i) => (
-          <button
-            key={src}
-            onClick={() => { setActive(i); setPaused(true) }}
-            className={`flex items-center gap-2 px-4 h-10 shrink-0 border-r border-line transition-colors ${
-              i === active ? 'text-ink bg-panel-2/60' : 'text-mute hover:text-body'
-            }`}
-          >
-            <FaRegFileImage size={11} />
-            {fileName(src)}
-          </button>
-        ))}
-      </div>
+      />
       <div className="relative aspect-[16/9] bg-[#0f0e0d]">
         {project.images.map((src, i) => (
           <img
             key={src}
             src={src}
-            alt={`${project.title} — ${fileName(src).replace(/\.\w+$/, '')}`}
+            alt={`${project.title}: ${fileName(src).replace(/\.\w+$/, '')}`}
             loading="lazy"
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-700 ${
               i === active ? 'opacity-100' : 'opacity-0'
@@ -64,7 +55,9 @@ function ProjectBlock({ project, onMoreDetail }) {
           <p className="text-[13px] uppercase tracking-wide text-body">{project.category || 'Project'}</p>
           <h3 className="font-serif text-ink text-3xl sm:text-4xl leading-tight">{project.title}</h3>
           <p className="text-ink/80 text-lg leading-relaxed">{project.tagline}</p>
-          <p className="text-body leading-relaxed">{project.description}</p>
+          <Expandable collapsed={130} more="Read more">
+            <p className="text-body leading-relaxed">{project.description}</p>
+          </Expandable>
           {project.role && (
             <p className="text-[13px] text-mute">
               <span className="text-flame">Role</span> · {project.role}
@@ -116,7 +109,7 @@ export default function Projects({ onSelectProject }) {
         tag="05"
         label="Projects"
         title="Real software, for real users."
-        description="Case studies from production systems built with teams — from optimising a retrieval-augmented generation pipeline to delivering a full-stack platform end to end."
+        description="Case studies from production systems built with teams, from optimising a retrieval augmented generation pipeline to delivering a full stack platform end to end."
         meta={<LiveMeta label="Featured">{projects.length} case {projects.length === 1 ? 'study' : 'studies'}</LiveMeta>}
       />
 
@@ -128,7 +121,7 @@ export default function Projects({ onSelectProject }) {
         <div className="rounded-lg border border-dashed border-line px-6 py-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="font-serif text-2xl text-ink">More projects in the pipeline.</p>
-            <p className="mt-2 text-body">New work is always in progress — check back soon.</p>
+            <p className="mt-2 text-body">New work is always in progress. Check back soon.</p>
           </div>
           <p className="font-mono text-[13px] text-mute flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />

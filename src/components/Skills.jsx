@@ -11,7 +11,7 @@ import { TbBrandCSharp } from 'react-icons/tb'
 import { LiveMeta, PixelArt, Reveal, SectionHeader, StatRow } from './ui'
 import { neuralNet } from '../lib/pixels'
 
-// Icons without a react-icons equivalent — rendered as monogram badges
+// Icons without a react-icons equivalent are rendered as monogram badges
 function MonoIcon({ label }) {
   return (
     <span className="text-[10px] font-mono font-bold leading-none">
@@ -48,7 +48,7 @@ const CATEGORIES = [
     ],
   },
   {
-    key: 'ai-ml',
+    key: 'ai_ml',
     label: 'AI / ML',
     dot: 'bg-gold',
     skills: [
@@ -87,7 +87,7 @@ export default function Skills() {
         tag="04"
         label="Skills"
         title="One toolkit, end to end."
-        description="A full-stack toolkit developed across years of study, industry placements and personal projects — from the model to the interface."
+        description="A full stack toolkit developed across years of study, industry placements and personal projects, from the model to the interface."
         meta={<LiveMeta label="Toolkit">{TOTAL} technologies</LiveMeta>}
       />
 
@@ -98,7 +98,7 @@ export default function Skills() {
               <p className="text-[13px] uppercase tracking-wide text-body">Model to interface</p>
               <h3 className="font-serif text-ink text-3xl mt-3">Train it. Serve it. Ship it.</h3>
               <p className="mt-6 text-body leading-relaxed max-w-md">
-                Comfortable across the whole pipeline — data wrangling and model training in Python,
+                Comfortable across the whole pipeline: data wrangling and model training in Python,
                 APIs in Node, Flask or .NET, and polished React front ends on top.
               </p>
             </div>
@@ -109,7 +109,7 @@ export default function Skills() {
               {...art}
               tones={['#e8e2d9', '#5d5953']}
               className="w-full max-w-[460px]"
-              label="Pixel-art neural network"
+              label="Pixel art neural network"
             />
           </div>
         </Reveal>

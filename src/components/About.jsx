@@ -43,7 +43,7 @@ const FILES = {
 }
 
 const TIMELINE = [
-  { label: 'BIT, Computer Science (graduated)', time: '2022–25', done: true },
+  { label: 'BIT, Computer Science (graduated)', time: '2022 to 2025', done: true },
   { label: 'QPS work integrated learning', time: '2024', done: true },
   { label: 'Founding President, QUT AI & ML Society', time: '2025', done: true },
   { label: 'CRDC industry project (team leader)', time: 'now', done: false },
@@ -64,7 +64,7 @@ const SIDEBAR = [
       { title: 'President of the Year', sub: 'QUT Guild Awards', time: '2026' },
       { title: 'Top 10 AI Innovators', sub: 'Australian Business Journal', time: '2026' },
       { title: 'Bachelor of IT', sub: 'Graduated · GPA 6.6', time: '2025' },
-      { title: 'AIML Hackathon', sub: '115+ hackers · 20 teams', time: '2025' },
+      { title: 'AIML Hackathon', sub: '115+ participants · 20 teams', time: '2025' },
       { title: 'QPS Resource Hub', sub: '110 user stories', time: '2024' },
     ],
   },
@@ -126,7 +126,7 @@ function CodePane() {
                 {sign === '-' ? '' : lineNo}
               </span>
               <span className={`w-4 shrink-0 select-none ${sign === '+' ? 'text-live' : 'text-rose'}`}>
-                {sign === '+' ? '+' : sign === '-' ? '–' : ''}
+                {sign === '+' ? '+' : sign === '-' ? '−' : ''}
               </span>
               <code className="text-ink/90 whitespace-pre">{highlight(code)}</code>
             </div>
@@ -144,13 +144,13 @@ export default function About() {
         tag="01"
         label="About"
         title="Curious about AI, and the people who build with it."
-        description="Computer Science graduate, Master of AI postgrad and founding president of a student society — equally at home training a model, shipping a full-stack app, or MC-ing a hackathon."
+        description="Computer Science graduate, Master of AI postgrad and founding president of a student society, equally at home training a model, shipping a full stack app, or MCing a hackathon."
         meta={<LiveMeta>Brisbane, Australia</LiveMeta>}
       />
 
       <Reveal className="px-0 sm:px-12 lg:px-20 xl:px-28">
         <Painted className="px-3 sm:px-8 pt-6 sm:pt-8">
-          <Window title="zacknight.dev — Desktop" className="rounded-b-none">
+          <Window title="zacknight.dev · Desktop" className="rounded-b-none">
             <div className="grid grid-cols-1 md:grid-cols-[1fr_1.15fr] xl:grid-cols-[240px_1fr_1.15fr] text-sm">
               {/* Sidebar */}
               <aside className="hidden xl:flex flex-col border-r border-line">
@@ -191,8 +191,8 @@ export default function About() {
                 <div className="flex flex-col gap-3 p-4">
                   <p className="rounded-md border border-line bg-panel-2/40 p-4 text-ink/90 leading-relaxed">
                     I am a Computer Science graduate pursuing a Master of Artificial Intelligence at
-                    QUT — passionate about software development, machine learning, and building
-                    solutions with real-world impact.
+                    QUT, passionate about software development, machine learning, and building
+                    solutions with real world impact.
                   </p>
                   <div className="rounded-md border border-line bg-panel-2/40 p-4">
                     <p className="text-ink mb-3">Zac · timeline</p>
@@ -213,8 +213,8 @@ export default function About() {
                   <p className="px-1 text-body leading-relaxed">
                     My enthusiasm for AI led me to become founding President of the{' '}
                     <span className="text-flame">QUT AI &amp; ML Society</span>, combining technical
-                    depth with leadership and community building — sharpening my analytical,
-                    problem-solving and communication skills along the way.
+                    depth with leadership and community building, sharpening my analytical,
+                    problem solving and communication skills along the way.
                   </p>
                   <p className="px-1 text-body leading-relaxed">
                     I&apos;m open to roles across{' '}

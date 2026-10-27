@@ -46,7 +46,7 @@ const masterCourses = [
 const byCode = (a, b) => a.localeCompare(b)
 
 const UNIT_GROUPS = [
-  { path: '~/master-of-ai/', label: 'Master of Artificial Intelligence', units: [...masterCourses].sort(byCode) },
+  { path: '~/master_of_ai/', label: 'Master of Artificial Intelligence', units: [...masterCourses].sort(byCode) },
   { path: '~/bit/', label: 'Bachelor of Information Technology', units: [...courses].sort(byCode) },
 ]
 
@@ -65,12 +65,12 @@ const findUnits = codes => codes.map(code => courses.find(c => c.startsWith(code
 
 const DEGREES = [
   {
-    file: 'master-of-ai.md',
+    file: 'master_of_ai.md',
     variant: 'meadow',
     status: 'In progress',
     live: true,
     name: 'Master of Artificial Intelligence',
-    dates: 'Feb 2026 – Jul 2027 (expected)',
+    dates: 'Feb 2026 to Jul 2027 (expected)',
     summary: 'Postgraduate study across data science, statistics, research methods and the responsible use of AI.',
     unitsTitle: 'Units completed so far',
     units: [...masterCourses].sort(byCode),
@@ -81,11 +81,11 @@ const DEGREES = [
     ],
   },
   {
-    file: 'bachelor-of-it.md',
+    file: 'bachelor_of_it.md',
     variant: 'dusk',
     status: 'Graduated Nov 2025',
     name: 'Bachelor of Information Technology',
-    dates: 'Feb 2022 – Nov 2025',
+    dates: 'Feb 2022 to Nov 2025',
     summary: 'A Computer Science major with an Engineering Foundations minor, covering microprocessors and networks through to cloud, AI and machine learning.',
     unitsTitle: 'Key units',
     units: findUnits(KEY_BACHELOR_UNITS),
@@ -156,7 +156,7 @@ export default function Education() {
         tag="03"
         label="Education"
         title="Grounded in computer science, focused on AI."
-        description="A Computer Science major from QUT, now deepening into artificial intelligence with a master's degree — theory, mathematics and plenty of shipped assignments."
+        description="A Computer Science major from QUT, now deepening into artificial intelligence with a master's degree: theory, mathematics and plenty of shipped assignments."
         meta={<LiveMeta label="Enrolled">QUT, Brisbane</LiveMeta>}
       />
 

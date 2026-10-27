@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaPlay, FaRegFileImage, FaTimes } from 'react-icons/fa'
-import { Button, Eyebrow, Hatch, LiveMeta, Painted, StatRow, Window } from './ui'
+import { Button, Eyebrow, Hatch, LiveMeta, Painted, StatRow, TabStrip, Window } from './ui'
 
-const fileName = (src) => decodeURIComponent(src.split('/').pop())
+// Tab labels show the file name with any hyphens turned into spaces
+const fileName = (src) => decodeURIComponent(src.split('/').pop()).replace(/\s*-\s*/g, ' ')
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 function Modal({ onClose, children }) {
@@ -43,20 +44,7 @@ function Gallery({ images, title }) {
   return (
     <>
       <Window title={title} className="rounded-b-none">
-        <div className="flex overflow-x-auto no-scrollbar border-b border-line text-[13px]">
-          {images.map((src, i) => (
-            <button
-              key={src}
-              onClick={() => setActive(i)}
-              className={`flex items-center gap-2 px-4 h-10 shrink-0 border-r border-line transition-colors ${
-                i === active ? 'text-ink bg-panel-2/60' : 'text-mute hover:text-body'
-              }`}
-            >
-              <FaRegFileImage size={11} />
-              {fileName(src)}
-            </button>
-          ))}
-        </div>
+        <TabStrip items={images.map(fileName)} active={active} onSelect={setActive} icon={FaRegFileImage} />
         <div className="relative aspect-video bg-[#0f0e0d]">
           <img
             key={active}
@@ -263,7 +251,7 @@ export default function ProjectDetail({ project, onBack }) {
       </Block>
 
       {project.video && (
-        <Block tag="—" label="Demo video">
+        <Block tag="▸" label="Demo video">
           <VideoPlayer src={project.video} />
         </Block>
       )}

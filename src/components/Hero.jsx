@@ -35,13 +35,13 @@ export default function Hero() {
         {/* Copy */}
         <div className="flex flex-col justify-center gap-7 sm:gap-8 px-6 sm:px-12 lg:px-20 xl:px-28 pt-10 sm:pt-24 pb-10 lg:pb-20">
           <div className="rise" style={{ '--d': '0ms' }}>
-            <Eyebrow tag="Now">Master of AI @ QUT — open to AI, data &amp; software roles</Eyebrow>
+            <Eyebrow tag="Now">Master of AI @ QUT · open to AI, data &amp; software roles</Eyebrow>
           </div>
           <h1 style={{ '--d': '120ms' }} className="rise font-serif text-ink text-[42px] sm:text-6xl xl:text-[68px] leading-[1.05] tracking-tight max-w-3xl">
             AI student and builder, learning to make systems that learn.
           </h1>
           <p style={{ '--d': '240ms' }} className="rise text-body text-base sm:text-lg leading-relaxed max-w-2xl">
-            I&apos;m Zac — a Computer Science graduate and Master of Artificial Intelligence
+            I&apos;m Zac, a Computer Science graduate and Master of Artificial Intelligence
             postgrad in Brisbane. Founding President of the QUT AI &amp; ML Society, leading a RAG
             industry project with CRDC, and always shipping something new.
           </p>
@@ -78,7 +78,7 @@ export default function Hero() {
             {...art}
             tones={['#8f8a83', '#55514b']}
             className="w-full max-w-[420px]"
-            label="Pixel-art ZK monogram"
+            label="Pixel art ZK monogram"
           />
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function Hero() {
           ))}
         </ul>
         <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8 zoom-group">
-          <Window title="industry-night.jpg" className="w-full max-w-[420px] rounded-b-none border-b-0">
+          <Window title="industry_night.jpg" className="w-full max-w-[420px] rounded-b-none border-b-0">
             <img
               src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
               alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
