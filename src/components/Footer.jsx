@@ -51,7 +51,11 @@ export default function Footer() {
         </div>
       </div>
       <div className="flex flex-col sm:flex-row justify-between gap-2 px-6 sm:px-12 lg:px-20 xl:px-28 py-5 border-t border-line text-[13px] text-mute">
-        <p>&copy; {new Date().getFullYear()} Zac Knight · Brisbane, Queensland, Australia</p>
+        <p>
+          Copyright &copy; {new Date().getFullYear()} Zac Knight. All rights reserved.
+          <span className="hidden sm:inline"> · </span>
+          <span className="block sm:inline">Brisbane, Queensland, Australia</span>
+        </p>
         <p className="font-mono">built with react + tailwind</p>
       </div>
     </footer>
