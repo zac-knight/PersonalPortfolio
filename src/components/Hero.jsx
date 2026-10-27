@@ -5,8 +5,8 @@ import { monogram } from '../lib/pixels'
 
 const CREDENTIALS = [
   {
-    label: 'RAG optimisation · CRDC',
-    title: 'Traced 86% of token cost to one step in a production RAG pipeline',
+    label: 'QUT Industry Project · CRDC',
+    title: 'Leading a six person team optimising a production RAG system',
     href: '#projects',
   },
   {
