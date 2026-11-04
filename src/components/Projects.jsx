@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FaArrowRight, FaPlay, FaRegFileImage } from 'react-icons/fa'
 import projects from '../data'
+import { SplitText, Tilt } from './fx'
 import { Button, Expandable, LiveMeta, Painted, Reveal, SectionHeader, StatRow, TabStrip, Window } from './ui'
 
 // Tab labels show the file name with any hyphens turned into spaces
@@ -26,15 +27,16 @@ function ScreenshotWindow({ project }) {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       />
-      <div className="relative aspect-[16/9] bg-[#0f0e0d]">
+      <div className="relative aspect-[16/9] bg-[#0f0e0d] overflow-hidden">
+        <div key={active} aria-hidden className="absolute left-0 top-0 z-10 h-[2px] bg-flame/80 progress-bar" style={{ animationPlayState: paused ? 'paused' : 'running' }} />
         {project.images.map((src, i) => (
           <img
             key={src}
             src={src}
             alt={`${project.title}: ${fileName(src).replace(/\.\w+$/, '')}`}
             loading="lazy"
-            className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-700 ${
-              i === active ? 'opacity-100' : 'opacity-0'
+            className={`absolute inset-0 w-full h-full object-contain transition-[opacity,transform,filter] duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              i === active ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-[1.06] blur-sm'
             }`}
           />
         ))}
@@ -53,7 +55,7 @@ function ProjectBlock({ project, onMoreDetail }) {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] 2xl:grid-cols-[1fr_1.4fr]">
         <Reveal className="flex flex-col justify-center gap-6 px-6 sm:px-10 py-10 sm:py-12 lg:border-r border-line">
           <p className="text-[13px] uppercase tracking-wide text-body">{project.category || 'Project'}</p>
-          <h3 className="font-serif text-ink text-3xl sm:text-4xl leading-tight">{project.title}</h3>
+          <h3 className="font-serif text-ink text-3xl sm:text-4xl leading-tight"><SplitText text={project.title} /></h3>
           <p className="text-ink/80 text-lg leading-relaxed">{project.tagline}</p>
           <Expandable collapsed={130} more="Read more">
             <p className="text-body leading-relaxed">{project.description}</p>
@@ -67,7 +69,7 @@ function ProjectBlock({ project, onMoreDetail }) {
             {project.skills.map((Icon, i) => (
               <li
                 key={project.skillLabels[i]}
-                className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
+                className="chip flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
               >
                 <Icon size={12} className="text-body" />
                 {project.skillLabels[i]}
@@ -87,7 +89,9 @@ function ProjectBlock({ project, onMoreDetail }) {
         </Reveal>
         <Reveal delay={120} className="min-w-0">
           <Painted variant="dusk" className="h-full flex items-center px-4 sm:px-8 xl:px-12 py-8 sm:py-12">
-            <ScreenshotWindow project={project} />
+            <Tilt max={5} className="w-full min-w-0">
+              <ScreenshotWindow project={project} />
+            </Tilt>
           </Painted>
         </Reveal>
       </div>
@@ -118,7 +122,7 @@ export default function Projects({ onSelectProject }) {
       ))}
 
       <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pt-2 pb-14 sm:pb-20">
-        <div className="rounded-lg border border-dashed border-line px-6 py-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="spot rounded-lg border border-dashed border-line px-6 py-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="font-serif text-2xl text-ink">More projects in the pipeline.</p>
             <p className="mt-2 text-body">New work is always in progress. Check back soon.</p>

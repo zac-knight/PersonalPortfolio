@@ -2,6 +2,8 @@ import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { MdEmail } from 'react-icons/md'
 import { Button, Eyebrow, Expandable, LiveMeta, Painted, Reveal, Window } from './ui'
 import roles from '../data/roles'
+import { SplitText, Tilt } from './fx'
+import { useInViewOnce } from '../lib/motion'
 
 const CHANNELS = [
   { key: 'email', value: 'zknight03@outlook.com', href: 'mailto:zknight03@outlook.com' },
@@ -11,6 +13,7 @@ const CHANNELS = [
 ]
 
 export default function Contact() {
+  const [termRef, typing] = useInViewOnce(0.4)
   return (
     <section id="contact" className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
       <Reveal className="flex flex-col justify-center gap-7 sm:gap-8 px-6 sm:px-12 lg:px-20 xl:px-28 py-16 sm:py-24">
@@ -18,7 +21,8 @@ export default function Contact() {
           <Eyebrow tag="06">Contact</Eyebrow>
         </div>
         <h2 className="font-serif text-ink text-4xl sm:text-6xl leading-[1.05] tracking-tight max-w-xl">
-          Let&apos;s build something together.
+          <SplitText text="Let's build something" stagger={70} />{' '}
+          <SplitText delay={300} className="italic text-flame" text="together." />
         </h2>
         <p className="text-body text-lg leading-relaxed max-w-lg">
           Whether you have a role, a project in mind, a question, or just want to connect,
@@ -48,7 +52,7 @@ export default function Contact() {
                   {titles.map(title => (
                     <li
                       key={title}
-                      className="px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
+                      className="chip px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
                     >
                       {title}
                     </li>
@@ -62,15 +66,16 @@ export default function Contact() {
 
       <Reveal delay={120} className="lg:border-l border-line">
         <Painted variant="meadow" className="h-full flex items-center px-4 sm:px-12 lg:px-20 xl:px-28 py-10 sm:py-16">
+          <Tilt max={5} className="w-full">
           <Window title="~/contact · zsh" className="w-full">
-            <div className="font-mono text-[12.5px] sm:text-[14px] leading-[2.1] px-5 sm:px-7 py-6">
-              <p>
+            <div ref={termRef} className={`font-mono text-[12.5px] sm:text-[14px] leading-[2.1] px-5 sm:px-7 py-6 ${typing ? 'typing' : ''}`}>
+              <p className="type-line" style={{ '--i': 0 }}>
                 <span className="text-live">zac@brisbane</span>
                 <span className="text-mute"> ~ </span>
                 <span className="text-ink">$ contact</span>
               </p>
-              {CHANNELS.map(c => (
-                <p key={c.key} className="flex gap-3">
+              {CHANNELS.map((c, i) => (
+                <p key={c.key} className="type-line flex gap-3" style={{ '--i': i + 1 }}>
                   <span className="text-mute w-20 shrink-0">{c.key}</span>
                   {c.href ? (
                     <a
@@ -86,8 +91,8 @@ export default function Contact() {
                   )}
                 </p>
               ))}
-              <p className="text-live">✓ open to new opportunities</p>
-              <p>
+              <p className="type-line text-live" style={{ '--i': CHANNELS.length + 1 }}>✓ open to new opportunities</p>
+              <p className="type-line" style={{ '--i': CHANNELS.length + 2 }}>
                 <span className="text-live">zac@brisbane</span>
                 <span className="text-mute"> ~ </span>
                 <span className="text-ink">$ </span>
@@ -95,6 +100,7 @@ export default function Contact() {
               </p>
             </div>
           </Window>
+          </Tilt>
         </Painted>
       </Reveal>
     </section>

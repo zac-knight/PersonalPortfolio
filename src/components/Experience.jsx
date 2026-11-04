@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FaUsers, FaTools, FaCode, FaProjectDiagram, FaShieldAlt, FaStore, FaSeedling } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 import { IconBox, LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
 import useCompact from '../lib/useCompact'
 
@@ -226,7 +227,7 @@ export default function Experience() {
           <Painted variant="meadow" className="h-full px-4 sm:px-8 lg:px-10 py-6 sm:py-8">
             <Window title={`${exp.company.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.log`}>
               <div className="px-5 sm:px-8 py-6 font-mono text-[12.5px] sm:text-[14px] leading-relaxed min-h-[340px]">
-                <p className="text-mute">
+                <p key={`r-${active}`} className="pixel text-mute">
                   → role <span className="text-gold">&quot;{exp.title}&quot;</span>
                 </p>
                 <p className="text-mute mb-3">
@@ -267,16 +268,26 @@ export default function Experience() {
               key={e.title + e.company}
               onClick={() => selectRole(i)}
               aria-pressed={active === i}
-              className={`w-full text-left flex gap-4 sm:gap-5 px-5 sm:px-8 py-5 sm:py-6 dots-b transition-colors ${
+              className={`spot group w-full text-left flex gap-4 sm:gap-5 px-5 sm:px-8 py-5 sm:py-6 dots-b transition-colors ${
                 active === i ? 'bg-panel-2/50' : 'hover:bg-panel/60'
               }`}
             >
-              <IconBox>
-                <e.Icon size={16} />
-              </IconBox>
+              {active === i && (
+                <motion.span
+                  layoutId="role-indicator"
+                  aria-hidden
+                  className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-flame to-gold"
+                  transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                />
+              )}
+              <span className={`transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-rotate-6 group-hover:scale-110 ${active === i ? 'scale-110' : ''}`}>
+                <IconBox>
+                  <e.Icon size={16} />
+                </IconBox>
+              </span>
               <div className="flex-1 min-w-0">
                 <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className={`font-serif text-xl sm:text-2xl ${active === i ? 'text-ink' : 'text-ink/80'}`}>
+                  <span className={`inline-block font-serif text-xl sm:text-2xl transition-all duration-500 ${active === i ? 'text-ink italic' : 'text-ink/80 group-hover:translate-x-1'}`}>
                     {e.title}
                   </span>
                 </p>

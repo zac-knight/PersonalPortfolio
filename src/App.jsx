@@ -10,6 +10,8 @@ import Projects from './components/Projects'
 import Contact from './components/Contact'
 import ProjectDetail from './components/ProjectDetail'
 import { Hatch } from './components/ui'
+import { Cursor, Grain, Intro } from './components/fx'
+
 
 function App() {
   const [activeProject, setActiveProject] = useState(null)
@@ -25,7 +27,7 @@ function App() {
     setTimeout(() => {
       setActiveProject(null)
       setClosing(false)
-    }, 280)
+    }, 300)
   }, [])
 
   // Lock page scroll while the case study overlay is open
@@ -35,6 +37,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-canvas">
+      <Intro />
+      <Cursor />
+      <Grain />
       <Navbar />
       <main>
         <Hero />

@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
 import { TypeAnimation } from 'react-type-animation'
-import { Button, Eyebrow, Painted, PixelArt, Window } from './ui'
+import { Button, Eyebrow, Painted, Window } from './ui'
+import { ParticleArt, SplitText, Tilt } from './fx'
 import { monogram } from '../lib/pixels'
+
+const TONES = ['#8f8a83', '#55514b']
 
 const CREDENTIALS = [
   {
@@ -37,8 +40,9 @@ export default function Hero() {
           <div className="rise" style={{ '--d': '0ms' }}>
             <Eyebrow tag="Now">Master of AI @ QUT · open to AI, data &amp; software roles</Eyebrow>
           </div>
-          <h1 style={{ '--d': '120ms' }} className="rise font-serif text-ink text-[42px] sm:text-6xl xl:text-[68px] leading-[1.05] tracking-tight max-w-3xl">
-            AI student and builder, learning to make systems that learn.
+          <h1 className="font-serif text-ink text-[42px] sm:text-6xl xl:text-[68px] leading-[1.05] tracking-tight max-w-3xl">
+            <SplitText play delay={120} stagger={70} text="AI student and builder, learning to make systems that" />{' '}
+            <SplitText play delay={820} className="italic text-flame" text="learn." />
           </h1>
           <p style={{ '--d': '240ms' }} className="rise text-body text-base sm:text-lg leading-relaxed max-w-2xl">
             I&apos;m Zac, a Computer Science graduate and Master of Artificial Intelligence
@@ -73,13 +77,17 @@ export default function Hero() {
         </div>
 
         {/* Monogram */}
-        <div className="relative hidden lg:flex items-center justify-center px-10 py-16 border-l border-line">
-          <PixelArt
+        <div className="relative hidden lg:flex flex-col items-center justify-center gap-6 px-10 py-16 border-l border-line overflow-hidden">
+          <div aria-hidden className="absolute w-[70%] aspect-square rounded-full bg-flame/10 blur-[90px] float" />
+          <ParticleArt
             {...art}
-            tones={['#8f8a83', '#55514b']}
-            className="w-full max-w-[420px]"
-            label="Pixel art ZK monogram"
+            tones={TONES}
+            className="relative w-full max-w-[420px]"
+            label="Interactive pixel art ZK monogram"
           />
+          <p className="rise relative font-mono text-[11px] uppercase tracking-[0.2em] text-mute" style={{ '--d': '1400ms' }}>
+            hover to disturb · click to scatter
+          </p>
         </div>
       </div>
 
@@ -96,7 +104,7 @@ export default function Hero() {
             >
               <a
                 href={c.href}
-                className="group h-full flex flex-col justify-between gap-6 px-6 sm:px-8 py-6 sm:py-8 hover:bg-panel/60 transition-colors duration-300"
+                className="spot group h-full flex flex-col justify-between gap-6 px-6 sm:px-8 py-6 sm:py-8 hover:bg-panel/60 transition-colors duration-300"
               >
                 <span className="text-[11px] sm:text-xs uppercase tracking-wide text-mute">{c.label}</span>
                 <span className="font-serif text-2xl sm:text-[28px] leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1">{c.title}</span>
@@ -105,13 +113,15 @@ export default function Hero() {
           ))}
         </ul>
         <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8 zoom-group">
-          <Window title="industry_night.jpg" className="w-full max-w-[420px] rounded-b-none border-b-0">
-            <img
-              src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
-              alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
-              className="w-full aspect-[3/2] object-cover"
-            />
-          </Window>
+          <Tilt max={6} className="w-full max-w-[420px]">
+            <Window title="industry_night.jpg" className="w-full rounded-b-none border-b-0">
+              <img
+                src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
+                alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
+                className="w-full aspect-[3/2] object-cover"
+              />
+            </Window>
+          </Tilt>
         </Painted>
       </div>
       </div>

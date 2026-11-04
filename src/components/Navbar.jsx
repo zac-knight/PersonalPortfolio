@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { HiMenuAlt4, HiX } from 'react-icons/hi'
+import { motion } from 'framer-motion'
 import { Button } from './ui'
+import { Scramble, ScrollProgress } from './fx'
 
 const LINKS = ['About', 'Experience', 'Education', 'Skills', 'Projects', 'Contact']
 
 export function Logo() {
   return (
-    <a href="#hero" className="flex items-center gap-2.5 text-ink">
-      <span className="w-8 h-8 rounded-md bg-cream text-canvas flex items-center justify-center font-serif text-[15px] leading-none pt-0.5">
+    <a href="#hero" className="group flex items-center gap-2.5 text-ink">
+      <span className="w-8 h-8 rounded-md bg-cream text-canvas flex items-center justify-center font-serif text-[15px] leading-none pt-0.5 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-[-12deg] group-hover:scale-110">
         ZK
       </span>
-      <span className="text-[17px] tracking-tight">zacknight.dev</span>
+      <Scramble text="zacknight.dev" className="text-[17px] tracking-tight" />
     </a>
   )
 }
@@ -82,11 +84,13 @@ export default function Navbar() {
               }`}
             >
               {link}
-              <span
-                className={`absolute left-0 -bottom-0.5 h-px w-full bg-cream origin-left transition-transform duration-500 ease-out ${
-                  active === link.toLowerCase() ? 'scale-x-100' : 'scale-x-0'
-                }`}
-              />
+              {active === link.toLowerCase() && (
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute left-0 -bottom-0.5 h-px w-full bg-cream"
+                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                />
+              )}
             </a>
           ))}
         </nav>
@@ -97,7 +101,7 @@ export default function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
-            className="hidden sm:flex items-center gap-2 text-body hover:text-ink transition-colors"
+            className="hidden sm:flex items-center gap-2 p-1 text-body hover:text-ink transition-colors"
           >
             <FaGithub size={19} />
           </a>
@@ -106,7 +110,7 @@ export default function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
-            className="hidden sm:flex items-center gap-2 text-body hover:text-ink transition-colors"
+            className="hidden sm:flex items-center gap-2 p-1 text-body hover:text-ink transition-colors"
           >
             <FaLinkedin size={19} />
           </a>
@@ -123,6 +127,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+      <ScrollProgress />
 
       {open && (
         <nav
@@ -139,7 +144,7 @@ export default function Navbar() {
                 >
                   <span className="font-mono text-[12px] text-mute w-6">{String(i + 1).padStart(2, '0')}</span>
                   <span
-                    className={`font-serif text-4xl sm:text-5xl transition-colors ${
+                    className={`font-serif text-4xl sm:text-5xl transition-all duration-500 group-hover:translate-x-2 group-hover:italic ${
                       active === link.toLowerCase() ? 'text-ink' : 'text-ink/70 group-hover:text-ink'
                     }`}
                   >
