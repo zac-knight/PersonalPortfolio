@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Laptop screens with a short viewport (e.g. a 14" MacBook with browser chrome) */
+@custom-variant short (@media (min-width: 64rem) and (max-height: 820px));
+
 @theme {
   --font-serif: "Libre Caslon Display", "Iowan Old Style", Georgia, serif;
   --font-sans: "Geist", system-ui, "Segoe UI", sans-serif;
@@ -32,6 +35,12 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Nothing decorative may widen the page; clip (unlike hidden) keeps sticky working */
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
@@ -131,20 +140,20 @@ section[id] {
 }
 .rise {
   animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--d, 0ms);
+  animation-delay: calc(var(--d, 0ms) + var(--intro, 0ms));
 }
 
 /* Case study overlay */
 @keyframes overlay-in {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: none; }
+  from { clip-path: inset(100% 0 0 0 round 32px 32px 0 0); }
+  to { clip-path: inset(0 0 0 0 round 0); }
 }
 @keyframes overlay-out {
-  from { opacity: 1; transform: none; }
-  to { opacity: 0; transform: translateY(24px); }
+  from { clip-path: inset(0 0 0 0 round 0); opacity: 1; }
+  to { clip-path: inset(0 0 100% 0 round 0 0 32px 32px); opacity: 0.6; }
 }
-.overlay-in { animation: overlay-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.overlay-out { animation: overlay-out 0.3s ease-in both; }
+.overlay-in { animation: overlay-in 0.75s cubic-bezier(0.77, 0, 0.18, 1) both; }
+.overlay-out { animation: overlay-out 0.3s cubic-bezier(0.7, 0, 0.84, 0) both; }
 
 /* Mobile menu */
 @keyframes drop-in {
@@ -186,6 +195,12 @@ section[id] {
   animation: blink 1s steps(1) infinite;
 }
 
+/* Slim scrollbars for panels that scroll inside a fixed-height window */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -193,9 +208,259 @@ section[id] {
   scrollbar-width: none;
 }
 
+/* ── Motion layer ─────────────────────────────────────────────────────────── */
+
+/* Custom cursor replaces the native one on fine pointers */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+/* Warm glow that follows the pointer across the whole page */
+.spotlight {
+  background: radial-gradient(240px circle at var(--cx, -999px) var(--cy, -999px), rgba(240, 136, 62, 0.08), transparent 70%);
+}
+
+/* Cards that light up under the pointer (position fed from the Cursor) */
+.spot {
+  position: relative;
+  isolation: isolate;
+}
+.spot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(246, 238, 231, 0.07), transparent 65%);
+}
+.spot:hover::before {
+  opacity: 1;
+}
+
+/* Animated film grain */
+.grain {
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.9s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-6%, 4%); }
+  40% { transform: translate(5%, -7%); }
+  60% { transform: translate(-3%, 8%); }
+  80% { transform: translate(7%, 2%); }
+  100% { transform: translate(-4%, -5%); }
+}
+
+/* Intro curtain */
+.intro {
+  animation: intro-out 0.9s cubic-bezier(0.77, 0, 0.18, 1) 1.55s both;
+}
+@keyframes intro-out {
+  to { clip-path: inset(0 0 100% 0); }
+}
+.intro-letter {
+  animation: letter-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 45ms + 100ms);
+}
+@keyframes letter-up {
+  from { transform: translateY(110%) rotate(8deg); }
+  to { transform: none; }
+}
+
+/* Word mask reveal */
+.split-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.split-word {
+  display: inline-block;
+  transform: translateY(105%) rotate(5deg);
+  transform-origin: left bottom;
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.split-intro .split-word {
+  transition-delay: calc(var(--d, 0ms) + var(--intro, 0ms));
+}
+.split-in .split-word {
+  transform: none;
+  /* Each word flashes a token highlight as it lands, like a tokenizer view */
+  animation: token-flash 1.6s ease-out both;
+  animation-delay: var(--d, 0ms);
+}
+.split-intro.split-in .split-word {
+  animation-delay: calc(var(--d, 0ms) + var(--intro, 0ms));
+}
+@keyframes token-flash {
+  0%, 55% { background-color: var(--tok, rgba(240, 136, 62, 0.25)); box-shadow: 0 0 0 0.06em var(--tok, rgba(240, 136, 62, 0.25)); }
+  100% { background-color: transparent; box-shadow: 0 0 0 0.06em transparent; }
+}
+
+/* Classification bars fill in from zero */
+.bar-grow {
+  animation: bar-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes bar-grow {
+  from { width: 0; }
+}
+
+/* Forward-pass signal sweeping through the neural net */
+@keyframes signal {
+  12% { fill: var(--sig, #f0883e); }
+  30% { fill: var(--sig-tail, #e3b341); opacity: 0.9; }
+}
+
+/* Oversized parallax numerals behind section headers */
+.ghost-num {
+  -webkit-text-stroke: 1px var(--color-line);
+  color: transparent;
+}
+@supports (animation-timeline: view()) {
+  .ghost-num {
+    animation: ghost-drift linear both;
+    animation-timeline: view();
+  }
+  @keyframes ghost-drift {
+    from { translate: 0 30%; opacity: 0; }
+    40% { opacity: 1; }
+    to { translate: 0 -30%; opacity: 0.4; }
+  }
+
+  /* Painted frames parallax as they cross the viewport */
+  .painted::before {
+    animation: drift 28s ease-in-out infinite alternate, paint-parallax linear both;
+    animation-timeline: auto, view();
+  }
+  @keyframes paint-parallax {
+    from { translate: 0 -6%; }
+    to { translate: 0 6%; }
+  }
+}
+
+/* Labelled section dividers */
+.hatch-line {
+  transform: translateY(-50%) scaleX(0);
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hatch-in .hatch-line {
+  transform: translateY(-50%) scaleX(1);
+}
+.hatch-label {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  transition: opacity 0.5s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: 0.35s;
+}
+.hatch-in .hatch-label {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+/* Data packets flowing along the divider line, like activations between layers */
+.hatch-packet {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 48px;
+  height: 1px;
+  margin-top: -0.5px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(240, 136, 62, 0.55));
+}
+.hatch-in .hatch-packet {
+  animation: packet 4.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: calc(1.2s + var(--p, 0s));
+}
+@keyframes packet {
+  0% { opacity: 0; transform: translateX(-80px); }
+  8% { opacity: 0.7; }
+  60% { opacity: 0.7; }
+  70%, 100% { opacity: 0; transform: translateX(100vw); }
+}
+
+/* Terminal lines typed out one at a time */
+.type-line {
+  clip-path: inset(0 100% 0 0);
+}
+.typing .type-line {
+  animation: type-in 0.55s steps(24, end) both;
+  animation-delay: calc(var(--i) * 320ms + 200ms);
+}
+@keyframes type-in {
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* Chips hop when hovered */
+.chip {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s, background-color 0.3s;
+}
+.chip:hover {
+  transform: translateY(-3px) rotate(-1.5deg);
+  border-color: var(--color-flame);
+  background-color: rgba(240, 136, 62, 0.08);
+}
+.chip svg {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s;
+}
+.chip:hover svg {
+  transform: rotate(-14deg) scale(1.25);
+  color: var(--color-flame);
+}
+
+/* Shimmer sweep across primary buttons */
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+.shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%) skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  pointer-events: none;
+}
+.shine:hover::after {
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateX(120%) skewX(-20deg);
+}
+
+/* Autoplay timer bar on the screenshot carousel */
+.progress-bar {
+  animation: progress 4s linear both;
+}
+@keyframes progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Slow float for decorative elements */
+@keyframes float {
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+.float {
+  animation: float 7s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .pixel, .caret, .rise, .overlay-in, .overlay-out, .drop-in, .painted::before { animation: none !important; }
+  .pixel, .caret, .rise, .overlay-in, .overlay-out, .drop-in, .painted::before,
+  .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, rect,
+  .hatch-packet, .bar-grow { animation: none !important; }
+  .split-word { transform: none !important; transition: none !important; animation: none !important; }
+  .type-line { clip-path: none !important; }
+  .hatch-line { transform: translateY(-50%) !important; transition: none !important; }
+  .hatch-label { opacity: 1 !important; transform: translate(-50%, -50%) !important; transition: none !important; }
+  .chip:hover, .chip:hover svg { transform: none; }
   .lift:hover, .zoom-group:hover img { transform: none; }
   .reveal { transition: none !important; opacity: 1 !important; transform: none !important; translate: none !important; filter: none !important; }
 }

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { FaUsers, FaTools, FaCode, FaProjectDiagram, FaShieldAlt, FaStore, FaSeedling } from 'react-icons/fa'
+import { motion } from 'framer-motion'
+import { TypeLines } from './fx'
 import { IconBox, LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
 import useCompact from '../lib/useCompact'
 
@@ -153,22 +155,22 @@ function formatSpan(months) {
 function RoleSummary({ role }) {
   const stats = [{ value: formatSpan(role.end - role.start + 1), label: role.end >= toMonthIndex('Present') ? 'So far' : 'Duration' }, ...role.results]
   return (
-    <div key={role.title + role.company} className="px-6 sm:px-10 py-6 border-t border-line">
-      <p className="text-ink">At a glance · {role.company}</p>
-      <dl className={`mt-4 grid gap-px rounded-lg overflow-hidden border border-line bg-line ${stats.length > 2 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2'}`}>
+    <div key={role.title + role.company} className="shrink-0 px-6 sm:px-10 lg:px-6 xl:px-8 py-6 lg:py-4 border-t border-line">
+      <p className="text-ink lg:text-[14px]">At a glance · {role.company}</p>
+      <dl className={`mt-4 lg:mt-3 grid gap-px rounded-lg overflow-hidden border border-line bg-line ${stats.length > 2 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2'}`}>
         {stats.map((s, i) => (
-          <div key={s.label} className="pixel bg-panel px-4 py-4" style={{ animationDelay: `${i * 70}ms` }}>
-            <dd className="font-serif text-2xl text-ink tabular-nums leading-tight">{s.value}</dd>
-            <dt className="mt-1 text-[11px] uppercase tracking-wide text-mute">{s.label}</dt>
+          <div key={s.label} className="pixel bg-panel px-4 py-4 lg:px-3 lg:py-2.5" style={{ animationDelay: `${i * 70}ms` }}>
+            <dd className="font-serif text-2xl lg:text-xl text-ink tabular-nums leading-tight">{s.value}</dd>
+            <dt className="mt-1 text-[11px] lg:text-[10px] uppercase tracking-wide text-mute">{s.label}</dt>
           </div>
         ))}
       </dl>
-      <p className="mt-5 mb-3 text-[11px] uppercase tracking-wide text-mute">Skills used</p>
-      <ul className="flex flex-wrap gap-2">
+      <p className="mt-5 mb-3 lg:mt-3 lg:mb-2 text-[11px] uppercase tracking-wide text-mute">Skills used</p>
+      <ul className="flex flex-wrap gap-2 lg:gap-1.5">
         {role.skills.map((skill, i) => (
           <li
             key={skill}
-            className="pixel px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
+            className="pixel px-2.5 py-1.5 lg:px-2 lg:py-1 rounded-md border border-line bg-panel-2/50 text-[13px] lg:text-[12px] text-ink/90"
             style={{ animationDelay: `${150 + i * 50}ms` }}
           >
             {skill}
@@ -204,7 +206,8 @@ export default function Experience() {
       />
 
       <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-14 sm:pb-20">
-      <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] rounded-lg border border-line overflow-hidden">
+      {/* On laptops and up, the whole panel fits in one screen: the log scrolls inside */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] rounded-lg border border-line overflow-hidden lg:h-[calc(100svh-104px)] lg:min-h-[600px] lg:max-h-[820px]">
         {/* Log window */}
         {/* Role tabs (mobile) */}
         <div className="lg:hidden flex flex-wrap gap-2 px-4 py-4 border-b border-line">
@@ -222,28 +225,29 @@ export default function Experience() {
           ))}
         </div>
 
-        <Reveal className="min-w-0">
-          <Painted variant="meadow" className="h-full px-4 sm:px-8 lg:px-10 py-6 sm:py-8">
-            <Window title={`${exp.company.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.log`}>
-              <div className="px-5 sm:px-8 py-6 font-mono text-[12.5px] sm:text-[14px] leading-relaxed min-h-[340px]">
-                <p className="text-mute">
+        <Reveal className="min-w-0 lg:min-h-0">
+          <Painted variant="meadow" className="h-full px-4 sm:px-8 lg:px-6 xl:px-8 py-6 sm:py-8 lg:py-5 lg:flex lg:flex-col">
+            <Window
+              title={`${exp.company.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.log`}
+              className="lg:flex-1 lg:min-h-0 lg:flex lg:flex-col"
+            >
+              <div
+                data-autoscroll
+                className="px-5 sm:px-8 lg:px-6 xl:px-8 py-6 lg:py-4 font-mono text-[12.5px] sm:text-[14px] lg:text-[13px] leading-relaxed min-h-[340px] lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
+              >
+                <p key={`r-${active}`} className="pixel text-mute">
                   → role <span className="text-gold">&quot;{exp.title}&quot;</span>
                 </p>
                 <p className="text-mute mb-3">
                   → at <span className="text-flame">{exp.company}</span> · {exp.type.toLowerCase()}
                 </p>
-                <ul key={active} className="flex flex-col gap-2">
-                  {points.map((point, i) => (
-                    <li
-                      key={i}
-                      className="pixel flex gap-2.5 text-ink/90"
-                      style={{ animationDelay: `${i * 90}ms` }}
-                    >
-                      <span className="text-live shrink-0">✓</span>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
+                {/* Points are typed out line by line, like a live log */}
+                <TypeLines
+                  key={active}
+                  lines={points}
+                  className="flex flex-col gap-2"
+                  lineClass="flex gap-2.5 text-ink/90"
+                />
                 {compact && hidden > 0 && (
                   <button
                     onClick={() => setShowAll(v => !v)}
@@ -261,32 +265,42 @@ export default function Experience() {
         </Reveal>
 
         {/* Role list */}
-        <div className="hidden lg:block border-l border-line">
+        <div className="hidden lg:flex lg:flex-col lg:min-h-0 border-l border-line">
           {sorted.map((e, i) => (
             <button
               key={e.title + e.company}
               onClick={() => selectRole(i)}
               aria-pressed={active === i}
-              className={`w-full text-left flex gap-4 sm:gap-5 px-5 sm:px-8 py-5 sm:py-6 dots-b transition-colors ${
+              className={`spot group w-full flex-1 min-h-0 text-left flex items-center gap-4 px-5 xl:px-7 py-2 dots-b transition-colors ${
                 active === i ? 'bg-panel-2/50' : 'hover:bg-panel/60'
               }`}
             >
-              <IconBox>
-                <e.Icon size={16} />
-              </IconBox>
+              {active === i && (
+                <motion.span
+                  layoutId="role-indicator"
+                  aria-hidden
+                  className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-flame to-gold"
+                  transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                />
+              )}
+              <span className={`transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-rotate-6 group-hover:scale-110 ${active === i ? 'scale-110' : ''}`}>
+                <IconBox>
+                  <e.Icon size={16} />
+                </IconBox>
+              </span>
               <div className="flex-1 min-w-0">
                 <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className={`font-serif text-xl sm:text-2xl ${active === i ? 'text-ink' : 'text-ink/80'}`}>
+                  <span className={`inline-block font-serif text-lg xl:text-xl leading-snug transition-all duration-500 ${active === i ? 'text-ink italic' : 'text-ink/80 group-hover:translate-x-1'}`}>
                     {e.title}
                   </span>
                 </p>
-                <p className="mt-1 text-body">
+                <p className="mt-0.5 text-[13px] text-body truncate">
                   {e.company}
                   <span className="text-mute"> · {e.dates}</span>
                 </p>
               </div>
               <span
-                className={`self-start mt-1 text-[11px] uppercase tracking-wide px-2 py-0.5 rounded border ${
+                className={`shrink-0 text-[10px] uppercase tracking-wide px-2 py-0.5 rounded border ${
                   e.type === 'Work' ? 'border-flame/40 text-flame' : 'border-live/40 text-live'
                 }`}
               >

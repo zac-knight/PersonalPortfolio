@@ -25,7 +25,8 @@ export default function Footer() {
           <ul className="grid grid-cols-2 gap-y-2.5">
             {SECTIONS.map(s => (
               <li key={s}>
-                <a href={`#${s.toLowerCase()}`} className="text-body hover:text-ink transition-colors">
+                <a href={`#${s.toLowerCase()}`} className="group inline-flex items-center gap-1.5 text-body hover:text-ink transition-colors">
+                  <span className="w-0 overflow-hidden text-flame transition-all duration-300 group-hover:w-3">→</span>
                   {s}
                 </a>
               </li>
@@ -41,9 +42,10 @@ export default function Footer() {
                   href={href}
                   target={href.startsWith('http') ? '_blank' : undefined}
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 text-body hover:text-ink transition-colors"
+                  className="group inline-flex items-center gap-2.5 text-body hover:text-ink transition-colors"
                 >
-                  <Icon size={14} /> {label}
+                  <Icon size={14} className="transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-125" />
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">{label}</span>
                 </a>
               </li>
             ))}

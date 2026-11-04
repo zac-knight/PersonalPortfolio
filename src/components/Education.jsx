@@ -101,39 +101,39 @@ const DEGREES = [
 
 function DegreeCard({ file, variant, status, live, name, dates, summary, unitsTitle, units, breadth, facts }) {
   return (
-    <article className="lift flex flex-col rounded-lg overflow-hidden bg-panel border border-line">
-      <Painted variant={variant} className="px-5 pt-5">
+    <article className="spot h-full flex flex-col rounded-lg overflow-hidden bg-panel border border-line transition-shadow duration-500 hover:shadow-[0_30px_60px_-25px_rgba(0,0,0,0.8)]">
+      <Painted variant={variant} className="px-5 pt-5 lg:px-4 lg:pt-4 short:pt-3">
         <Window title={file} className="rounded-b-none border-b-0 shadow-none">
-          <div className="px-5 sm:px-6 py-5">
-            <p className="mb-4 text-[12px] uppercase tracking-wide text-mute">{unitsTitle}</p>
-            <ul className="flex flex-col gap-2.5">
+          <div className="px-5 sm:px-6 py-5 lg:py-4 short:py-3">
+            <p className="mb-4 lg:mb-2.5 text-[12px] uppercase tracking-wide text-mute">{unitsTitle}</p>
+            <ul className="flex flex-col gap-2.5 lg:gap-1.5 short:gap-1">
               {units.map(unit => {
                 const [code, ...title] = unit.split(' ')
                 return (
-                  <li key={unit} className="grid grid-cols-[64px_1fr] gap-3 text-[14px]">
+                  <li key={unit} className="group/unit grid grid-cols-[64px_1fr] gap-3 text-[14px] lg:text-[13px] transition-transform duration-300 hover:translate-x-1.5">
                     <span className="font-mono text-flame">{code}</span>
                     <span className="text-ink/90">{title.join(' ')}</span>
                   </li>
                 )
               })}
             </ul>
-            {breadth && <p className="mt-5 font-mono text-[11px] uppercase tracking-wide text-mute">{breadth}</p>}
+            {breadth && <p className="mt-5 lg:mt-3 font-mono text-[11px] uppercase tracking-wide text-mute">{breadth}</p>}
           </div>
         </Window>
       </Painted>
-      <div className="flex flex-col gap-4 px-6 py-6 flex-1">
+      <div className="flex flex-col gap-4 lg:gap-2.5 short:gap-2 px-6 py-6 lg:py-4 short:py-3 flex-1">
         <p className="flex items-center gap-2 text-[13px]">
           <span className={`w-1.5 h-1.5 rounded-full ${live ? 'bg-live' : 'bg-mute'}`} />
           <span className={live ? 'text-live' : 'text-body'}>{status}</span>
           <span className="text-mute">· {dates}</span>
         </p>
-        <h3 className="font-serif text-2xl sm:text-3xl text-ink leading-tight">{name}</h3>
-        <p className="text-body leading-relaxed">{summary}</p>
-        <dl className="mt-2 rounded-lg border border-line overflow-hidden">
+        <h3 className="font-serif text-2xl sm:text-3xl lg:text-[26px] text-ink leading-tight">{name}</h3>
+        <p className="text-body leading-relaxed lg:text-[15px] lg:leading-normal">{summary}</p>
+        <dl className="mt-2 lg:mt-1 rounded-lg border border-line overflow-hidden">
           {facts.map(([term, value], i) => (
             <div
               key={term}
-              className={`grid grid-cols-[90px_1fr] gap-3 sm:gap-4 px-4 py-2.5 font-mono text-[12px] uppercase tracking-wide ${
+              className={`grid grid-cols-[90px_1fr] gap-3 sm:gap-4 px-4 py-2.5 lg:py-1.5 short:py-1 font-mono text-[12px] uppercase tracking-wide ${
                 i > 0 ? 'border-t border-line' : ''
               }`}
             >
@@ -163,7 +163,9 @@ export default function Education() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 sm:px-12 lg:px-20 xl:px-28">
         {DEGREES.map((degree, i) => (
           <Reveal key={degree.name} delay={i * 100} className="flex">
-            <DegreeCard {...degree} />
+            <div className="flex-1">
+              <DegreeCard {...degree} />
+            </div>
           </Reveal>
         ))}
       </div>
@@ -189,17 +191,18 @@ export default function Education() {
             />
           </button>
           {open && UNIT_GROUPS.map(group => (
-            <div key={group.path} className="px-6 pb-6 pt-4 border-t border-line">
+            <div key={group.path} className="drop-in px-6 pb-6 pt-4 border-t border-line">
               <p className="flex items-baseline gap-3 text-[13px]">
                 <span className="font-mono text-mute">{group.path}</span>
                 <span className="text-ink">{group.label}</span>
                 <span className="text-mute">· {group.units.length} units</span>
               </p>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2.5 pt-2">
-                {group.units.map(course => {
+              {/* Columns fill top to bottom, so the code order reads down each column */}
+              <ul className="columns-1 sm:columns-2 lg:columns-3 gap-x-8 pt-2">
+                {group.units.map((course, i) => {
                   const [code, ...name] = course.split(' ')
                   return (
-                    <li key={course} className="flex gap-3 text-[13px] pt-2.5">
+                    <li key={course} className="pixel break-inside-avoid flex gap-3 text-[13px] py-2.5" style={{ animationDelay: `${i * 25}ms` }}>
                       <span className="font-mono text-flame shrink-0">{code}</span>
                       <span className="text-body">{name.join(' ')}</span>
                     </li>

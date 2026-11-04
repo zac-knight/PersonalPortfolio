@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
 import { TypeAnimation } from 'react-type-animation'
-import { Button, Eyebrow, Painted, PixelArt, Window } from './ui'
-import { monogram } from '../lib/pixels'
+import { Button, Eyebrow, Painted, Window } from './ui'
+import { SplitText } from './fx'
+import VisionPipeline from './VisionPipeline'
 
 const CREDENTIALS = [
   {
@@ -27,8 +27,6 @@ const CREDENTIALS = [
 ]
 
 export default function Hero() {
-  const art = useMemo(() => monogram(), [])
-
   return (
     <section id="hero">
       <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr]">
@@ -37,8 +35,9 @@ export default function Hero() {
           <div className="rise" style={{ '--d': '0ms' }}>
             <Eyebrow tag="Now">Master of AI @ QUT · open to AI, data &amp; software roles</Eyebrow>
           </div>
-          <h1 style={{ '--d': '120ms' }} className="rise font-serif text-ink text-[42px] sm:text-6xl xl:text-[68px] leading-[1.05] tracking-tight max-w-3xl">
-            AI student and builder, learning to make systems that learn.
+          <h1 className="font-serif text-ink text-[42px] sm:text-6xl xl:text-[68px] leading-[1.05] tracking-tight max-w-3xl">
+            <SplitText play delay={120} stagger={70} text="AI student and builder, learning to make systems that" />{' '}
+            <SplitText play delay={820} className="italic text-flame" text="learn." />
           </h1>
           <p style={{ '--d': '240ms' }} className="rise text-body text-base sm:text-lg leading-relaxed max-w-2xl">
             I&apos;m Zac, a Computer Science graduate and Master of Artificial Intelligence
@@ -72,14 +71,16 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Monogram */}
-        <div className="relative hidden lg:flex items-center justify-center px-10 py-16 border-l border-line">
-          <PixelArt
-            {...art}
-            tones={['#8f8a83', '#55514b']}
-            className="w-full max-w-[420px]"
-            label="Pixel art ZK monogram"
-          />
+        {/* Live computer vision pipeline */}
+        <div className="relative flex flex-col items-center justify-center gap-4 lg:gap-5 px-4 sm:px-12 lg:px-10 pt-2 pb-10 lg:py-14 lg:border-l border-line overflow-hidden">
+          <div aria-hidden className="absolute w-[70%] aspect-square rounded-full bg-flame/10 blur-[90px] float" />
+          <div className="rise relative w-full max-w-[440px]" style={{ '--d': '300ms' }}>
+            <VisionPipeline />
+          </div>
+          <p className="rise relative font-mono text-[11px] uppercase tracking-[0.2em] text-mute text-center" style={{ '--d': '600ms' }}>
+            <span className="hidden lg:inline">hover to pause · pick a stage or photo</span>
+            <span className="lg:hidden">tap a stage or photo · ‹ › to browse</span>
+          </p>
         </div>
       </div>
 
@@ -96,7 +97,7 @@ export default function Hero() {
             >
               <a
                 href={c.href}
-                className="group h-full flex flex-col justify-between gap-6 px-6 sm:px-8 py-6 sm:py-8 hover:bg-panel/60 transition-colors duration-300"
+                className="spot group h-full flex flex-col justify-start gap-4 sm:gap-5 px-6 sm:px-8 py-6 sm:py-8 hover:bg-panel/60 transition-colors duration-300"
               >
                 <span className="text-[11px] sm:text-xs uppercase tracking-wide text-mute">{c.label}</span>
                 <span className="font-serif text-2xl sm:text-[28px] leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1">{c.title}</span>
@@ -105,13 +106,15 @@ export default function Hero() {
           ))}
         </ul>
         <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8 zoom-group">
-          <Window title="industry_night.jpg" className="w-full max-w-[420px] rounded-b-none border-b-0">
-            <img
-              src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
-              alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
-              className="w-full aspect-[3/2] object-cover"
-            />
-          </Window>
+          <div className="w-full max-w-[420px]">
+            <Window title="industry_night.jpg" className="w-full rounded-b-none border-b-0">
+              <img
+                src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
+                alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
+                className="w-full aspect-[3/2] object-cover"
+              />
+            </Window>
+          </div>
         </Painted>
       </div>
       </div>

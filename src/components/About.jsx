@@ -92,8 +92,8 @@ function CodePane() {
   let lineNo = 40
 
   return (
-    <div className="flex flex-col min-w-0">
-      <div className="flex items-stretch h-11 border-b border-line text-[13px]">
+    <div className="flex flex-col min-w-0 lg:min-h-0 lg:flex-1">
+      <div className="flex items-stretch shrink-0 h-11 border-b border-line text-[13px]">
         {names.map(name => (
           <button
             key={name}
@@ -110,7 +110,7 @@ function CodePane() {
           <HiOutlineSearch size={14} />
         </span>
       </div>
-      <pre className="font-mono text-[12px] sm:text-[13px] leading-[2] py-3 overflow-x-auto no-scrollbar">
+      <pre className="font-mono text-[12px] sm:text-[13px] leading-[2] short:leading-[1.8] py-3 overflow-x-auto no-scrollbar lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
         {FILES[file].map((raw, i) => {
           const sign = raw[0] === '+' || raw[0] === '-' ? raw[0] : ''
           const code = sign ? raw.slice(1) : raw
@@ -149,15 +149,15 @@ export default function About() {
       />
 
       <Reveal className="px-0 sm:px-12 lg:px-20 xl:px-28">
-        <Painted className="px-3 sm:px-8 pt-6 sm:pt-8">
+        <Painted className="px-3 sm:px-8 pt-6 sm:pt-8 short:pt-4">
           <Window title="zacknight.dev · Desktop" className="rounded-b-none">
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_1.15fr] xl:grid-cols-[240px_1fr_1.15fr] text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_1.15fr] xl:grid-cols-[240px_1fr_1.15fr] text-sm lg:h-[min(680px,calc(100svh-150px))]">
               {/* Sidebar */}
-              <aside className="hidden xl:flex flex-col border-r border-line">
+              <aside className="hidden xl:flex flex-col border-r border-line lg:min-h-0 lg:overflow-y-auto thin-scroll">
                 <img
                   src={`${import.meta.env.BASE_URL}profile.png`}
                   alt="Zac Knight"
-                  className="w-full aspect-[1.39] object-cover grayscale contrast-110"
+                  className="w-full aspect-[1.39] short:aspect-[1.7] object-cover object-top grayscale contrast-110"
                 />
                 {SIDEBAR.map(group => (
                   <div key={group.heading} className="py-4">
@@ -181,14 +181,14 @@ export default function About() {
               </aside>
 
               {/* Narrative */}
-              <div className="flex flex-col border-b md:border-b-0 md:border-r border-line">
+              <div className="flex flex-col border-b md:border-b-0 md:border-r border-line lg:min-h-0">
                 <div className="flex items-center justify-between h-11 px-4 border-b border-line">
                   <p className="text-ink">about(Zac): background</p>
                   <span className="flex items-center gap-1.5 text-[11px] text-live">
                     <LiveDot /> Live
                   </span>
                 </div>
-                <div className="flex flex-col gap-3 p-4">
+                <div className="flex flex-col gap-3 p-4 lg:min-h-0 lg:overflow-y-auto thin-scroll">
                   <p className="rounded-md border border-line bg-panel-2/40 p-4 text-ink/90 leading-relaxed">
                     I am a Computer Science graduate pursuing a Master of Artificial Intelligence at
                     QUT, passionate about software development, machine learning, and building
@@ -229,7 +229,7 @@ export default function About() {
               </div>
 
               {/* Code */}
-              <div className="hidden md:block min-w-0">
+              <div className="hidden md:flex md:flex-col min-w-0 lg:min-h-0">
                 <CodePane />
               </div>
             </div>

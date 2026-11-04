@@ -1,5 +1,6 @@
 import { FaArrowRight } from 'react-icons/fa'
 import { Expandable, Painted, Reveal, Window } from './ui'
+import { SplitText } from './fx'
 
 const base = import.meta.env.BASE_URL
 
@@ -152,7 +153,7 @@ const CHAPTERS = [
 
 function Figure({ src, file, alt, caption, variant, position = 'object-center' }) {
   return (
-    <figure className="zoom-group">
+    <figure className="zoom-group" data-cursor="view">
       <Painted variant={variant} className="px-4 pt-4 rounded-t-lg">
         <Window title={file} className="rounded-b-none border-b-0">
           <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] object-cover ${position}`} />
@@ -188,7 +189,7 @@ function FeatureCard({ href, label, title, body, cta }) {
     <a
       href={href}
       {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="lift group h-full rounded-lg border border-line bg-panel-2/40 hover:bg-panel-2/70 px-5 py-5 flex flex-col gap-3"
+      className="lift spot group h-full rounded-lg border border-line bg-panel-2/40 hover:bg-panel-2/70 px-5 py-5 flex flex-col gap-3"
     >
       <span className="font-mono text-[11px] uppercase tracking-wide text-mute">{label}</span>
       <span className="font-serif text-2xl text-ink leading-snug">{title}</span>
@@ -212,11 +213,11 @@ function Chapter({ badge, label, name, role, where, body, facts, figures = [], f
 
   const header = (
     <Reveal as="header" className="flex flex-col gap-3 lg:sticky lg:top-24 lg:self-start">
-      <span className="w-14 h-14 rounded-md bg-cream text-canvas flex items-center justify-center font-mono text-[12px] font-medium tracking-wide">
+      <span className="w-14 h-14 rounded-md bg-cream text-canvas flex items-center justify-center font-mono text-[12px] font-medium tracking-wide transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:rotate-[-8deg] hover:scale-110">
         {badge}
       </span>
       <p className="mt-2 font-mono text-[12px] uppercase tracking-wide text-mute">{label}</p>
-      <h4 className="font-serif text-2xl sm:text-3xl text-ink leading-tight">{name}</h4>
+      <h4 className="font-serif text-2xl sm:text-3xl text-ink leading-tight"><SplitText text={name} stagger={40} /></h4>
       <p className="text-flame">{role}</p>
       <p className="font-mono text-[11px] uppercase tracking-wide text-mute">{where}</p>
     </Reveal>
@@ -281,7 +282,9 @@ export default function AboutChapters() {
       <Reveal className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pb-10 sm:pb-14">
         <div>
           <p className="font-mono text-[12px] uppercase tracking-wide text-mute">The long version</p>
-          <h3 className="mt-4 font-serif text-ink text-3xl sm:text-4xl leading-tight">Where it all comes from.</h3>
+          <h3 className="mt-4 font-serif text-ink text-3xl sm:text-4xl leading-tight">
+            <SplitText text="Where it all" /> <SplitText delay={160} className="italic text-flame" text="comes from." />
+          </h3>
         </div>
         <p className="text-body leading-relaxed max-w-md lg:self-end">
           A student society, a research corporation, a university, a police service and a shop floor.

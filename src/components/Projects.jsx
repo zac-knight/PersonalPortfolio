@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FaArrowRight, FaPlay, FaRegFileImage } from 'react-icons/fa'
 import projects from '../data'
+import { SplitText } from './fx'
 import { Button, Expandable, LiveMeta, Painted, Reveal, SectionHeader, StatRow, TabStrip, Window } from './ui'
 
 // Tab labels show the file name with any hyphens turned into spaces
@@ -26,15 +27,16 @@ function ScreenshotWindow({ project }) {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       />
-      <div className="relative aspect-[16/9] bg-[#0f0e0d]">
+      <div className="relative bg-[#0f0e0d] overflow-hidden" style={{ aspectRatio: project.aspect || '16 / 10' }}>
+        <div key={active} aria-hidden className="absolute left-0 top-0 z-10 h-[2px] bg-flame/80 progress-bar" style={{ animationPlayState: paused ? 'paused' : 'running' }} />
         {project.images.map((src, i) => (
           <img
             key={src}
             src={src}
             alt={`${project.title}: ${fileName(src).replace(/\.\w+$/, '')}`}
             loading="lazy"
-            className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-700 ${
-              i === active ? 'opacity-100' : 'opacity-0'
+            className={`absolute inset-0 w-full h-full object-contain transition-[opacity,transform,filter] duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              i === active ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-[1.06] blur-sm'
             }`}
           />
         ))}
@@ -50,31 +52,31 @@ function ProjectBlock({ project, onMoreDetail }) {
   return (
     <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-6 sm:pb-8">
       <div className="rounded-lg border border-line overflow-hidden">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] 2xl:grid-cols-[1fr_1.4fr]">
-        <Reveal className="flex flex-col justify-center gap-6 px-6 sm:px-10 py-10 sm:py-12 lg:border-r border-line">
-          <p className="text-[13px] uppercase tracking-wide text-body">{project.category || 'Project'}</p>
-          <h3 className="font-serif text-ink text-3xl sm:text-4xl leading-tight">{project.title}</h3>
-          <p className="text-ink/80 text-lg leading-relaxed">{project.tagline}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.35fr] 2xl:grid-cols-[1fr_1.7fr]">
+        <Reveal className="flex flex-col justify-center gap-6 lg:gap-3.5 short:gap-3 px-6 sm:px-10 lg:px-8 xl:px-10 py-10 sm:py-12 lg:py-7 short:py-5 lg:border-r border-line">
+          <p className="text-[13px] lg:text-[12px] uppercase tracking-wide text-body">{project.category || 'Project'}</p>
+          <h3 className="font-serif text-ink text-3xl sm:text-4xl lg:text-[32px] leading-tight"><SplitText text={project.title} /></h3>
+          <p className="text-ink/80 text-lg lg:text-base leading-relaxed lg:leading-snug">{project.tagline}</p>
           <Expandable collapsed={130} more="Read more">
-            <p className="text-body leading-relaxed">{project.description}</p>
+            <p className="text-body leading-relaxed lg:text-[14.5px] lg:leading-[1.6] short:text-[14px] short:leading-[1.5]">{project.description}</p>
           </Expandable>
           {project.role && (
             <p className="text-[13px] text-mute">
               <span className="text-flame">Role</span> · {project.role}
             </p>
           )}
-          <ul className="flex flex-wrap gap-2">
+          <ul className="flex flex-wrap gap-2 lg:gap-1.5">
             {project.skills.map((Icon, i) => (
               <li
                 key={project.skillLabels[i]}
-                className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
+                className="chip flex items-center gap-2 px-2.5 py-1.5 lg:px-2 lg:py-1 rounded-md border border-line bg-panel-2/50 text-[13px] lg:text-[12px] text-ink/90"
               >
                 <Icon size={12} className="text-body" />
                 {project.skillLabels[i]}
               </li>
             ))}
           </ul>
-          <div className="flex flex-wrap gap-3 pt-2">
+          <div className="flex flex-wrap gap-3 pt-2 lg:pt-1">
             <Button onClick={() => onMoreDetail(project)}>
               Read case study <FaArrowRight size={11} />
             </Button>
@@ -86,8 +88,10 @@ function ProjectBlock({ project, onMoreDetail }) {
           </div>
         </Reveal>
         <Reveal delay={120} className="min-w-0">
-          <Painted variant="dusk" className="h-full flex items-center px-4 sm:px-8 xl:px-12 py-8 sm:py-12">
-            <ScreenshotWindow project={project} />
+          <Painted variant="dusk" className="h-full flex items-center px-3 sm:px-5 xl:px-6 py-5 sm:py-8 short:py-3">
+            <div className="w-full min-w-0">
+              <ScreenshotWindow project={project} />
+            </div>
           </Painted>
         </Reveal>
       </div>
@@ -118,7 +122,7 @@ export default function Projects({ onSelectProject }) {
       ))}
 
       <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pt-2 pb-14 sm:pb-20">
-        <div className="rounded-lg border border-dashed border-line px-6 py-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="spot rounded-lg border border-dashed border-line px-6 py-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="font-serif text-2xl text-ink">More projects in the pipeline.</p>
             <p className="mt-2 text-body">New work is always in progress. Check back soon.</p>

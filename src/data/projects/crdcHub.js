@@ -151,8 +151,6 @@ Our main technical work was a code level review of the RAG pipeline, traced thro
     `${base}projects/crdcHub/Off Topic Question.png`,
     `${base}projects/crdcHub/Research Library.png`,
     `${base}projects/crdcHub/Admin Ingestion.png`,
-    `${base}projects/crdcHub/RAG Pipeline.png`,
-    `${base}projects/crdcHub/Token Cost by Stage.png`,
   ],
 }
 

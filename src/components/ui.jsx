@@ -1,9 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
 import useCompact from '../lib/useCompact'
+import { SplitText } from './fx'
+import { useInViewOnce } from '../lib/motion'
 
 // ── Layout ────────────────────────────────────────────────────────────────────
-export function Hatch({ className = 'h-10 sm:h-14' }) {
-  return <div aria-hidden className={`hatch border-y border-line ${className}`} />
+// The band between sections. With `tag`/`label` it names the section that
+// follows: a flame line sweeps across and the label pops in as it scrolls into view.
+export function Hatch({ className = 'h-10 sm:h-14', tag, label }) {
+  const [ref, shown] = useInViewOnce(0.6)
+  return (
+    <div ref={ref} aria-hidden className={`hatch relative overflow-hidden border-y border-line ${className} ${shown ? 'hatch-in' : ''}`}>
+      {label && (
+        <>
+          <span className="hatch-line absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-flame to-transparent" />
+          <span className="hatch-packet" />
+          <span className="hatch-packet" style={{ '--p': '2.1s' }} />
+          <span className="hatch-label absolute left-1/2 top-1/2 flex items-center gap-2.5 rounded-full border border-line bg-canvas pl-1.5 pr-4 py-1 font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-ink whitespace-nowrap">
+            <span className="rounded-full bg-flame text-canvas px-2 py-0.5 tracking-normal">{tag}</span>
+            {label}
+          </span>
+        </>
+      )}
+    </div>
+  )
 }
 
 export function Reveal({ children, className = '', delay = 0, as: Tag = 'div' }) {
@@ -95,7 +114,7 @@ export function Expandable({ children, collapsed = 260, more = 'Read more', less
 export function Eyebrow({ tag, children }) {
   return (
     <div className="inline-flex w-fit items-center gap-3 rounded-md bg-panel-2/70 border border-line/60 pl-1.5 pr-3 py-1.5 text-[11px] sm:text-[13px] uppercase tracking-wide text-body">
-      <span className="rounded bg-panel-2 border border-line px-2 py-0.5 text-ink">{tag}</span>
+      <span className="rounded bg-panel-2 border border-line px-2 py-0.5 text-ink font-mono">{tag}</span>
       <span>{children}</span>
     </div>
   )
@@ -122,14 +141,20 @@ export function LiveMeta({ label = 'Live', children }) {
 
 export function SectionHeader({ tag, label, title, description, meta }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-20 pb-10 sm:pb-14">
-      <Reveal className="flex flex-col gap-6 sm:gap-8">
+    <div className="relative overflow-hidden grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-20 pb-10 sm:pb-14">
+      <span
+        aria-hidden
+        className="ghost-num pointer-events-none select-none absolute -right-4 sm:right-6 lg:right-16 -top-6 sm:-top-10 font-serif text-[9rem] sm:text-[15rem] lg:text-[19rem] leading-none"
+      >
+        {tag}
+      </span>
+      <Reveal className="relative flex flex-col gap-6 sm:gap-8">
         <Eyebrow tag={tag}>{label}</Eyebrow>
         <h2 className="font-serif text-ink text-4xl sm:text-5xl leading-[1.08] tracking-tight max-w-xl">
-          {title}
+          <SplitText text={title} delay={150} />
         </h2>
       </Reveal>
-      <Reveal delay={120} className="flex flex-col justify-between gap-6 lg:items-end">
+      <Reveal delay={120} className="relative flex flex-col justify-between gap-6 lg:items-end">
         {meta && <div className="hidden lg:block">{meta}</div>}
         {description && (
           <p className="text-body leading-relaxed max-w-md lg:mb-2">{description}</p>
@@ -141,7 +166,7 @@ export function SectionHeader({ tag, label, title, description, meta }) {
 
 // ── Buttons ───────────────────────────────────────────────────────────────────
 const BUTTON = {
-  primary: 'bg-cream text-canvas hover:bg-white',
+  primary: 'shine bg-cream text-canvas hover:bg-white',
   ghost: 'bg-panel-2/60 text-ink border border-line hover:bg-panel-2',
 }
 
@@ -327,12 +352,12 @@ export function StatRow({ stats, className = '' }) {
       {stats.map((s, i) => (
         <div
           key={s.label}
-          className={`px-5 sm:px-6 py-5 sm:py-6 border-line ${i > 0 ? 'sm:border-l' : ''} ${
+          className={`spot px-5 sm:px-6 py-5 sm:py-6 lg:py-4 short:py-3 border-line ${i > 0 ? 'sm:border-l' : ''} ${
             i % 2 === 1 ? 'border-l' : ''
           } ${i >= 2 ? 'border-t sm:border-t-0' : ''}`}
         >
-          <p className="text-[11px] sm:text-xs uppercase tracking-wide text-mute min-h-[2.8em]">{s.label}</p>
-          <p className="mt-2 sm:mt-4 text-2xl sm:text-3xl text-ink tabular-nums"><CountUp value={s.value} /></p>
+          <p className="text-[11px] sm:text-xs uppercase tracking-wide text-mute min-h-[2.8em] lg:min-h-0">{s.label}</p>
+          <p className="mt-2 sm:mt-4 lg:mt-2 text-2xl sm:text-3xl lg:text-[26px] text-ink tabular-nums"><CountUp value={s.value} /></p>
         </div>
       ))}
     </div>
@@ -341,7 +366,8 @@ export function StatRow({ stats, className = '' }) {
 
 // ── Pixel art ─────────────────────────────────────────────────────────────────
 // `cells` is an array of [x, y, tone] where tone indexes into `tones`.
-export function PixelArt({ cells, width, height, tones, cell = 10, gap = 2, className = '', label }) {
+// With `pulse`, a forward-pass signal sweeps left to right through the cells.
+export function PixelArt({ cells, width, height, tones, cell = 10, gap = 2, className = '', label, pulse = false }) {
   return (
     <svg
       viewBox={`0 0 ${width * cell} ${height * cell}`}
@@ -359,7 +385,15 @@ export function PixelArt({ cells, width, height, tones, cell = 10, gap = 2, clas
           width={cell - gap}
           height={cell - gap}
           fill={tones[tone]}
-          style={{ animationDelay: `${(x + y) * 18}ms` }}
+          style={
+            pulse
+              ? {
+                  animation: `pixel-in 0.5s ease-out ${(x + y) * 18}ms both, signal 3.2s ease-in-out ${1200 + x * 32}ms infinite`,
+                  '--sig': tone === 0 ? '#f6eee7' : '#f0883e',
+                  '--sig-tail': tone === 0 ? '#e3b341' : '#7a5a3a',
+                }
+              : { animationDelay: `${(x + y) * 18}ms` }
+          }
         />
       ))}
     </svg>
