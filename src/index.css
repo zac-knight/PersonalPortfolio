@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Laptop screens with a short viewport (e.g. a 14" MacBook with browser chrome) */
+@custom-variant short (@media (min-width: 64rem) and (max-height: 820px));
+
 @theme {
   --font-serif: "Libre Caslon Display", "Iowan Old Style", Georgia, serif;
   --font-sans: "Geist", system-ui, "Segoe UI", sans-serif;
@@ -32,6 +35,12 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Nothing decorative may widen the page; clip (unlike hidden) keeps sticky working */
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
@@ -186,6 +195,12 @@ section[id] {
   animation: blink 1s steps(1) infinite;
 }
 
+/* Slim scrollbars for panels that scroll inside a fixed-height window */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -289,66 +304,12 @@ html.has-cursor * {
   100% { background-color: transparent; box-shadow: 0 0 0 0.06em transparent; }
 }
 
-/* Vision-model scan over photos on hover */
-.scan {
-  overflow: hidden;
+/* Classification bars fill in from zero */
+.bar-grow {
+  animation: bar-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.scan-line {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 30%;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-100%);
-  background: linear-gradient(to bottom, transparent, rgba(61, 220, 151, 0.18) 85%, rgba(61, 220, 151, 0.9) 99%, transparent);
-}
-.scan:hover .scan-line {
-  animation: scan-sweep 1.4s cubic-bezier(0.45, 0, 0.55, 1) both;
-}
-@keyframes scan-sweep {
-  0% { opacity: 1; transform: translateY(-100%); }
-  85% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(340%); }
-}
-.scan-box {
-  position: absolute;
-  inset: 12%;
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(1.15);
-  transition: opacity 0.3s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  --c: #3ddc97;
-  background:
-    linear-gradient(var(--c), var(--c)) left top / 18px 2px,
-    linear-gradient(var(--c), var(--c)) left top / 2px 18px,
-    linear-gradient(var(--c), var(--c)) right top / 18px 2px,
-    linear-gradient(var(--c), var(--c)) right top / 2px 18px,
-    linear-gradient(var(--c), var(--c)) left bottom / 18px 2px,
-    linear-gradient(var(--c), var(--c)) left bottom / 2px 18px,
-    linear-gradient(var(--c), var(--c)) right bottom / 18px 2px,
-    linear-gradient(var(--c), var(--c)) right bottom / 2px 18px;
-  background-repeat: no-repeat;
-}
-.scan:hover .scan-box {
-  opacity: 1;
-  transform: none;
-  transition-delay: 0.5s;
-}
-.scan-tag {
-  position: absolute;
-  left: 0;
-  bottom: 100%;
-  margin-bottom: 6px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  background: #3ddc97;
-  color: #0d0c0b;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
+@keyframes bar-grow {
+  from { width: 0; }
 }
 
 /* Forward-pass signal sweeping through the neural net */
@@ -407,14 +368,13 @@ html.has-cursor * {
   position: absolute;
   top: 50%;
   left: 0;
-  width: 72px;
-  height: 3px;
-  margin-top: -1.5px;
+  width: 48px;
+  height: 1px;
+  margin-top: -0.5px;
   border-radius: 999px;
   opacity: 0;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--color-flame), #fff);
-  box-shadow: 0 0 10px rgba(240, 136, 62, 0.8);
+  background: linear-gradient(90deg, transparent, rgba(240, 136, 62, 0.55));
 }
 .hatch-in .hatch-packet {
   animation: packet 4.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
@@ -422,8 +382,8 @@ html.has-cursor * {
 }
 @keyframes packet {
   0% { opacity: 0; transform: translateX(-80px); }
-  8% { opacity: 1; }
-  60% { opacity: 1; }
+  8% { opacity: 0.7; }
+  60% { opacity: 0.7; }
   70%, 100% { opacity: 0; transform: translateX(100vw); }
 }
 
@@ -495,9 +455,8 @@ html.has-cursor * {
   html { scroll-behavior: auto; }
   .pixel, .caret, .rise, .overlay-in, .overlay-out, .drop-in, .painted::before,
   .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, rect,
-  .hatch-packet, .scan-line { animation: none !important; }
+  .hatch-packet, .bar-grow { animation: none !important; }
   .split-word { transform: none !important; transition: none !important; animation: none !important; }
-  .scan-box { transition: none !important; }
   .type-line { clip-path: none !important; }
   .hatch-line { transform: translateY(-50%) !important; transition: none !important; }
   .hatch-label { opacity: 1 !important; transform: translate(-50%, -50%) !important; transition: none !important; }

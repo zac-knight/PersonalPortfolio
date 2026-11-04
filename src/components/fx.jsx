@@ -272,6 +272,18 @@ export function TypeLines({ lines, className = '', lineClass = '', marker = '✓
     return () => cancelAnimationFrame(frame)
   }, [inView, total])
 
+  // Inside a [data-autoscroll] panel, keep the caret in view while typing
+  // (scrolls only that panel, never the page)
+  const caretRef = useRef(null)
+  useEffect(() => {
+    const caret = caretRef.current
+    const box = caret?.closest('[data-autoscroll]')
+    if (!box || box.scrollHeight <= box.clientHeight) return
+    const c = caret.getBoundingClientRect()
+    const b = box.getBoundingClientRect()
+    if (c.bottom > b.bottom - 12) box.scrollTop += c.bottom - b.bottom + 28
+  }, [typed])
+
   return (
     <ul ref={ref} className={className}>
       {lines.map((line, i) => {
@@ -286,7 +298,7 @@ export function TypeLines({ lines, className = '', lineClass = '', marker = '✓
               {line.slice(0, shown)}
               {(typing || (last && shown === line.length && typed < Infinity)) && (
                 <span aria-hidden className="inline-block w-0 overflow-visible">
-                  <span className={`text-flame ${typing ? '' : 'caret'}`}>▍</span>
+                  <span ref={caretRef} className={`text-flame ${typing ? '' : 'caret'}`}>▍</span>
                 </span>
               )}
               <span className="invisible">{line.slice(shown)}</span>
@@ -295,20 +307,6 @@ export function TypeLines({ lines, className = '', lineClass = '', marker = '✓
         )
       })}
     </ul>
-  )
-}
-
-// Hover overlay for photos: a scan line sweeps down and detection-style
-// corner brackets lock on, like an image passing through a vision model.
-export function Scan({ children, className = '', label = 'vision pass' }) {
-  return (
-    <div className={`scan relative ${className}`}>
-      {children}
-      <span aria-hidden className="scan-line" />
-      <span aria-hidden className="scan-box">
-        <span className="scan-tag">{label}</span>
-      </span>
-    </div>
   )
 }
 
@@ -331,182 +329,5 @@ export function SplitText({ text, className = '', play = false, delay = 0, stagg
         </Fragment>
       ))}
     </span>
-  )
-}
-
-// ── Particle monogram ─────────────────────────────────────────────────────────
-// The pixel monogram as a field of particles: they fly in from scattered
-// positions, the pointer attends to nearby particles (drawn as attention lines)
-// and pushes them away as they heat up, and a click sends a perturbation
-// through them. Everything springs back home.
-const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))
-const HOT = hex('#f0883e')
-const GOLD = hex('#e3b341')
-
-export function ParticleArt({ cells, width, height, tones, gap = 0.2, className = '', label, radius = 6 }) {
-  const wrapRef = useRef(null)
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    const wrapEl = wrapRef.current
-    if (!canvas || !wrapEl) return
-    const ctx = canvas.getContext('2d')
-    const reduced = prefersReduced()
-    const toneRgb = tones.map(hex)
-    let size = 1
-    let dpr = 1
-    let frame = 0
-    let visible = true
-    const pointer = { x: -9999, y: -9999, active: false }
-
-    const parts = cells.map(([cx, cy, tone]) => {
-      const angle = Math.random() * Math.PI * 2
-      const dist = 20 + Math.random() * 40
-      return {
-        hx: cx,
-        hy: cy,
-        x: reduced ? cx : width / 2 + Math.cos(angle) * dist,
-        y: reduced ? cy : height / 2 + Math.sin(angle) * dist,
-        vx: 0,
-        vy: 0,
-        tone,
-        heat: 0,
-        delay: reduced ? 0 : (cx + cy) * 9 + Math.random() * 200,
-      }
-    })
-    const born = performance.now() + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--intro')) || 0)
-
-    const resize = () => {
-      dpr = Math.min(2, window.devicePixelRatio || 1)
-      const w = wrapEl.clientWidth
-      size = w / width
-      canvas.width = Math.round(w * dpr)
-      canvas.height = Math.round(size * height * dpr)
-      canvas.style.height = `${size * height}px`
-      draw()
-    }
-
-    const draw = () => {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      const s = size * (1 - gap)
-      for (const p of parts) {
-        const base = toneRgb[p.tone]
-        const hot = p.tone === 0 ? HOT : GOLD
-        const h = Math.min(1, p.heat)
-        const r = base[0] + (hot[0] - base[0]) * h
-        const g = base[1] + (hot[1] - base[1]) * h
-        const b = base[2] + (hot[2] - base[2]) * h
-        ctx.fillStyle = `rgb(${r | 0},${g | 0},${b | 0})`
-        ctx.fillRect(p.x * size, p.y * size, s, s)
-      }
-      // Attention: the pointer is the query and nearby particles are keys, with
-      // line strength falling off with distance like softmax weights
-      if (pointer.active) {
-        const reach = radius * 2.2
-        const qx = pointer.x * size
-        const qy = pointer.y * size
-        ctx.lineWidth = 1
-        for (const p of parts) {
-          const d = Math.hypot(p.x - pointer.x, p.y - pointer.y)
-          if (d >= reach) continue
-          const w = Math.pow(1 - d / reach, 2.2)
-          if (w < 0.04) continue
-          ctx.strokeStyle = `rgba(240, 136, 62, ${(w * 0.75).toFixed(3)})`
-          ctx.beginPath()
-          ctx.moveTo(qx, qy)
-          ctx.lineTo(p.x * size + s / 2, p.y * size + s / 2)
-          ctx.stroke()
-        }
-        ctx.fillStyle = '#f6eee7'
-        ctx.beginPath()
-        ctx.arc(qx, qy, 3, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
-
-    const step = now => {
-      const age = now - born
-      const R = radius
-      for (const p of parts) {
-        if (age < p.delay) continue
-        // Spring toward home
-        p.vx += (p.hx - p.x) * 0.045
-        p.vy += (p.hy - p.y) * 0.045
-        // Repel from the pointer
-        if (pointer.active) {
-          const dx = p.x - pointer.x
-          const dy = p.y - pointer.y
-          const d = Math.hypot(dx, dy)
-          if (d < R && d > 0.001) {
-            const f = (1 - d / R) * 1.4
-            p.vx += (dx / d) * f
-            p.vy += (dy / d) * f
-            p.heat = Math.min(1.4, p.heat + f * 0.35)
-          }
-        }
-        p.vx *= 0.8
-        p.vy *= 0.8
-        p.x += p.vx
-        p.y += p.vy
-        p.heat *= 0.955
-      }
-      draw()
-      frame = visible ? requestAnimationFrame(step) : 0
-    }
-
-    const toLocal = e => {
-      const r = canvas.getBoundingClientRect()
-      return [(e.clientX - r.left) / size, (e.clientY - r.top) / size]
-    }
-    const onMove = e => {
-      ;[pointer.x, pointer.y] = toLocal(e)
-      pointer.active = true
-    }
-    const onLeave = () => {
-      pointer.active = false
-    }
-    const onClick = e => {
-      const [px, py] = toLocal(e)
-      for (const p of parts) {
-        const dx = p.x - px
-        const dy = p.y - py
-        const d = Math.hypot(dx, dy) || 1
-        const f = 9 / (1 + d * 0.25)
-        p.vx += (dx / d) * f
-        p.vy += (dy / d) * f
-        p.heat = 1.3
-      }
-    }
-
-    resize()
-    const ro = new ResizeObserver(resize)
-    ro.observe(wrapEl)
-
-    if (reduced) return () => ro.disconnect()
-
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting
-      if (visible && !frame) frame = requestAnimationFrame(step)
-    })
-    io.observe(canvas)
-    canvas.addEventListener('pointermove', onMove)
-    canvas.addEventListener('pointerleave', onLeave)
-    canvas.addEventListener('click', onClick)
-    return () => {
-      ro.disconnect()
-      io.disconnect()
-      cancelAnimationFrame(frame)
-      canvas.removeEventListener('pointermove', onMove)
-      canvas.removeEventListener('pointerleave', onLeave)
-      canvas.removeEventListener('click', onClick)
-    }
-  }, [cells, width, height, tones, gap, radius])
-
-  return (
-    <div ref={wrapRef} className={className}>
-      <canvas ref={canvasRef} role="img" aria-label={label} className="block w-full touch-pan-y" data-cursor="click" />
-    </div>
   )
 }

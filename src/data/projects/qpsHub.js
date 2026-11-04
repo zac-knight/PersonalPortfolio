@@ -5,6 +5,8 @@ const base = import.meta.env.BASE_URL
 
 const qpsHub = {
   title: 'QPS Post Course Resource Hub',
+  // Screenshot frame shape (the captures are 1918 × ~988)
+  aspect: '1918 / 988',
   category: 'QUT Capstone × Queensland Police Service',
   tagline: 'Centralised learning continuity for Queensland Police investigators.',
   description:

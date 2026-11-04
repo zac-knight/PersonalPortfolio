@@ -95,7 +95,7 @@ export default function Skills() {
       <div className="px-6 sm:px-12 lg:px-20 xl:px-28 pb-14 sm:pb-20">
         <Reveal className="grid grid-cols-1 lg:grid-cols-2 rounded-lg border border-line bg-panel/70 overflow-hidden">
           <div className="flex flex-col border-b lg:border-b-0 lg:border-r border-line">
-            <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 py-12 sm:py-20">
+            <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 py-12 sm:py-20 lg:py-10">
               <p className="text-[13px] uppercase tracking-wide text-body">Model to interface</p>
               <h3 className="font-serif text-ink text-3xl mt-3">
                 <SplitText text="Train it. Serve it." /> <SplitText delay={250} className="italic text-flame" text="Ship it." />
@@ -107,12 +107,12 @@ export default function Skills() {
             </div>
             <StatRow stats={STATS} className="border-t border-line" />
           </div>
-          <div className="flex items-center justify-center p-10 sm:p-14">
+          <div className="flex items-center justify-center p-10 sm:p-14 lg:p-8">
             <PixelArt
               {...art}
               pulse
               tones={['#e8e2d9', '#5d5953']}
-              className="w-full max-w-[460px]"
+              className="w-full max-w-[460px] lg:max-w-[400px]"
               label="Pixel art neural network"
             />
           </div>
@@ -123,11 +123,11 @@ export default function Skills() {
             <Reveal
               key={cat.key}
               delay={i * 80}
-              className={`spot p-6 bg-panel/40 border-line ${i > 0 ? 'border-t sm:border-t-0' : ''} ${
+              className={`spot p-6 lg:p-5 bg-panel/40 border-line ${i > 0 ? 'border-t sm:border-t-0' : ''} ${
                 i % 2 === 1 ? 'sm:border-l' : ''
               } ${i >= 2 ? 'sm:border-t xl:border-t-0' : ''} ${i === 2 ? 'xl:border-l' : ''}`}
             >
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center justify-between mb-5 lg:mb-4">
                 <p className="font-mono text-[13px]">
                   <span className="text-mute">~/skills/</span>
                   <span className="text-ink">{cat.key}</span>

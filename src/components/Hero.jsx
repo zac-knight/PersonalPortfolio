@@ -1,10 +1,7 @@
-import { useMemo } from 'react'
 import { TypeAnimation } from 'react-type-animation'
 import { Button, Eyebrow, Painted, Window } from './ui'
-import { ParticleArt, Scan, SplitText } from './fx'
-import { monogram } from '../lib/pixels'
-
-const TONES = ['#8f8a83', '#55514b']
+import { SplitText } from './fx'
+import VisionPipeline from './VisionPipeline'
 
 const CREDENTIALS = [
   {
@@ -30,8 +27,6 @@ const CREDENTIALS = [
 ]
 
 export default function Hero() {
-  const art = useMemo(() => monogram(), [])
-
   return (
     <section id="hero">
       <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr]">
@@ -76,17 +71,15 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Monogram */}
-        <div className="relative hidden lg:flex flex-col items-center justify-center gap-6 px-10 py-16 border-l border-line overflow-hidden">
+        {/* Live computer vision pipeline */}
+        <div className="relative flex flex-col items-center justify-center gap-4 lg:gap-5 px-4 sm:px-12 lg:px-10 pt-2 pb-10 lg:py-14 lg:border-l border-line overflow-hidden">
           <div aria-hidden className="absolute w-[70%] aspect-square rounded-full bg-flame/10 blur-[90px] float" />
-          <ParticleArt
-            {...art}
-            tones={TONES}
-            className="relative w-full max-w-[420px]"
-            label="Interactive pixel art ZK monogram"
-          />
-          <p className="rise relative font-mono text-[11px] uppercase tracking-[0.2em] text-mute" style={{ '--d': '1400ms' }}>
-            hover to attend · click to perturb
+          <div className="rise relative w-full max-w-[440px]" style={{ '--d': '300ms' }}>
+            <VisionPipeline />
+          </div>
+          <p className="rise relative font-mono text-[11px] uppercase tracking-[0.2em] text-mute text-center" style={{ '--d': '600ms' }}>
+            <span className="hidden lg:inline">hover to pause · pick a stage or photo</span>
+            <span className="lg:hidden">tap a stage or photo · ‹ › to browse</span>
           </p>
         </div>
       </div>
@@ -115,13 +108,11 @@ export default function Hero() {
         <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8 zoom-group">
           <div className="w-full max-w-[420px]">
             <Window title="industry_night.jpg" className="w-full rounded-b-none border-b-0">
-              <Scan>
-                <img
-                  src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
-                  alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
-                  className="w-full aspect-[3/2] object-cover"
-                />
-              </Scan>
+              <img
+                src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
+                alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
+                className="w-full aspect-[3/2] object-cover"
+              />
             </Window>
           </div>
         </Painted>

@@ -9,7 +9,7 @@ import { useInViewOnce } from '../lib/motion'
 export function Hatch({ className = 'h-10 sm:h-14', tag, label }) {
   const [ref, shown] = useInViewOnce(0.6)
   return (
-    <div ref={ref} aria-hidden className={`hatch relative border-y border-line ${className} ${shown ? 'hatch-in' : ''}`}>
+    <div ref={ref} aria-hidden className={`hatch relative overflow-hidden border-y border-line ${className} ${shown ? 'hatch-in' : ''}`}>
       {label && (
         <>
           <span className="hatch-line absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-flame to-transparent" />
@@ -352,12 +352,12 @@ export function StatRow({ stats, className = '' }) {
       {stats.map((s, i) => (
         <div
           key={s.label}
-          className={`spot px-5 sm:px-6 py-5 sm:py-6 border-line ${i > 0 ? 'sm:border-l' : ''} ${
+          className={`spot px-5 sm:px-6 py-5 sm:py-6 lg:py-4 short:py-3 border-line ${i > 0 ? 'sm:border-l' : ''} ${
             i % 2 === 1 ? 'border-l' : ''
           } ${i >= 2 ? 'border-t sm:border-t-0' : ''}`}
         >
-          <p className="text-[11px] sm:text-xs uppercase tracking-wide text-mute min-h-[2.8em]">{s.label}</p>
-          <p className="mt-2 sm:mt-4 text-2xl sm:text-3xl text-ink tabular-nums"><CountUp value={s.value} /></p>
+          <p className="text-[11px] sm:text-xs uppercase tracking-wide text-mute min-h-[2.8em] lg:min-h-0">{s.label}</p>
+          <p className="mt-2 sm:mt-4 lg:mt-2 text-2xl sm:text-3xl lg:text-[26px] text-ink tabular-nums"><CountUp value={s.value} /></p>
         </div>
       ))}
     </div>

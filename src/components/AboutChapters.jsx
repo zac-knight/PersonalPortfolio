@@ -1,6 +1,6 @@
 import { FaArrowRight } from 'react-icons/fa'
 import { Expandable, Painted, Reveal, Window } from './ui'
-import { Scan, SplitText } from './fx'
+import { SplitText } from './fx'
 
 const base = import.meta.env.BASE_URL
 
@@ -156,9 +156,7 @@ function Figure({ src, file, alt, caption, variant, position = 'object-center' }
     <figure className="zoom-group" data-cursor="view">
       <Painted variant={variant} className="px-4 pt-4 rounded-t-lg">
         <Window title={file} className="rounded-b-none border-b-0">
-          <Scan>
-            <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] object-cover ${position}`} />
-          </Scan>
+          <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] object-cover ${position}`} />
         </Window>
       </Painted>
       <figcaption className="px-4 py-3 text-[13px] text-body border border-t-0 border-line rounded-b-lg bg-panel/50">
