@@ -36,8 +36,8 @@ export default function Hero() {
             <Eyebrow tag="Now">Master of AI @ QUT · open to AI, data &amp; software roles</Eyebrow>
           </div>
           <h1 className="font-serif text-ink text-[42px] sm:text-6xl xl:text-[68px] leading-[1.05] tracking-tight max-w-3xl">
-            <SplitText play delay={120} stagger={70} text="AI student and builder, learning to make systems that" />{' '}
-            <SplitText play delay={820} className="italic text-flame" text="learn." />
+            <SplitText play delay={120} stagger={70} text="AI student and builder, making systems that" />{' '}
+            <SplitText play delay={620} className="italic text-flame" text="learn." />
           </h1>
           <p style={{ '--d': '240ms' }} className="rise text-body text-base sm:text-lg leading-relaxed max-w-2xl">
             I&apos;m Zac, a Computer Science graduate and Master of Artificial Intelligence
