@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { FaUsers, FaTools, FaCode, FaProjectDiagram, FaShieldAlt, FaStore, FaSeedling } from 'react-icons/fa'
 import { motion } from 'framer-motion'
+import { TypeLines } from './fx'
 import { IconBox, LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
 import useCompact from '../lib/useCompact'
 
@@ -233,18 +234,13 @@ export default function Experience() {
                 <p className="text-mute mb-3">
                   → at <span className="text-flame">{exp.company}</span> · {exp.type.toLowerCase()}
                 </p>
-                <ul key={active} className="flex flex-col gap-2">
-                  {points.map((point, i) => (
-                    <li
-                      key={i}
-                      className="pixel flex gap-2.5 text-ink/90"
-                      style={{ animationDelay: `${i * 90}ms` }}
-                    >
-                      <span className="text-live shrink-0">✓</span>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
+                {/* Points are typed out line by line, like a live log */}
+                <TypeLines
+                  key={active}
+                  lines={points}
+                  className="flex flex-col gap-2"
+                  lineClass="flex gap-2.5 text-ink/90"
+                />
                 {compact && hidden > 0 && (
                   <button
                     onClick={() => setShowAll(v => !v)}

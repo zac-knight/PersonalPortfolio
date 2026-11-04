@@ -7,9 +7,20 @@ import {
 import { finePointer, prefersReduced, useInViewOnce } from '../lib/motion'
 
 // ── Intro ─────────────────────────────────────────────────────────────────────
-// A one-per-session curtain: a counter runs to 100 while the name rises, then
-// the panel wipes upward to reveal the page. The hero waits via --intro.
+// A one-per-session curtain styled as a training run: epochs tick up while the
+// loss curve falls and accuracy climbs, then the panel wipes upward to reveal
+// the page. The hero waits via --intro.
 const INTRO_MS = 1700
+const EPOCHS = 100
+
+// Deterministic jitter so the curve looks like a real (noisy) run
+const jitter = i => ((Math.sin(i * 12.9898) * 43758.5453) % 1)
+const lossAt = t => 2.4 * Math.exp(-4.2 * t) + 0.035
+const CURVE_PATH = Array.from({ length: 61 }, (_, i) => {
+  const t = i / 60
+  const l = lossAt(t) * (1 + jitter(i + 1) * 0.12 * (1 - t * 0.7))
+  return `${i ? 'L' : 'M'}${(t * 300).toFixed(1)},${(100 - (l / 2.6) * 96).toFixed(1)}`
+}).join(' ')
 
 export function Intro() {
   const [show] = useState(() => {
@@ -39,7 +50,7 @@ export function Intro() {
     let frame
     const tick = now => {
       const t = Math.min(1, (now - start) / (INTRO_MS - 500))
-      setCount(Math.round(100 * (1 - Math.pow(1 - t, 3))))
+      setCount(1 - Math.pow(1 - t, 3))
       if (t < 1) frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
@@ -59,11 +70,16 @@ export function Intro() {
 
   if (gone) return null
   const name = 'Zac Knight'
+  const epoch = Math.round(count * EPOCHS)
+  const loss = lossAt(count)
+  const acc = 99.1 * (1 - Math.exp(-4.6 * count))
   return (
     <div aria-hidden className="intro fixed inset-0 z-[100] bg-canvas flex flex-col justify-between p-6 sm:p-12">
-      <div className="flex justify-between font-mono text-[12px] uppercase tracking-wide text-mute">
-        <span>zacknight.dev</span>
-        <span>Brisbane, AU</span>
+      <div className="flex justify-between font-mono text-[12px] tracking-wide text-mute">
+        <span>
+          <span className="text-live">$</span> python train.py --model zac
+        </span>
+        <span className="hidden sm:inline uppercase">Brisbane, AU</span>
       </div>
       <h2 className="font-serif text-ink text-[18vw] sm:text-[13vw] leading-[0.9] tracking-tight overflow-hidden pb-[0.08em]">
         {[...name].map((ch, i) => (
@@ -72,13 +88,38 @@ export function Intro() {
           </span>
         ))}
       </h2>
-      <div className="flex items-end justify-between">
-        <span className="font-mono text-[12px] uppercase tracking-wide text-mute">loading model weights</span>
-        <span className="font-serif text-ink text-6xl sm:text-8xl tabular-nums leading-none">
-          {String(count).padStart(3, '0')}
-        </span>
+      <div className="flex items-end justify-between gap-6">
+        <div className="flex flex-col gap-4 min-w-0">
+          <svg viewBox="0 0 300 100" className="w-[min(52vw,320px)] h-auto overflow-visible">
+            {[25, 50, 75].map(y => (
+              <line key={y} x1="0" x2="300" y1={y} y2={y} stroke="var(--color-line)" strokeDasharray="2 4" />
+            ))}
+            <path
+              d={CURVE_PATH}
+              fill="none"
+              stroke="var(--color-flame)"
+              strokeWidth="2"
+              pathLength="1"
+              strokeDasharray="1"
+              strokeDashoffset={1 - count}
+            />
+            <circle cx={count * 300} cy={100 - (loss / 2.6) * 96} r="3.5" fill="var(--color-cream)" />
+          </svg>
+          <dl className="grid grid-cols-3 gap-x-5 sm:gap-x-10 font-mono text-[11px] sm:text-[12px] uppercase tracking-wide">
+            <div><dt className="text-mute">loss</dt><dd className="text-ink tabular-nums">{loss.toFixed(3)}</dd></div>
+            <div><dt className="text-mute">acc</dt><dd className="text-live tabular-nums">{acc.toFixed(1)}%</dd></div>
+            <div><dt className="text-mute">lr</dt><dd className="text-ink tabular-nums">3e-4</dd></div>
+          </dl>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="font-mono text-[11px] sm:text-[12px] uppercase tracking-wide text-mute mb-2">epoch</p>
+          <p className="font-serif text-ink text-5xl sm:text-8xl tabular-nums leading-none">
+            {String(epoch).padStart(3, '0')}
+            <span className="text-mute text-xl sm:text-4xl">/{EPOCHS}</span>
+          </p>
+        </div>
       </div>
-      <div className="absolute left-0 bottom-0 h-[3px] bg-gradient-to-r from-flame via-gold to-live" style={{ width: `${count}%` }} />
+      <div className="absolute left-0 bottom-0 h-[3px] bg-gradient-to-r from-flame via-gold to-live" style={{ width: `${count * 100}%` }} />
     </div>
   )
 }
@@ -191,6 +232,86 @@ export function Grain() {
 }
 
 // ── Text ──────────────────────────────────────────────────────────────────────
+// Tints cycled across words, like a tokenizer visualiser highlighting tokens
+const TOKEN_TINTS = [
+  'rgba(240, 136, 62, 0.28)',
+  'rgba(227, 179, 65, 0.26)',
+  'rgba(61, 220, 151, 0.22)',
+  'rgba(201, 162, 240, 0.26)',
+  'rgba(240, 98, 90, 0.24)',
+]
+
+// Types a list of lines out character by character, one line after another,
+// with a caret at the typing position. Untyped text is laid out invisibly so
+// the block keeps its final height while it types. Remount (key) to replay.
+const LINE_PAUSE = 14 // extra "characters" of pause before each new line
+
+export function TypeLines({ lines, className = '', lineClass = '', marker = '✓' }) {
+  const [ref, inView] = useInViewOnce(0.25)
+  const [typed, setTyped] = useState(() => (prefersReduced() ? Infinity : 0))
+
+  const starts = []
+  let total = 0
+  for (const line of lines) {
+    starts.push(total + LINE_PAUSE)
+    total += LINE_PAUSE + line.length
+  }
+
+  useEffect(() => {
+    if (!inView || prefersReduced()) return
+    // Aim for roughly 3.5s whatever the length, within a readable typing speed
+    const msPerChar = Math.min(22, Math.max(5, 3500 / total))
+    const start = performance.now()
+    let frame
+    const tick = now => {
+      const n = (now - start) / msPerChar
+      setTyped(n)
+      if (n < total) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [inView, total])
+
+  return (
+    <ul ref={ref} className={className}>
+      {lines.map((line, i) => {
+        const shown = Math.max(0, Math.min(line.length, Math.floor(typed - starts[i])))
+        const started = typed >= starts[i] - LINE_PAUSE / 2
+        const typing = started && shown < line.length
+        const last = i === lines.length - 1
+        return (
+          <li key={i} className={lineClass}>
+            <span className={`text-live shrink-0 transition-opacity duration-150 ${started ? 'opacity-100' : 'opacity-0'}`}>{marker}</span>
+            <span>
+              {line.slice(0, shown)}
+              {(typing || (last && shown === line.length && typed < Infinity)) && (
+                <span aria-hidden className="inline-block w-0 overflow-visible">
+                  <span className={`text-flame ${typing ? '' : 'caret'}`}>▍</span>
+                </span>
+              )}
+              <span className="invisible">{line.slice(shown)}</span>
+            </span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+// Hover overlay for photos: a scan line sweeps down and detection-style
+// corner brackets lock on, like an image passing through a vision model.
+export function Scan({ children, className = '', label = 'vision pass' }) {
+  return (
+    <div className={`scan relative ${className}`}>
+      {children}
+      <span aria-hidden className="scan-line" />
+      <span aria-hidden className="scan-box">
+        <span className="scan-tag">{label}</span>
+      </span>
+    </div>
+  )
+}
+
 // Splits text into words that slide up out of a mask, staggered. With `play`
 // it runs on mount (honouring the intro delay), otherwise when scrolled into view.
 export function SplitText({ text, className = '', play = false, delay = 0, stagger = 55 }) {
@@ -202,7 +323,7 @@ export function SplitText({ text, className = '', play = false, delay = 0, stagg
       {words.map((word, i) => (
         <Fragment key={i}>
           <span aria-hidden className="split-mask">
-            <span className="split-word" style={{ '--d': `${delay + i * stagger}ms` }}>
+            <span className="split-word" style={{ '--d': `${delay + i * stagger}ms`, '--tok': TOKEN_TINTS[(i + word.length) % TOKEN_TINTS.length] }}>
               {word}
             </span>
           </span>
@@ -213,50 +334,11 @@ export function SplitText({ text, className = '', play = false, delay = 0, stagg
   )
 }
 
-const GLYPHS = '01<>/{}[]#$%&*+=?ZKAI'
-
-// Decodes text from random glyphs when it enters view, and again on hover.
-export function Scramble({ text, className = '', hover = true }) {
-  const [ref, inView] = useInViewOnce(0.5)
-  const [out, setOut] = useState(text)
-  const frame = useRef(0)
-
-  const run = () => {
-    if (prefersReduced()) return
-    cancelAnimationFrame(frame.current)
-    const start = performance.now()
-    const total = 380 + text.length * 35
-    const tick = now => {
-      const t = (now - start) / total
-      const settled = Math.floor(t * text.length)
-      setOut(
-        [...text]
-          .map((ch, i) => (ch === ' ' || i < settled ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]))
-          .join('')
-      )
-      if (t < 1) frame.current = requestAnimationFrame(tick)
-      else setOut(text)
-    }
-    frame.current = requestAnimationFrame(tick)
-  }
-
-  useEffect(() => {
-    if (inView) run()
-    return () => cancelAnimationFrame(frame.current)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, text])
-
-  return (
-    <span ref={ref} className={className} onMouseEnter={hover ? run : undefined} aria-label={text}>
-      <span aria-hidden>{out}</span>
-    </span>
-  )
-}
-
 // ── Particle monogram ─────────────────────────────────────────────────────────
 // The pixel monogram as a field of particles: they fly in from scattered
-// positions, scatter away from the pointer (glowing as they heat up), and an
-// click sends a shockwave through them. Everything springs back home.
+// positions, the pointer attends to nearby particles (drawn as attention lines)
+// and pushes them away as they heat up, and a click sends a perturbation
+// through them. Everything springs back home.
 const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))
 const HOT = hex('#f0883e')
 const GOLD = hex('#e3b341')
@@ -318,6 +400,29 @@ export function ParticleArt({ cells, width, height, tones, gap = 0.2, className 
         const b = base[2] + (hot[2] - base[2]) * h
         ctx.fillStyle = `rgb(${r | 0},${g | 0},${b | 0})`
         ctx.fillRect(p.x * size, p.y * size, s, s)
+      }
+      // Attention: the pointer is the query and nearby particles are keys, with
+      // line strength falling off with distance like softmax weights
+      if (pointer.active) {
+        const reach = radius * 2.2
+        const qx = pointer.x * size
+        const qy = pointer.y * size
+        ctx.lineWidth = 1
+        for (const p of parts) {
+          const d = Math.hypot(p.x - pointer.x, p.y - pointer.y)
+          if (d >= reach) continue
+          const w = Math.pow(1 - d / reach, 2.2)
+          if (w < 0.04) continue
+          ctx.strokeStyle = `rgba(240, 136, 62, ${(w * 0.75).toFixed(3)})`
+          ctx.beginPath()
+          ctx.moveTo(qx, qy)
+          ctx.lineTo(p.x * size + s / 2, p.y * size + s / 2)
+          ctx.stroke()
+        }
+        ctx.fillStyle = '#f6eee7'
+        ctx.beginPath()
+        ctx.arc(qx, qy, 3, 0, Math.PI * 2)
+        ctx.fill()
       }
     }
 

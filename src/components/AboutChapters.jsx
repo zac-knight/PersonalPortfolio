@@ -1,6 +1,6 @@
 import { FaArrowRight } from 'react-icons/fa'
 import { Expandable, Painted, Reveal, Window } from './ui'
-import { Scramble, SplitText } from './fx'
+import { Scan, SplitText } from './fx'
 
 const base = import.meta.env.BASE_URL
 
@@ -156,7 +156,9 @@ function Figure({ src, file, alt, caption, variant, position = 'object-center' }
     <figure className="zoom-group" data-cursor="view">
       <Painted variant={variant} className="px-4 pt-4 rounded-t-lg">
         <Window title={file} className="rounded-b-none border-b-0">
-          <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] object-cover ${position}`} />
+          <Scan>
+            <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] object-cover ${position}`} />
+          </Scan>
         </Window>
       </Painted>
       <figcaption className="px-4 py-3 text-[13px] text-body border border-t-0 border-line rounded-b-lg bg-panel/50">
@@ -214,7 +216,7 @@ function Chapter({ badge, label, name, role, where, body, facts, figures = [], f
   const header = (
     <Reveal as="header" className="flex flex-col gap-3 lg:sticky lg:top-24 lg:self-start">
       <span className="w-14 h-14 rounded-md bg-cream text-canvas flex items-center justify-center font-mono text-[12px] font-medium tracking-wide transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:rotate-[-8deg] hover:scale-110">
-        <Scramble text={badge} />
+        {badge}
       </span>
       <p className="mt-2 font-mono text-[12px] uppercase tracking-wide text-mute">{label}</p>
       <h4 className="font-serif text-2xl sm:text-3xl text-ink leading-tight"><SplitText text={name} stagger={40} /></h4>

@@ -277,6 +277,78 @@ html.has-cursor * {
 }
 .split-in .split-word {
   transform: none;
+  /* Each word flashes a token highlight as it lands, like a tokenizer view */
+  animation: token-flash 1.6s ease-out both;
+  animation-delay: var(--d, 0ms);
+}
+.split-intro.split-in .split-word {
+  animation-delay: calc(var(--d, 0ms) + var(--intro, 0ms));
+}
+@keyframes token-flash {
+  0%, 55% { background-color: var(--tok, rgba(240, 136, 62, 0.25)); box-shadow: 0 0 0 0.06em var(--tok, rgba(240, 136, 62, 0.25)); }
+  100% { background-color: transparent; box-shadow: 0 0 0 0.06em transparent; }
+}
+
+/* Vision-model scan over photos on hover */
+.scan {
+  overflow: hidden;
+}
+.scan-line {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 30%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-100%);
+  background: linear-gradient(to bottom, transparent, rgba(61, 220, 151, 0.18) 85%, rgba(61, 220, 151, 0.9) 99%, transparent);
+}
+.scan:hover .scan-line {
+  animation: scan-sweep 1.4s cubic-bezier(0.45, 0, 0.55, 1) both;
+}
+@keyframes scan-sweep {
+  0% { opacity: 1; transform: translateY(-100%); }
+  85% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(340%); }
+}
+.scan-box {
+  position: absolute;
+  inset: 12%;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(1.15);
+  transition: opacity 0.3s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  --c: #3ddc97;
+  background:
+    linear-gradient(var(--c), var(--c)) left top / 18px 2px,
+    linear-gradient(var(--c), var(--c)) left top / 2px 18px,
+    linear-gradient(var(--c), var(--c)) right top / 18px 2px,
+    linear-gradient(var(--c), var(--c)) right top / 2px 18px,
+    linear-gradient(var(--c), var(--c)) left bottom / 18px 2px,
+    linear-gradient(var(--c), var(--c)) left bottom / 2px 18px,
+    linear-gradient(var(--c), var(--c)) right bottom / 18px 2px,
+    linear-gradient(var(--c), var(--c)) right bottom / 2px 18px;
+  background-repeat: no-repeat;
+}
+.scan:hover .scan-box {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.5s;
+}
+.scan-tag {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  margin-bottom: 6px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #3ddc97;
+  color: #0d0c0b;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Forward-pass signal sweeping through the neural net */
@@ -329,6 +401,30 @@ html.has-cursor * {
 .hatch-in .hatch-label {
   opacity: 1;
   transform: translate(-50%, -50%);
+}
+/* Data packets flowing along the divider line, like activations between layers */
+.hatch-packet {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 72px;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--color-flame), #fff);
+  box-shadow: 0 0 10px rgba(240, 136, 62, 0.8);
+}
+.hatch-in .hatch-packet {
+  animation: packet 4.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: calc(1.2s + var(--p, 0s));
+}
+@keyframes packet {
+  0% { opacity: 0; transform: translateX(-80px); }
+  8% { opacity: 1; }
+  60% { opacity: 1; }
+  70%, 100% { opacity: 0; transform: translateX(100vw); }
 }
 
 /* Terminal lines typed out one at a time */
@@ -398,8 +494,10 @@ html.has-cursor * {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .pixel, .caret, .rise, .overlay-in, .overlay-out, .drop-in, .painted::before,
-  .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, rect { animation: none !important; }
-  .split-word { transform: none !important; transition: none !important; }
+  .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, rect,
+  .hatch-packet, .scan-line { animation: none !important; }
+  .split-word { transform: none !important; transition: none !important; animation: none !important; }
+  .scan-box { transition: none !important; }
   .type-line { clip-path: none !important; }
   .hatch-line { transform: translateY(-50%) !important; transition: none !important; }
   .hatch-label { opacity: 1 !important; transform: translate(-50%, -50%) !important; transition: none !important; }

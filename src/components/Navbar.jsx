@@ -3,7 +3,6 @@ import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { HiMenuAlt4, HiX } from 'react-icons/hi'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Button } from './ui'
-import { Scramble } from './fx'
 
 const LINKS = ['About', 'Experience', 'Education', 'Skills', 'Projects', 'Contact']
 
@@ -13,7 +12,7 @@ export function Logo() {
       <span className="w-8 h-8 rounded-md bg-cream text-canvas flex items-center justify-center font-serif text-[15px] leading-none pt-0.5 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-[-12deg] group-hover:scale-110">
         ZK
       </span>
-      <Scramble text="zacknight.dev" className="text-[17px] tracking-tight" />
+      <span className="text-[17px] tracking-tight">zacknight.dev</span>
     </a>
   )
 }

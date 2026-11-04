@@ -197,11 +197,12 @@ export default function Education() {
                 <span className="text-ink">{group.label}</span>
                 <span className="text-mute">· {group.units.length} units</span>
               </p>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2.5 pt-2">
+              {/* Columns fill top to bottom, so the code order reads down each column */}
+              <ul className="columns-1 sm:columns-2 lg:columns-3 gap-x-8 pt-2">
                 {group.units.map((course, i) => {
                   const [code, ...name] = course.split(' ')
                   return (
-                    <li key={course} className="pixel flex gap-3 text-[13px] pt-2.5" style={{ animationDelay: `${i * 25}ms` }}>
+                    <li key={course} className="pixel break-inside-avoid flex gap-3 text-[13px] py-2.5" style={{ animationDelay: `${i * 25}ms` }}>
                       <span className="font-mono text-flame shrink-0">{code}</span>
                       <span className="text-body">{name.join(' ')}</span>
                     </li>

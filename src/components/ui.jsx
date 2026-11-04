@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import useCompact from '../lib/useCompact'
-import { Scramble, SplitText } from './fx'
+import { SplitText } from './fx'
 import { useInViewOnce } from '../lib/motion'
 
 // ── Layout ────────────────────────────────────────────────────────────────────
@@ -13,6 +13,8 @@ export function Hatch({ className = 'h-10 sm:h-14', tag, label }) {
       {label && (
         <>
           <span className="hatch-line absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-flame to-transparent" />
+          <span className="hatch-packet" />
+          <span className="hatch-packet" style={{ '--p': '2.1s' }} />
           <span className="hatch-label absolute left-1/2 top-1/2 flex items-center gap-2.5 rounded-full border border-line bg-canvas pl-1.5 pr-4 py-1 font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-ink whitespace-nowrap">
             <span className="rounded-full bg-flame text-canvas px-2 py-0.5 tracking-normal">{tag}</span>
             {label}
@@ -112,7 +114,7 @@ export function Expandable({ children, collapsed = 260, more = 'Read more', less
 export function Eyebrow({ tag, children }) {
   return (
     <div className="inline-flex w-fit items-center gap-3 rounded-md bg-panel-2/70 border border-line/60 pl-1.5 pr-3 py-1.5 text-[11px] sm:text-[13px] uppercase tracking-wide text-body">
-      <span className="rounded bg-panel-2 border border-line px-2 py-0.5 text-ink font-mono"><Scramble text={tag} /></span>
+      <span className="rounded bg-panel-2 border border-line px-2 py-0.5 text-ink font-mono">{tag}</span>
       <span>{children}</span>
     </div>
   )
