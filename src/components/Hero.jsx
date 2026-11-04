@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { TypeAnimation } from 'react-type-animation'
 import { Button, Eyebrow, Painted, Window } from './ui'
-import { ParticleArt, SplitText, Tilt } from './fx'
+import { ParticleArt, SplitText } from './fx'
 import { monogram } from '../lib/pixels'
 
 const TONES = ['#8f8a83', '#55514b']
@@ -104,7 +104,7 @@ export default function Hero() {
             >
               <a
                 href={c.href}
-                className="spot group h-full flex flex-col justify-between gap-6 px-6 sm:px-8 py-6 sm:py-8 hover:bg-panel/60 transition-colors duration-300"
+                className="spot group h-full flex flex-col justify-start gap-4 sm:gap-5 px-6 sm:px-8 py-6 sm:py-8 hover:bg-panel/60 transition-colors duration-300"
               >
                 <span className="text-[11px] sm:text-xs uppercase tracking-wide text-mute">{c.label}</span>
                 <span className="font-serif text-2xl sm:text-[28px] leading-snug text-ink transition-transform duration-500 ease-out group-hover:translate-x-1">{c.title}</span>
@@ -113,7 +113,7 @@ export default function Hero() {
           ))}
         </ul>
         <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8 zoom-group">
-          <Tilt max={6} className="w-full max-w-[420px]">
+          <div className="w-full max-w-[420px]">
             <Window title="industry_night.jpg" className="w-full rounded-b-none border-b-0">
               <img
                 src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
@@ -121,7 +121,7 @@ export default function Hero() {
                 className="w-full aspect-[3/2] object-cover"
               />
             </Window>
-          </Tilt>
+          </div>
         </Painted>
       </div>
       </div>

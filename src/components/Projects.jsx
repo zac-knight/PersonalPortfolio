@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FaArrowRight, FaPlay, FaRegFileImage } from 'react-icons/fa'
 import projects from '../data'
-import { SplitText, Tilt } from './fx'
+import { SplitText } from './fx'
 import { Button, Expandable, LiveMeta, Painted, Reveal, SectionHeader, StatRow, TabStrip, Window } from './ui'
 
 // Tab labels show the file name with any hyphens turned into spaces
@@ -89,9 +89,9 @@ function ProjectBlock({ project, onMoreDetail }) {
         </Reveal>
         <Reveal delay={120} className="min-w-0">
           <Painted variant="dusk" className="h-full flex items-center px-4 sm:px-8 xl:px-12 py-8 sm:py-12">
-            <Tilt max={5} className="w-full min-w-0">
+            <div className="w-full min-w-0">
               <ScreenshotWindow project={project} />
-            </Tilt>
+            </div>
           </Painted>
         </Reveal>
       </div>

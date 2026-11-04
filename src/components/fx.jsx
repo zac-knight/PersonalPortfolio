@@ -2,9 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import {
   motion,
   useMotionValue,
-  useScroll,
   useSpring,
-  useTransform,
 } from 'framer-motion'
 import { finePointer, prefersReduced, useInViewOnce } from '../lib/motion'
 
@@ -192,19 +190,6 @@ export function Grain() {
   return <div aria-hidden className="grain pointer-events-none fixed -inset-[50%] z-[80]" />
 }
 
-// ── Scroll progress ───────────────────────────────────────────────────────────
-export function ScrollProgress() {
-  const { scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 28, restDelta: 0.001 })
-  return (
-    <motion.div
-      aria-hidden
-      className="absolute left-0 right-0 bottom-0 h-[2px] origin-left bg-gradient-to-r from-flame via-gold to-live"
-      style={{ scaleX }}
-    />
-  )
-}
-
 // ── Text ──────────────────────────────────────────────────────────────────────
 // Splits text into words that slide up out of a mask, staggered. With `play`
 // it runs on mount (honouring the intro delay), otherwise when scrolled into view.
@@ -265,58 +250,6 @@ export function Scramble({ text, className = '', hover = true }) {
     <span ref={ref} className={className} onMouseEnter={hover ? run : undefined} aria-label={text}>
       <span aria-hidden>{out}</span>
     </span>
-  )
-}
-
-// ── Tilt ──────────────────────────────────────────────────────────────────────
-// Tilts its child in 3D toward the pointer with a moving glare highlight.
-export function Tilt({ children, className = '', max = 8, glare = true }) {
-  const ref = useRef(null)
-  const [enabled] = useState(() => finePointer() && !prefersReduced())
-  const rx = useSpring(0, { stiffness: 200, damping: 20 })
-  const ry = useSpring(0, { stiffness: 200, damping: 20 })
-  const gx = useMotionValue(50)
-  const gy = useMotionValue(50)
-  const glareBg = useTransform([gx, gy], ([a, b]) => `radial-gradient(circle at ${a}% ${b}%, rgba(255,255,255,0.16), transparent 55%)`)
-  const [hovering, setHovering] = useState(false)
-
-  if (!enabled) return <div className={className}>{children}</div>
-
-  const onMove = e => {
-    const r = ref.current.getBoundingClientRect()
-    const px = (e.clientX - r.left) / r.width
-    const py = (e.clientY - r.top) / r.height
-    ry.set((px - 0.5) * 2 * max)
-    rx.set(-(py - 0.5) * 2 * max)
-    gx.set(px * 100)
-    gy.set(py * 100)
-  }
-  const onLeave = () => {
-    rx.set(0)
-    ry.set(0)
-    setHovering(false)
-  }
-
-  return (
-    <div className={`[perspective:1200px] ${className}`}>
-      <motion.div
-        ref={ref}
-        onPointerMove={onMove}
-        onPointerEnter={() => setHovering(true)}
-        onPointerLeave={onLeave}
-        style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}
-        className="relative h-full will-change-transform"
-      >
-        {children}
-        {glare && (
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-[inherit] mix-blend-overlay transition-opacity duration-300"
-            style={{ background: glareBg, opacity: hovering ? 1 : 0 }}
-          />
-        )}
-      </motion.div>
-    </div>
   )
 }
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { MotionConfig } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Hero from './components/Hero'
@@ -36,6 +37,7 @@ function App() {
   }, [activeProject])
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen bg-canvas">
       <Intro />
       <Cursor />
@@ -43,16 +45,17 @@ function App() {
       <Navbar />
       <main>
         <Hero />
+        <Hatch tag="01" label="About" />
         <About />
-        <Hatch />
+        <Hatch tag="02" label="Experience" />
         <Experience />
-        <Hatch />
+        <Hatch tag="03" label="Education" />
         <Education />
-        <Hatch />
+        <Hatch tag="04" label="Skills" />
         <Skills />
-        <Hatch />
+        <Hatch tag="05" label="Projects" />
         <Projects onSelectProject={setActiveProject} />
-        <Hatch />
+        <Hatch tag="06" label="Contact" />
         <Contact />
       </main>
       <Footer />
@@ -63,6 +66,7 @@ function App() {
         </div>
       )}
     </div>
+    </MotionConfig>
   )
 }
 

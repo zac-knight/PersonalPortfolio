@@ -203,7 +203,7 @@ html.has-cursor * {
 
 /* Warm glow that follows the pointer across the whole page */
 .spotlight {
-  background: radial-gradient(520px circle at var(--cx, -999px) var(--cy, -999px), rgba(240, 136, 62, 0.07), transparent 60%);
+  background: radial-gradient(240px circle at var(--cx, -999px) var(--cy, -999px), rgba(240, 136, 62, 0.08), transparent 70%);
 }
 
 /* Cards that light up under the pointer (position fed from the Cursor) */
@@ -220,7 +220,7 @@ html.has-cursor * {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.4s;
-  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(246, 238, 231, 0.07), transparent 65%);
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(246, 238, 231, 0.07), transparent 65%);
 }
 .spot:hover::before {
   opacity: 1;
@@ -312,6 +312,25 @@ html.has-cursor * {
   }
 }
 
+/* Labelled section dividers */
+.hatch-line {
+  transform: translateY(-50%) scaleX(0);
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hatch-in .hatch-line {
+  transform: translateY(-50%) scaleX(1);
+}
+.hatch-label {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  transition: opacity 0.5s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: 0.35s;
+}
+.hatch-in .hatch-label {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
 /* Terminal lines typed out one at a time */
 .type-line {
   clip-path: inset(0 100% 0 0);
@@ -382,6 +401,8 @@ html.has-cursor * {
   .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, rect { animation: none !important; }
   .split-word { transform: none !important; transition: none !important; }
   .type-line { clip-path: none !important; }
+  .hatch-line { transform: translateY(-50%) !important; transition: none !important; }
+  .hatch-label { opacity: 1 !important; transform: translate(-50%, -50%) !important; transition: none !important; }
   .chip:hover, .chip:hover svg { transform: none; }
   .lift:hover, .zoom-group:hover img { transform: none; }
   .reveal { transition: none !important; opacity: 1 !important; transform: none !important; translate: none !important; filter: none !important; }

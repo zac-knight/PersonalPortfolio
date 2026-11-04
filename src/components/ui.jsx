@@ -1,10 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import useCompact from '../lib/useCompact'
 import { Scramble, SplitText } from './fx'
+import { useInViewOnce } from '../lib/motion'
 
 // ── Layout ────────────────────────────────────────────────────────────────────
-export function Hatch({ className = 'h-10 sm:h-14' }) {
-  return <div aria-hidden className={`hatch border-y border-line ${className}`} />
+// The band between sections. With `tag`/`label` it names the section that
+// follows: a flame line sweeps across and the label pops in as it scrolls into view.
+export function Hatch({ className = 'h-10 sm:h-14', tag, label }) {
+  const [ref, shown] = useInViewOnce(0.6)
+  return (
+    <div ref={ref} aria-hidden className={`hatch relative border-y border-line ${className} ${shown ? 'hatch-in' : ''}`}>
+      {label && (
+        <>
+          <span className="hatch-line absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-flame to-transparent" />
+          <span className="hatch-label absolute left-1/2 top-1/2 flex items-center gap-2.5 rounded-full border border-line bg-canvas pl-1.5 pr-4 py-1 font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-ink whitespace-nowrap">
+            <span className="rounded-full bg-flame text-canvas px-2 py-0.5 tracking-normal">{tag}</span>
+            {label}
+          </span>
+        </>
+      )}
+    </div>
+  )
 }
 
 export function Reveal({ children, className = '', delay = 0, as: Tag = 'div' }) {

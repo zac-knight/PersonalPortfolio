@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { HiMenuAlt4, HiX } from 'react-icons/hi'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Button } from './ui'
-import { Scramble, ScrollProgress } from './fx'
+import { Scramble } from './fx'
 
 const LINKS = ['About', 'Experience', 'Education', 'Skills', 'Projects', 'Contact']
 
@@ -58,6 +58,9 @@ export default function Navbar() {
     }
   }, [])
 
+  const sectionNo = id => String(LINKS.findIndex(l => l.toLowerCase() === id) + 1).padStart(2, '0')
+  const sectionName = id => LINKS.find(l => l.toLowerCase() === id)
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
     onScroll()
@@ -73,6 +76,26 @@ export default function Navbar() {
     >
       <div className="flex items-center h-16 sm:h-[72px] px-6 sm:px-12 lg:px-20 xl:px-28">
         <Logo />
+
+        {/* Current section, for widths where the nav links are hidden */}
+        <span className="hidden min-[370px]:flex sm:hidden md:flex xl:hidden items-center ml-3 h-6 overflow-hidden font-mono text-[12px] uppercase tracking-wide">
+          <AnimatePresence mode="wait" initial={false}>
+            {active && (
+              <motion.span
+                key={active}
+                initial={{ y: '110%', opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: '-110%', opacity: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="flex items-center gap-2 text-mute"
+              >
+                <span className="text-line">/</span>
+                <span className="text-flame">{sectionNo(active)}</span>
+                <span className="text-ink">{sectionName(active)}</span>
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </span>
 
         <nav className="hidden xl:flex items-center gap-7 2xl:gap-9 ml-14 2xl:ml-24 text-[15px] text-body">
           {LINKS.map(link => (
@@ -127,8 +150,6 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      <ScrollProgress />
-
       {open && (
         <nav
           aria-label="Menu"

@@ -2,7 +2,7 @@ import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { MdEmail } from 'react-icons/md'
 import { Button, Eyebrow, Expandable, LiveMeta, Painted, Reveal, Window } from './ui'
 import roles from '../data/roles'
-import { SplitText, Tilt } from './fx'
+import { SplitText } from './fx'
 import { useInViewOnce } from '../lib/motion'
 
 const CHANNELS = [
@@ -66,7 +66,7 @@ export default function Contact() {
 
       <Reveal delay={120} className="lg:border-l border-line">
         <Painted variant="meadow" className="h-full flex items-center px-4 sm:px-12 lg:px-20 xl:px-28 py-10 sm:py-16">
-          <Tilt max={5} className="w-full">
+          <div className="w-full">
           <Window title="~/contact · zsh" className="w-full">
             <div ref={termRef} className={`font-mono text-[12.5px] sm:text-[14px] leading-[2.1] px-5 sm:px-7 py-6 ${typing ? 'typing' : ''}`}>
               <p className="type-line" style={{ '--i': 0 }}>
@@ -100,7 +100,7 @@ export default function Contact() {
               </p>
             </div>
           </Window>
-          </Tilt>
+          </div>
         </Painted>
       </Reveal>
     </section>

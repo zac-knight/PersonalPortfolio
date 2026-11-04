@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
-import { Tilt } from './fx'
 
 const courses = [
   'IFB102 Introduction to Computer Systems',
@@ -164,9 +163,9 @@ export default function Education() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 sm:px-12 lg:px-20 xl:px-28">
         {DEGREES.map((degree, i) => (
           <Reveal key={degree.name} delay={i * 100} className="flex">
-            <Tilt max={4} className="flex-1">
+            <div className="flex-1">
               <DegreeCard {...degree} />
-            </Tilt>
+            </div>
           </Reveal>
         ))}
       </div>
