@@ -1,12 +1,15 @@
+import { Suspense, lazy, useState } from 'react'
 import { TypeAnimation } from 'react-type-animation'
 import { Button, Eyebrow, Painted, Window } from './ui'
 import { SplitText } from './fx'
-import VisionPipeline from './VisionPipeline'
+// Loaded separately so the rest of the page doesn't wait for the vision demo and its data
+const VisionPipeline = lazy(() => import('./VisionPipeline'))
+import Lightbox from './Lightbox'
 
 const CREDENTIALS = [
   {
     label: 'QUT Industry Project · CRDC',
-    title: 'Leading a six person team optimising a production RAG system',
+    title: "Leading a six person team on CRDC's RAG knowledge hub",
     href: '#projects',
   },
   {
@@ -26,7 +29,14 @@ const CREDENTIALS = [
   },
 ]
 
+const HERO_PHOTO = {
+  src: `${import.meta.env.BASE_URL}community/industry-night.jpg`,
+  alt: 'Zac speaking at the podium at the AIML × BANDS Industry Night',
+  caption: 'Speaking at the AIML × BANDS Industry Night.',
+}
+
 export default function Hero() {
+  const [zoomed, setZoomed] = useState(false)
   return (
     <section id="hero">
       <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr]">
@@ -72,10 +82,19 @@ export default function Hero() {
         </div>
 
         {/* Live computer vision pipeline */}
-        <div className="relative flex flex-col items-center justify-center gap-4 lg:gap-5 px-4 sm:px-12 lg:px-10 pt-2 pb-10 lg:py-14 lg:border-l border-line overflow-hidden">
+        <div className="relative flex flex-col items-center justify-center gap-4 lg:gap-5 px-4 sm:px-12 lg:px-10 pt-2 pb-10 lg:py-14 short:lg:py-6 lg:border-l border-line overflow-hidden">
           <div aria-hidden className="absolute w-[70%] aspect-square rounded-full bg-flame/10 blur-[90px] float" />
           <div className="rise relative w-full max-w-[440px]" style={{ '--d': '300ms' }}>
-            <VisionPipeline />
+            <Suspense
+              fallback={
+                <Window title="vision.py" className="w-full">
+                  <div className="aspect-[4/3] bg-[#0f0e0d] animate-pulse" />
+                  <div className="h-[200px] border-t border-line" />
+                </Window>
+              }
+            >
+              <VisionPipeline />
+            </Suspense>
           </div>
           <p className="rise relative font-mono text-[11px] uppercase tracking-[0.2em] text-mute text-center" style={{ '--d': '600ms' }}>
             <span className="hidden lg:inline">hover to pause · pick a stage or photo</span>
@@ -108,17 +127,22 @@ export default function Hero() {
         <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8 zoom-group">
           <div className="w-full max-w-[420px]">
             <Window title="industry_night.jpg" className="w-full rounded-b-none border-b-0">
-              <img
-                src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
-                alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
-                className="w-full aspect-[3/2] object-cover"
-              />
+              <button
+                type="button"
+                onClick={() => setZoomed(true)}
+                aria-label="Open industry_night.jpg full screen"
+                data-cursor="enlarge"
+                className="block w-full cursor-zoom-in"
+              >
+                <img src={HERO_PHOTO.src} alt={HERO_PHOTO.alt} className="w-full aspect-[3/2] object-cover" />
+              </button>
             </Window>
           </div>
         </Painted>
       </div>
       </div>
 
+      {zoomed && <Lightbox images={[HERO_PHOTO]} index={0} onIndex={() => {}} onClose={() => setZoomed(false)} />}
     </section>
   )
 }

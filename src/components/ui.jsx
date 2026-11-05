@@ -7,17 +7,27 @@ import { useInViewOnce } from '../lib/motion'
 // The band between sections. With `tag`/`label` it names the section that
 // follows: a flame line sweeps across and the label pops in as it scrolls into view.
 export function Hatch({ className = 'h-10 sm:h-14', tag, label }) {
-  const [ref, shown] = useInViewOnce(0.6)
+  const [ref, shown] = useInViewOnce(0.5)
   return (
-    <div ref={ref} aria-hidden className={`hatch relative overflow-hidden border-y border-line ${className} ${shown ? 'hatch-in' : ''}`}>
+    <div
+      ref={ref}
+      aria-hidden
+      className={`hatch relative overflow-hidden border-y ${label ? 'hatch-labelled h-16 sm:h-20 border-flame/25' : `border-line ${className}`} ${shown ? 'hatch-in' : ''}`}
+    >
       {label && (
         <>
-          <span className="hatch-line absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-flame to-transparent" />
+          <span className="hatch-glow" />
+          <span className="hatch-beam" />
+          <span className="hatch-line absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 bg-gradient-to-r from-transparent via-flame to-transparent" />
           <span className="hatch-packet" />
           <span className="hatch-packet" style={{ '--p': '2.1s' }} />
-          <span className="hatch-label absolute left-1/2 top-1/2 flex items-center gap-2.5 rounded-full border border-line bg-canvas pl-1.5 pr-4 py-1 font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-ink whitespace-nowrap">
-            <span className="rounded-full bg-flame text-canvas px-2 py-0.5 tracking-normal">{tag}</span>
-            {label}
+          <span className="hatch-label absolute left-1/2 top-1/2 flex items-center gap-3 rounded-full border border-flame/40 bg-canvas pl-1.5 pr-5 py-1.5 font-mono text-[12px] sm:text-[13px] uppercase tracking-[0.22em] text-ink whitespace-nowrap shadow-[0_0_30px_-6px_rgba(240,136,62,0.45)]">
+            <span className="rounded-full bg-flame text-canvas px-2.5 py-0.5 tracking-normal">{tag}</span>
+            <span>
+              {[...label].map((ch, i) => (
+                <span key={i} className="hatch-char" style={{ '--c': i }}>{ch}</span>
+              ))}
+            </span>
           </span>
         </>
       )}
@@ -140,13 +150,15 @@ export function LiveMeta({ label = 'Live', children }) {
 }
 
 export function SectionHeader({ tag, label, title, description, meta }) {
+  // The outlined number lights up when the section is entered, then settles back
+  const [ref, entered] = useInViewOnce(0.35)
   return (
-    <div className="relative overflow-hidden grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-20 pb-10 sm:pb-14">
+    <div ref={ref} className={`relative overflow-hidden grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-20 pb-10 sm:pb-14 ${entered ? 'section-entered' : ''}`}>
       <span
         aria-hidden
-        className="ghost-num pointer-events-none select-none absolute -right-4 sm:right-6 lg:right-16 -top-6 sm:-top-10 font-serif text-[9rem] sm:text-[15rem] lg:text-[19rem] leading-none"
+        className="ghost-num pointer-events-none select-none absolute right-5 sm:right-8 lg:right-16 top-3 sm:top-4 lg:-top-10 font-serif text-[5.5rem] sm:text-[8rem] lg:text-[19rem] leading-none"
       >
-        {tag}
+        <span className="ghost-glyph">{tag}</span>
       </span>
       <Reveal className="relative flex flex-col gap-6 sm:gap-8">
         <Eyebrow tag={tag}>{label}</Eyebrow>
@@ -201,11 +213,11 @@ export function Window({ title, right, children, className = '' }) {
           ))}
         </div>
         {title && (
-          <p className="ml-4 min-w-0 truncate text-[13px] text-body sm:ml-0 sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[60%]">
+          <p className={`ml-4 min-w-0 truncate text-[13px] text-body ${right ? '' : 'sm:ml-0 sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:max-w-[60%]'}`}>
             {title}
           </p>
         )}
-        {right && <div className="ml-auto">{right}</div>}
+        {right && <div className="ml-auto pl-3 shrink-0">{right}</div>}
       </div>
       {children}
     </div>

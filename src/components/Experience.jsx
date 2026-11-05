@@ -9,17 +9,17 @@ const experiences = [
   {
     title: 'Work Integrated Learning Student',
     short: 'CRDC',
-    results: [{ value: '86%', label: 'Tokens traced to one step' }, { value: '42 → 4', label: 'Model calls per question' }, { value: '6', label: 'Students led' }],
-    skills: ['RAG', 'Python', 'FastAPI', 'Postgres + pgvector', 'LLM evaluation', 'Team leadership'],
+    results: [{ value: '1,796', label: 'Automated tests' }, { value: '240', label: 'User stories' }, { value: '6', label: 'Students led' }],
+    skills: ['RAG', 'Requirements', 'Automated testing', 'Python', 'Postgres', 'Team leadership'],
     company: 'Cotton Research and Development Corporation',
     dates: 'Aug 2026 to Present',
     type: 'Work',
     Icon: FaSeedling,
     points: [
       "Leading Team 16, six QUT students across AI, Data Science and Cyber Security streams, on a QUT Industry Project extending CRDC's Cotton Knowledge Hub",
-      'Led a code level audit of the production RAG pipeline across all twelve stages, tracing about 86% of tokens read per question to a single reranking step',
-      'Designed a target architecture that cuts model calls from about 42 to 3 to 4 per question, at an estimated 95% lower cost per 1,000 questions',
-      'Ran the weekly client cadence and set up a local development stack on Groq so the team could build without touching production services',
+      'Reverse engineered the system into a 35 requirement BRD and a backlog expanded from 22 to 240 user stories, then built 1,796 automated tests that surfaced 101 bugs, 23 of them high priority',
+      'Mapped the RAG pipeline\'s nine judgment points and estimated that one relevance checking step accounts for about 86% of the AI reading per question, proposing a design that cuts it from about 40 model calls to 3 or 4',
+      'Ran the weekly client meetings and set up a local environment from the Supabase backup, so the team could work without touching production services',
     ],
   },
   {

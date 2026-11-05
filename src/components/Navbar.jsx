@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { HiMenuAlt4, HiX } from 'react-icons/hi'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -20,16 +20,38 @@ export function Logo() {
 export default function Navbar() {
   const [open, setOpen] = useState(false)
 
-  // Full-screen menu: lock page scroll, close on Escape or when the desktop nav takes over
+  const menuRef = useRef(null)
+
+  // Full-screen menu: lock page scroll, close on Escape or when the desktop nav takes over.
+  // iOS Safari ignores overflow:hidden for touch scrolling, so touch moves are also
+  // blocked unless they scroll the menu itself (and only while it has room to scroll).
   useEffect(() => {
     if (!open) return
-    document.body.style.overflow = 'hidden'
+    const root = document.documentElement
+    // Lock the root only: hiding overflow on body too would make body its own scroll
+    // container and unstick the sticky navbar
+    root.style.overflow = 'hidden'
+    let startY = 0
+    const onTouchStart = e => { startY = e.touches[0].clientY }
+    const onTouchMove = e => {
+      const menu = menuRef.current
+      if (!menu || !menu.contains(e.target)) return e.preventDefault()
+      const dy = e.touches[0].clientY - startY
+      const atTop = menu.scrollTop <= 0
+      const atBottom = menu.scrollTop + menu.clientHeight >= menu.scrollHeight - 1
+      // Nothing to scroll, or pulling past either end: don't let it reach the page
+      if (menu.scrollHeight <= menu.clientHeight || (atTop && dy > 0) || (atBottom && dy < 0)) e.preventDefault()
+    }
     const onKey = e => e.key === 'Escape' && setOpen(false)
     const onResize = () => window.innerWidth >= 1280 && setOpen(false)
+    document.addEventListener('touchstart', onTouchStart, { passive: true })
+    document.addEventListener('touchmove', onTouchMove, { passive: false })
     window.addEventListener('keydown', onKey)
     window.addEventListener('resize', onResize)
     return () => {
-      document.body.style.overflow = ''
+      root.style.overflow = ''
+      document.removeEventListener('touchstart', onTouchStart)
+      document.removeEventListener('touchmove', onTouchMove)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('resize', onResize)
     }
@@ -151,8 +173,9 @@ export default function Navbar() {
       </div>
       {open && (
         <nav
+          ref={menuRef}
           aria-label="Menu"
-          className="drop-in xl:hidden fixed inset-x-0 bottom-0 top-16 sm:top-[72px] z-40 bg-canvas flex flex-col px-6 sm:px-12 pt-8 pb-8 overflow-y-auto"
+          className="drop-in xl:hidden fixed inset-x-0 bottom-0 top-16 sm:top-[72px] z-40 bg-canvas flex flex-col px-6 sm:px-12 pt-8 pb-8 overflow-y-auto overscroll-contain"
         >
           <ul className="flex flex-col">
             {LINKS.map((link, i) => (

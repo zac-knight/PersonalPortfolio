@@ -28,12 +28,13 @@ function App() {
     setTimeout(() => {
       setActiveProject(null)
       setClosing(false)
-    }, 300)
+    }, 360)
   }, [])
 
-  // Lock page scroll while the case study overlay is open
+  // Lock page scroll while the case study overlay is open (on the root, so iOS
+  // respects it and the sticky navbar stays put)
   useEffect(() => {
-    document.body.style.overflow = activeProject ? 'hidden' : ''
+    document.documentElement.style.overflow = activeProject ? 'hidden' : ''
   }, [activeProject])
 
   return (

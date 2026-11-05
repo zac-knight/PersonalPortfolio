@@ -55,7 +55,7 @@ const SIDEBAR = [
     heading: 'In progress 2',
     items: [
       { title: 'Master of AI', sub: 'GPA 6.5 · Expected Jul 2027', time: 'Now', live: true },
-      { title: 'CRDC Industry Project', sub: 'RAG optimisation · Team lead', time: 'Now', live: true },
+      { title: 'CRDC Industry Project', sub: 'RAG system · Team lead', time: 'Now', live: true },
     ],
   },
   {

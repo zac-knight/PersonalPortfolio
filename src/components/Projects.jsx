@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FaArrowRight, FaPlay, FaRegFileImage } from 'react-icons/fa'
 import projects from '../data'
 import { SplitText } from './fx'
+import Lightbox from './Lightbox'
 import { Button, Expandable, LiveMeta, Painted, Reveal, SectionHeader, StatRow, TabStrip, Window } from './ui'
 
 // Tab labels show the file name with any hyphens turned into spaces
@@ -10,12 +11,13 @@ const fileName = (src) => decodeURIComponent(src.split('/').pop()).replace(/\s*-
 function ScreenshotWindow({ project }) {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [zoomed, setZoomed] = useState(null) // index open in the lightbox
 
   useEffect(() => {
-    if (paused) return
-    const timer = setInterval(() => setActive(i => (i + 1) % project.images.length), 4000)
+    if (paused || zoomed !== null) return
+    const timer = setInterval(() => setActive(i => (i + 1) % project.images.length), 7000)
     return () => clearInterval(timer)
-  }, [paused, project.images.length])
+  }, [paused, zoomed, project.images.length])
 
   return (
     <Window title={project.title} className="w-full min-w-0">
@@ -27,7 +29,16 @@ function ScreenshotWindow({ project }) {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       />
-      <div className="relative bg-[#0f0e0d] overflow-hidden" style={{ aspectRatio: project.aspect || '16 / 10' }}>
+      <div
+        className="relative bg-[#0f0e0d] overflow-hidden cursor-zoom-in"
+        style={{ aspectRatio: project.aspect || '16 / 10' }}
+        data-cursor="enlarge"
+        role="button"
+        tabIndex={0}
+        aria-label="Open screenshot full screen"
+        onClick={() => setZoomed(active)}
+        onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setZoomed(active))}
+      >
         <div key={active} aria-hidden className="absolute left-0 top-0 z-10 h-[2px] bg-flame/80 progress-bar" style={{ animationPlayState: paused ? 'paused' : 'running' }} />
         {project.images.map((src, i) => (
           <img
@@ -44,6 +55,14 @@ function ScreenshotWindow({ project }) {
           {String(active + 1).padStart(2, '0')} / {String(project.images.length).padStart(2, '0')}
         </span>
       </div>
+      {zoomed !== null && (
+        <Lightbox
+          images={project.images.map(src => ({ src, alt: `${project.title}: ${fileName(src).replace(/\.\w+$/, '')}`, caption: fileName(src).replace(/\.\w+$/, '') }))}
+          index={zoomed}
+          onIndex={i => setZoomed(typeof i === 'function' ? i(zoomed) : i)}
+          onClose={() => { setActive(zoomed); setZoomed(null) }}
+        />
+      )}
     </Window>
   )
 }
@@ -113,7 +132,7 @@ export default function Projects({ onSelectProject }) {
         tag="05"
         label="Projects"
         title="Real software, for real users."
-        description="Case studies from production systems built with teams, from optimising a retrieval augmented generation pipeline to delivering a full stack platform end to end."
+        description="Case studies from real systems built with teams, from reverse engineering and testing a retrieval augmented generation assistant to delivering a full stack platform end to end."
         meta={<LiveMeta label="Featured">{projects.length} case {projects.length === 1 ? 'study' : 'studies'}</LiveMeta>}
       />
 

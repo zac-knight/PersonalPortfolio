@@ -16,15 +16,15 @@ export default function Contact() {
   const [termRef, typing] = useInViewOnce(0.4)
   return (
     <section id="contact" className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
-      <Reveal className="flex flex-col justify-center gap-7 sm:gap-8 px-6 sm:px-12 lg:px-20 xl:px-28 py-16 sm:py-24">
+      <Reveal className="flex flex-col justify-center gap-7 sm:gap-8 lg:gap-5 short:gap-4 px-6 sm:px-12 lg:px-20 xl:px-28 py-16 sm:py-24 lg:py-14 short:py-10">
         <div>
           <Eyebrow tag="06">Contact</Eyebrow>
         </div>
-        <h2 className="font-serif text-ink text-4xl sm:text-6xl leading-[1.05] tracking-tight max-w-xl">
+        <h2 className="font-serif text-ink text-4xl sm:text-6xl lg:text-[54px] short:text-5xl leading-[1.05] tracking-tight max-w-xl">
           <SplitText text="Let's build something" stagger={70} />{' '}
           <SplitText delay={300} className="italic text-flame" text="together." />
         </h2>
-        <p className="text-body text-lg leading-relaxed max-w-lg">
+        <p className="text-body text-lg lg:text-base leading-relaxed max-w-lg">
           Whether you have a role, a project in mind, a question, or just want to connect,
           my inbox is always open.
         </p>
@@ -41,18 +41,18 @@ export default function Contact() {
           </Button>
         </div>
         <Expandable collapsed={170} more="Show all roles" less="Show fewer roles">
-          <div className="flex flex-col gap-5 pt-2 max-w-xl">
+          <div className="flex flex-col gap-5 lg:gap-3.5 pt-2 lg:pt-0 max-w-xl">
             {roles.map(({ group, dot, titles }) => (
               <div key={group}>
-                <p className="flex items-center gap-2 mb-3 text-[12px] uppercase tracking-wide text-mute">
+                <p className="flex items-center gap-2 mb-3 lg:mb-2 text-[12px] uppercase tracking-wide text-mute">
                   <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
                   {group}
                 </p>
-                <ul className="flex flex-wrap gap-2">
+                <ul className="flex flex-wrap gap-2 lg:gap-1.5">
                   {titles.map(title => (
                     <li
                       key={title}
-                      className="chip px-2.5 py-1.5 rounded-md border border-line bg-panel-2/50 text-[13px] text-ink/90"
+                      className="chip px-2.5 py-1.5 lg:px-2 lg:py-1 rounded-md border border-line bg-panel-2/50 text-[13px] lg:text-[12px] text-ink/90"
                     >
                       {title}
                     </li>
@@ -65,10 +65,10 @@ export default function Contact() {
       </Reveal>
 
       <Reveal delay={120} className="lg:border-l border-line">
-        <Painted variant="meadow" className="h-full flex items-center px-4 sm:px-12 lg:px-20 xl:px-28 py-10 sm:py-16">
+        <Painted variant="meadow" className="h-full flex items-center px-4 sm:px-12 lg:px-14 xl:px-20 py-10 sm:py-16 lg:py-10">
           <div className="w-full">
           <Window title="~/contact · zsh" className="w-full">
-            <div ref={termRef} className={`font-mono text-[12.5px] sm:text-[14px] leading-[2.1] px-5 sm:px-7 py-6 ${typing ? 'typing' : ''}`}>
+            <div ref={termRef} className={`font-mono text-[12.5px] sm:text-[14px] leading-[2.1] short:leading-[1.9] px-5 sm:px-7 py-6 short:py-5 ${typing ? 'typing' : ''}`}>
               <p className="type-line" style={{ '--i': 0 }}>
                 <span className="text-live">zac@brisbane</span>
                 <span className="text-mute"> ~ </span>
