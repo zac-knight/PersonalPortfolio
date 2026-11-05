@@ -20,18 +20,29 @@ function ScreenshotWindow({ project }) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    let visible = false
+    const leave = () => {
+      setOnScreen(false)
+      setActive(0)
+      setPaused(false)
+    }
+    // "On screen" means at least half the window is visible; anything less counts as leaving
     const io = new IntersectionObserver(
       ([entry]) => {
-        setOnScreen(entry.isIntersecting)
-        if (!entry.isIntersecting) {
-          setActive(0)
-          setPaused(false)
-        }
+        visible = entry.intersectionRatio >= 0.5
+        if (visible && !document.hidden) setOnScreen(true)
+        else leave()
       },
-      { threshold: 0.5 }
+      { threshold: [0, 0.5, 1] }
     )
     io.observe(el)
-    return () => io.disconnect()
+    // Switching to another browser tab also counts as leaving
+    const onVisibility = () => (document.hidden ? leave() : visible && setOnScreen(true))
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      io.disconnect()
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
   }, [])
 
   useEffect(() => {
