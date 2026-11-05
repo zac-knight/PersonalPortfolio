@@ -98,6 +98,7 @@ export default function VisionPipeline({ className = '' }) {
   const canvasRef = useRef(null)
   const wrapRef = useRef(null)
   const run = useRef({ sample: 0, stage: 0, t0: 0, touched: -Infinity, paused: false })
+  const stripRef = useRef(null)
   const [ui, setUi] = useState({ sample: 0, stage: 0 })
 
   useEffect(() => {
@@ -397,6 +398,13 @@ export default function VisionPipeline({ className = '' }) {
     }
   }, [])
 
+  useEffect(() => {
+    const strip = stripRef.current
+    const thumb = strip?.children[ui.sample]
+    if (!strip || !thumb) return
+    strip.scrollTo({ left: thumb.offsetLeft - strip.clientWidth / 2 + thumb.offsetWidth / 2, behavior: 'smooth' })
+  }, [ui.sample])
+
   const S = samples[ui.sample]
   const stage = STAGES[ui.stage]
   const jump = (sample, stageIdx, e) => run.current.api?.jump(sample, stageIdx, e.timeStamp)
@@ -602,7 +610,8 @@ export default function VisionPipeline({ className = '' }) {
         >
           ‹
         </button>
-        <div className="flex-1 grid gap-1" style={{ gridTemplateColumns: `repeat(${samples.length}, minmax(0, 1fr))` }}>
+        {/* Scrolls sideways; the current photo is kept in view */}
+        <div ref={stripRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth">
           {samples.map((s, i) => (
             <button
               key={s.slug}
@@ -610,7 +619,7 @@ export default function VisionPipeline({ className = '' }) {
               aria-label={`Run the pipeline on ${s.slug}`}
               aria-pressed={ui.sample === i}
               title={s.slug}
-              className={`h-7 rounded-sm overflow-hidden border transition-all ${
+              className={`shrink-0 w-9 h-7 rounded-sm overflow-hidden border transition-all ${
                 ui.sample === i ? 'border-flame' : 'border-line opacity-50 hover:opacity-100'
               }`}
             >
@@ -625,7 +634,7 @@ export default function VisionPipeline({ className = '' }) {
         >
           ›
         </button>
-        <span className="shrink-0 w-10 text-right font-mono text-[10px] text-mute tabular-nums">
+        <span className="shrink-0 w-11 text-right font-mono text-[10px] text-mute tabular-nums">
           {String(ui.sample + 1).padStart(2, '0')}/{samples.length}
         </span>
       </div>

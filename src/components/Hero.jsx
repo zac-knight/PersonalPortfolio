@@ -1,12 +1,14 @@
+import { useState } from 'react'
 import { TypeAnimation } from 'react-type-animation'
 import { Button, Eyebrow, Painted, Window } from './ui'
 import { SplitText } from './fx'
 import VisionPipeline from './VisionPipeline'
+import Lightbox from './Lightbox'
 
 const CREDENTIALS = [
   {
     label: 'QUT Industry Project · CRDC',
-    title: 'Leading a six person team optimising a production RAG system',
+    title: "Leading a six person team on CRDC's RAG knowledge hub",
     href: '#projects',
   },
   {
@@ -26,7 +28,14 @@ const CREDENTIALS = [
   },
 ]
 
+const HERO_PHOTO = {
+  src: `${import.meta.env.BASE_URL}community/industry-night.jpg`,
+  alt: 'Zac speaking at the podium at the AIML × BANDS Industry Night',
+  caption: 'Speaking at the AIML × BANDS Industry Night.',
+}
+
 export default function Hero() {
+  const [zoomed, setZoomed] = useState(false)
   return (
     <section id="hero">
       <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr]">
@@ -108,17 +117,22 @@ export default function Hero() {
         <Painted variant="dusk" className="border-t lg:border-t-0 lg:border-l border-line flex items-end justify-center px-8 pt-8 zoom-group">
           <div className="w-full max-w-[420px]">
             <Window title="industry_night.jpg" className="w-full rounded-b-none border-b-0">
-              <img
-                src={`${import.meta.env.BASE_URL}community/industry-night.jpg`}
-                alt="Zac speaking at the podium at the AIML × BANDS Industry Night"
-                className="w-full aspect-[3/2] object-cover"
-              />
+              <button
+                type="button"
+                onClick={() => setZoomed(true)}
+                aria-label="Open industry_night.jpg full screen"
+                data-cursor="enlarge"
+                className="block w-full cursor-zoom-in"
+              >
+                <img src={HERO_PHOTO.src} alt={HERO_PHOTO.alt} className="w-full aspect-[3/2] object-cover" />
+              </button>
             </Window>
           </div>
         </Painted>
       </div>
       </div>
 
+      {zoomed && <Lightbox images={[HERO_PHOTO]} index={0} onIndex={() => {}} onClose={() => setZoomed(false)} />}
     </section>
   )
 }

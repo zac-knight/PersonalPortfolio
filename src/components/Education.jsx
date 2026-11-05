@@ -43,6 +43,20 @@ const masterCourses = [
   'IFN521 Trust and Artificial Intelligence',
 ]
 
+// The full Master of AI unit set. Completed units carry their QUT code; the rest
+// show a status instead.
+const MASTER_UNITS = [
+  { code: 'IFN500', title: 'Introduction to Data Science', done: true },
+  { code: 'MXN500', title: 'Introduction to Statistics for Data Science', done: true },
+  { code: 'INN700', title: 'Introduction to Research', done: true },
+  { code: 'IFN521', title: 'Trust and Artificial Intelligence', done: true },
+  { title: 'Industry Project (Phases 1 and 2)', status: 'now' },
+  { title: 'Machine Learning for NLP' },
+  { title: 'Advanced Machine Learning' },
+  { title: 'Cyber Security, Risk and Governance' },
+  { title: 'Human Centred Design of IT Systems' },
+]
+
 const byCode = (a, b) => a.localeCompare(b)
 
 const UNIT_GROUPS = [
@@ -55,7 +69,6 @@ const totalUnits = courses.length + masterCourses.length
 const DISCIPLINES = [
   { label: 'Computer Science', prefixes: ['CAB'] },
   { label: 'IT', prefixes: ['IFB', 'IAB'] },
-  { label: 'Maths', prefixes: ['MXB', 'MZB'] },
   { label: 'Engineering', prefixes: ['EGB'] },
 ].map(d => ({ ...d, count: courses.filter(c => d.prefixes.includes(c.slice(0, 3))).length }))
 
@@ -71,9 +84,9 @@ const DEGREES = [
     live: true,
     name: 'Master of Artificial Intelligence',
     dates: 'Feb 2026 to Jul 2027 (expected)',
-    summary: 'Postgraduate study across data science, statistics, research methods and the responsible use of AI.',
-    unitsTitle: 'Units completed so far',
-    units: [...masterCourses].sort(byCode),
+    summary: 'Postgraduate study across advanced machine learning, NLP, data science, trust and governance in AI, human centred design, and an industry project with CRDC.',
+    unitsTitle: 'Degree units',
+    units: MASTER_UNITS,
     facts: [
       ['Level', 'Postgraduate'],
       ['Progress', `${masterCourses.length} units completed`],
@@ -108,11 +121,16 @@ function DegreeCard({ file, variant, status, live, name, dates, summary, unitsTi
             <p className="mb-4 lg:mb-2.5 text-[12px] uppercase tracking-wide text-mute">{unitsTitle}</p>
             <ul className="flex flex-col gap-2.5 lg:gap-1.5 short:gap-1">
               {units.map(unit => {
-                const [code, ...title] = unit.split(' ')
+                // Units are "CODE Title" strings, or { code?, title, done?, status? }
+                const u = typeof unit === 'string'
+                  ? { code: unit.split(' ')[0], title: unit.split(' ').slice(1).join(' '), done: true }
+                  : unit
                 return (
-                  <li key={unit} className="group/unit grid grid-cols-[64px_1fr] gap-3 text-[14px] lg:text-[13px] transition-transform duration-300 hover:translate-x-1.5">
-                    <span className="font-mono text-flame">{code}</span>
-                    <span className="text-ink/90">{title.join(' ')}</span>
+                  <li key={u.title} className="group/unit grid grid-cols-[64px_1fr] gap-3 text-[14px] lg:text-[13px] transition-transform duration-300 hover:translate-x-1.5">
+                    <span className={`font-mono ${u.code ? 'text-flame' : u.status ? 'text-live text-[11px] uppercase pt-0.5' : 'text-mute'}`}>
+                      {u.code || u.status || '·'}
+                    </span>
+                    <span className={u.done || u.status ? 'text-ink/90' : 'text-body'}>{u.title}</span>
                   </li>
                 )
               })}
@@ -156,7 +174,7 @@ export default function Education() {
         tag="03"
         label="Education"
         title="Grounded in computer science, focused on AI."
-        description="A Computer Science major from QUT, now deepening into artificial intelligence with a master's degree: theory, mathematics and plenty of shipped assignments."
+        description="A Computer Science major from QUT, now deepening into artificial intelligence with a master's degree spanning advanced machine learning, NLP, data science and an industry project with CRDC."
         meta={<LiveMeta label="Enrolled">QUT, Brisbane</LiveMeta>}
       />
 

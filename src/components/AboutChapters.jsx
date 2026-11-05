@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { FaArrowRight } from 'react-icons/fa'
 import { Expandable, Painted, Reveal, Window } from './ui'
 import { SplitText } from './fx'
+import Lightbox from './Lightbox'
 
 const base = import.meta.env.BASE_URL
 
@@ -63,12 +65,12 @@ const CHAPTERS = [
     role: 'Work Integrated Learning Student · Team Leader',
     where: 'QUT Industry Project · Aug 2026 to present',
     body: [
-      "Through a QUT Industry Project, I lead Team 16: six students across AI, Data Science and Cyber Security streams. We're extending CRDC's Cotton Knowledge Hub, a citation grounded RAG assistant over 1,995 cotton research reports from 1986 to 2025.",
-      'We audited the production retrieval pipeline end to end and traced about 86% of the tokens read per question to a single reranking step. Our target architecture cuts model calls from about 42 to 3 to 4 per question, at an estimated 95% lower cost. Implementation is planned for Semester 1, 2027.',
+      "Through a QUT Industry Project, I lead Team 16: six students across AI, Data Science and Cyber Security streams. We're working on CRDC's Cotton Knowledge Hub, a citation grounded RAG assistant over nearly 2,000 cotton research reports from 1986 to 2025.",
+      'In Phase 1 we reverse engineered the system into requirements and a 240 story backlog, built 1,796 automated tests that surfaced 101 bugs, and mapped the retrieval pipeline, estimating that one relevance checking step accounts for about 86% of the AI reading per question. Phase 2, in 2027, focuses on advanced and graph RAG and on the highest priority security fixes.',
     ],
     facts: [
       ['Program', 'QUT Industry Project · WIL'],
-      ['Focus', 'RAG · Retrieval optimisation · Evaluation'],
+      ['Focus', 'RAG · Requirements · Automated testing'],
       ['Team', '6 students · AI, Data Science, Cyber'],
     ],
     figures: [
@@ -85,7 +87,7 @@ const CHAPTERS = [
       {
         href: '#projects',
         label: 'Case study',
-        title: 'Auditing and rearchitecting a production RAG system',
+        title: 'Reverse engineering and testing a RAG system',
         body: 'Findings, the target pipeline and the cost model, in the Projects section.',
         cta: 'See the project',
       },
@@ -151,15 +153,17 @@ const CHAPTERS = [
   },
 ]
 
-function Figure({ src, file, alt, caption, variant, position = 'object-center' }) {
+function Figure({ src, file, alt, caption, variant, position = 'object-center', onOpen }) {
   return (
-    <figure className="zoom-group" data-cursor="view">
-      <Painted variant={variant} className="px-4 pt-4 rounded-t-lg">
+    <figure className="zoom-group" data-cursor="enlarge">
+      <Painted variant={variant} className="px-4 pt-4 short:px-3 short:pt-3 rounded-t-lg">
         <Window title={file} className="rounded-b-none border-b-0">
-          <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] object-cover ${position}`} />
+          <button type="button" onClick={onOpen} aria-label={`Open ${file} full screen`} className="block w-full cursor-zoom-in">
+            <img src={src} alt={alt} loading="lazy" className={`w-full aspect-[3/2] short:aspect-[16/9] object-cover ${position}`} />
+          </button>
         </Window>
       </Painted>
-      <figcaption className="px-4 py-3 text-[13px] text-body border border-t-0 border-line rounded-b-lg bg-panel/50">
+      <figcaption className="px-4 py-3 short:py-2 text-[13px] short:text-[12px] text-body border border-t-0 border-line rounded-b-lg bg-panel/50">
         {caption}
       </figcaption>
     </figure>
@@ -189,11 +193,11 @@ function FeatureCard({ href, label, title, body, cta }) {
     <a
       href={href}
       {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="lift spot group h-full rounded-lg border border-line bg-panel-2/40 hover:bg-panel-2/70 px-5 py-5 flex flex-col gap-3"
+      className="lift spot group h-full rounded-lg border border-line bg-panel-2/40 hover:bg-panel-2/70 px-5 py-5 lg:py-4 flex flex-col gap-3 lg:gap-2"
     >
       <span className="font-mono text-[11px] uppercase tracking-wide text-mute">{label}</span>
-      <span className="font-serif text-2xl text-ink leading-snug">{title}</span>
-      <span className="text-body leading-relaxed">{body}</span>
+      <span className="font-serif text-2xl lg:text-xl text-ink leading-snug">{title}</span>
+      <span className="text-body leading-relaxed lg:text-[14px] lg:leading-normal">{body}</span>
       <span className="mt-auto inline-flex items-center gap-2 text-[14px] text-ink">
         {cta}
         <FaArrowRight size={11} className="transition-transform group-hover:translate-x-1" />
@@ -207,6 +211,7 @@ function FeatureCard({ href, label, title, body, cta }) {
 const SIDE_LIMIT = 2
 
 function Chapter({ badge, label, name, role, where, body, facts, figures = [], features = [] }) {
+  const [zoomed, setZoomed] = useState(null) // figure index open full screen
   const mediaCount = figures.length + features.length
   const wide = mediaCount > SIDE_LIMIT
   const side = mediaCount > 0 && !wide
@@ -229,7 +234,7 @@ function Chapter({ badge, label, name, role, where, body, facts, figures = [], f
 
   return (
     <article
-      className={`grid grid-cols-1 gap-6 sm:gap-8 lg:gap-12 px-6 sm:px-12 lg:px-20 xl:px-28 py-10 sm:py-16 border-t border-line ${
+      className={`grid grid-cols-1 gap-6 sm:gap-8 lg:gap-12 px-6 sm:px-12 lg:px-20 xl:px-28 py-10 sm:py-16 lg:py-12 short:py-8 border-t border-line ${
         side ? 'lg:grid-cols-[260px_minmax(0,1fr)_minmax(0,0.85fr)]' : 'lg:grid-cols-[260px_minmax(0,1fr)]'
       }`}
     >
@@ -238,23 +243,18 @@ function Chapter({ badge, label, name, role, where, body, facts, figures = [], f
       <Expandable collapsed={230} more={`Read more about ${badge}`}>
 
         {wide ? (
-          <div className="flex flex-col gap-8 min-w-0">
+          <div className="flex flex-col gap-8 lg:gap-6 min-w-0">
             <Reveal delay={80} className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-8 xl:gap-10">
-              <div className="flex flex-col gap-5">{paragraphs}</div>
+              <div className="flex flex-col gap-5 lg:gap-4">{paragraphs}</div>
               <div className="xl:sticky xl:top-24 xl:self-start">
                 <Facts facts={facts} />
               </div>
             </Reveal>
-            {figures.length > 0 && (
-              <Reveal delay={120} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {figures.map(fig => <Figure key={fig.file} {...fig} />)}
-              </Reveal>
-            )}
-            {features.length > 0 && (
-              <Reveal delay={160} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {features.map(feature => <FeatureCard key={feature.title} {...feature} />)}
-              </Reveal>
-            )}
+            {/* Photos and articles share one row on wide screens */}
+            <Reveal delay={120} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 xl:gap-4">
+              {figures.map((fig, i) => <Figure key={fig.file} {...fig} onOpen={() => setZoomed(i)} />)}
+              {features.map(feature => <FeatureCard key={feature.title} {...feature} />)}
+            </Reveal>
           </div>
         ) : (
           <Reveal delay={80} className={`flex flex-col gap-5 ${side ? '' : 'max-w-3xl'}`}>
@@ -266,12 +266,20 @@ function Chapter({ badge, label, name, role, where, body, facts, figures = [], f
         )}
 
         {side && (
-          <Reveal delay={160} className="flex flex-col gap-5 min-w-0">
-            {figures.map(fig => <Figure key={fig.file} {...fig} />)}
+          <Reveal delay={160} className="flex flex-col gap-5 lg:gap-4 min-w-0">
+            {figures.map((fig, i) => <Figure key={fig.file} {...fig} onOpen={() => setZoomed(i)} />)}
             {features.map(feature => <FeatureCard key={feature.title} {...feature} />)}
           </Reveal>
         )}
       </Expandable>
+      {zoomed !== null && (
+        <Lightbox
+          images={figures.map(f => ({ src: f.src, alt: f.alt, caption: f.caption }))}
+          index={zoomed}
+          onIndex={i => setZoomed(typeof i === 'function' ? i(zoomed) : i)}
+          onClose={() => setZoomed(null)}
+        />
+      )}
     </article>
   )
 }

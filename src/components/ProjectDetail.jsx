@@ -275,7 +275,7 @@ export default function ProjectDetail({ project, onBack }) {
       )}
 
       {project.optimisations?.length > 0 && (
-        <Block tag={tag()} label="Optimisation" title="Findings and fixes">
+        <Block tag={tag()} label="Analysis" title="Findings and proposed fixes">
           <div className="rounded-lg border border-line overflow-hidden">
             {project.optimisations.map((o, i) => (
               <div
@@ -301,12 +301,12 @@ export default function ProjectDetail({ project, onBack }) {
       )}
 
       {project.comparison?.length > 0 && (
-        <Block tag={tag()} label="Target" title="Today vs target">
+        <Block tag={tag()} label="Proposal" title="Today vs proposed design">
           <div className="rounded-lg border border-line overflow-hidden text-[15px]">
             <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr] gap-6 px-6 py-3 bg-panel-2/60 text-[12px] uppercase tracking-wide text-mute">
               <span />
               <span>Today</span>
-              <span>Target</span>
+              <span>Proposed</span>
             </div>
             {project.comparison.map(c => (
               <div key={c.label} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr] gap-1 sm:gap-6 px-6 py-4 bg-panel/50 border-t border-line">
@@ -321,7 +321,7 @@ export default function ProjectDetail({ project, onBack }) {
       )}
 
       {project.keyFeatures?.length > 0 && (
-        <Block tag={tag()} label="Features" title={project.optimisations ? 'What we delivered' : 'Key features'}>
+        <Block tag={tag()} label="Features" title={project.optimisations ? 'What we did' : 'Key features'}>
           <div className="grid grid-cols-1 sm:grid-cols-2 rounded-lg border border-line overflow-hidden">
             {project.keyFeatures.map((feat, i) => (
               <div

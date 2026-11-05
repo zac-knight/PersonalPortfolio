@@ -144,16 +144,25 @@ section[id] {
 }
 
 /* Case study overlay */
-@keyframes overlay-in {
-  from { clip-path: inset(100% 0 0 0 round 32px 32px 0 0); }
-  to { clip-path: inset(0 0 0 0 round 0); }
+/* Case study overlay: the backdrop fades while the content rises gently into place */
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
 }
-@keyframes overlay-out {
-  from { clip-path: inset(0 0 0 0 round 0); opacity: 1; }
-  to { clip-path: inset(0 0 100% 0 round 0 0 32px 32px); opacity: 0.6; }
+@keyframes overlay-fade-out {
+  to { opacity: 0; }
 }
-.overlay-in { animation: overlay-in 0.75s cubic-bezier(0.77, 0, 0.18, 1) both; }
-.overlay-out { animation: overlay-out 0.3s cubic-bezier(0.7, 0, 0.84, 0) both; }
+@keyframes overlay-rise {
+  from { opacity: 0; transform: translateY(28px) scale(0.99); }
+}
+@keyframes overlay-sink {
+  to { opacity: 0; transform: translateY(14px) scale(0.995); }
+}
+/* In: the backdrop covers the page first, then the content rises once it's hidden.
+   Out: the content leaves first, then the backdrop fades to reveal the page. */
+.overlay-in { animation: overlay-fade-in 0.26s ease-out both; }
+.overlay-in > * { animation: overlay-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+.overlay-out { animation: overlay-fade-out 0.24s ease-in 0.1s both; }
+.overlay-out > * { animation: overlay-sink 0.2s ease-in both; }
 
 /* Mobile menu */
 @keyframes drop-in {
@@ -320,18 +329,22 @@ html.has-cursor * {
 
 /* Oversized parallax numerals behind section headers */
 .ghost-num {
-  -webkit-text-stroke: 1px var(--color-line);
-  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(243, 237, 230, 0.13);
+  color: rgba(240, 136, 62, 0.035);
 }
 @supports (animation-timeline: view()) {
   .ghost-num {
     animation: ghost-drift linear both;
     animation-timeline: view();
   }
+  /* On smaller screens the numeral stays put so it can't drift out of its header */
+  @media (max-width: 1023px) {
+    .ghost-num { animation: none; }
+  }
   @keyframes ghost-drift {
     from { translate: 0 30%; opacity: 0; }
     40% { opacity: 1; }
-    to { translate: 0 -30%; opacity: 0.4; }
+    to { translate: 0 -30%; opacity: 0.6; }
   }
 
   /* Painted frames parallax as they cross the viewport */
@@ -436,7 +449,21 @@ html.has-cursor * {
 
 /* Autoplay timer bar on the screenshot carousel */
 .progress-bar {
-  animation: progress 4s linear both;
+  animation: progress 7s linear both;
+}
+
+/* Full-screen image viewer */
+.lightbox {
+  animation: lightbox-in 0.25s ease-out both;
+}
+.lightbox-img {
+  animation: lightbox-img-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes lightbox-in {
+  from { opacity: 0; }
+}
+@keyframes lightbox-img-in {
+  from { opacity: 0; transform: scale(0.97); }
 }
 @keyframes progress {
   from { width: 0; }
@@ -453,8 +480,8 @@ html.has-cursor * {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .pixel, .caret, .rise, .overlay-in, .overlay-out, .drop-in, .painted::before,
-  .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, rect,
+  .pixel, .caret, .rise, .overlay-in, .overlay-out, .overlay-in > *, .overlay-out > *, .drop-in, .painted::before,
+  .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, .lightbox, .lightbox-img, rect,
   .hatch-packet, .bar-grow { animation: none !important; }
   .split-word { transform: none !important; transition: none !important; animation: none !important; }
   .type-line { clip-path: none !important; }

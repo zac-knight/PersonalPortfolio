@@ -144,7 +144,7 @@ export function SectionHeader({ tag, label, title, description, meta }) {
     <div className="relative overflow-hidden grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-20 pb-10 sm:pb-14">
       <span
         aria-hidden
-        className="ghost-num pointer-events-none select-none absolute -right-4 sm:right-6 lg:right-16 -top-6 sm:-top-10 font-serif text-[9rem] sm:text-[15rem] lg:text-[19rem] leading-none"
+        className="ghost-num pointer-events-none select-none absolute right-5 sm:right-8 lg:right-16 top-3 sm:top-4 lg:-top-10 font-serif text-[5.5rem] sm:text-[8rem] lg:text-[19rem] leading-none"
       >
         {tag}
       </span>

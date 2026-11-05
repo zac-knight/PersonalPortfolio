@@ -12,6 +12,22 @@
 //  - kind 'faces': face-api.js faces (box, 68 landmarks, expression scores).
 const vision = [
   {
+    slug: "expressions",
+    w: 960,
+    h: 720,
+    credit: {"author": "B. Cagle, C. Yan, B. White, G. Arnaiz", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Laughing_woman_in_jean_jacket_(Unsplash).jpg"},
+    kind: "faces",
+    faces: [
+      {"box": [201, 123, 80, 125], "score": 0.94, "expressions": [["happy", 1], ["sad", 0], ["angry", 0], ["disgusted", 0]], "landmarks": [[193, 169], [193, 182], [194, 194], [195, 205], [198, 217], [204, 226], [212, 233], [222, 241], [236, 246], [251, 244], [259, 239], [266, 234], [273, 225], [278, 215], [281, 204], [284, 194], [285, 183], [209, 161], [216, 159], [224, 158], [231, 159], [237, 162], [259, 165], [265, 164], [271, 164], [278, 166], [282, 170], [247, 173], [247, 180], [247, 187], [246, 193], [235, 196], [239, 198], [244, 200], [249, 199], [252, 199], [218, 170], [223, 169], [228, 170], [233, 172], [229, 173], [222, 172], [257, 175], [263, 174], [268, 175], [272, 177], [268, 178], [262, 177], [221, 210], [229, 206], [239, 205], [243, 206], [247, 206], [256, 210], [260, 216], [252, 223], [246, 226], [240, 226], [234, 224], [227, 220], [222, 210], [236, 208], [242, 209], [248, 210], [258, 216], [246, 221], [241, 221], [235, 219]]},
+      {"box": [695, 459, 94, 168], "score": 0.78, "expressions": [["neutral", 1], ["happy", 0], ["surprised", 0], ["angry", 0]], "landmarks": [[678, 535], [681, 551], [686, 567], [691, 580], [698, 594], [706, 604], [715, 612], [727, 619], [745, 623], [762, 616], [773, 607], [782, 599], [790, 585], [795, 570], [798, 556], [801, 542], [802, 525], [685, 519], [692, 513], [700, 511], [709, 512], [717, 514], [749, 512], [757, 509], [767, 507], [777, 507], [786, 511], [734, 532], [734, 544], [734, 555], [734, 564], [728, 572], [731, 573], [736, 574], [742, 572], [747, 570], [698, 531], [703, 529], [711, 528], [719, 532], [713, 535], [704, 535], [753, 529], [760, 524], [768, 524], [774, 527], [768, 531], [760, 531], [720, 594], [726, 590], [733, 587], [738, 587], [742, 585], [752, 589], [761, 591], [754, 597], [747, 601], [740, 603], [734, 602], [727, 600], [721, 594], [733, 592], [739, 592], [745, 591], [759, 591], [746, 593], [740, 595], [734, 594]]},
+      {"box": [191, 475, 91, 143], "score": 0.73, "expressions": [["surprised", 1], ["neutral", 0], ["angry", 0], ["fearful", 0]], "landmarks": [[186, 539], [188, 552], [190, 566], [194, 576], [199, 587], [206, 596], [214, 602], [225, 610], [240, 615], [254, 611], [261, 604], [268, 599], [274, 591], [281, 580], [285, 569], [288, 557], [289, 544], [198, 521], [206, 514], [215, 513], [224, 515], [232, 518], [259, 521], [265, 518], [273, 516], [281, 518], [286, 525], [245, 534], [246, 542], [247, 548], [247, 556], [236, 564], [241, 565], [245, 566], [250, 566], [253, 566], [209, 533], [215, 530], [222, 531], [228, 535], [223, 537], [215, 536], [258, 537], [265, 533], [272, 534], [276, 538], [272, 540], [264, 539], [226, 588], [233, 580], [241, 576], [245, 577], [249, 576], [256, 582], [258, 591], [253, 601], [247, 606], [240, 607], [234, 605], [229, 599], [227, 589], [239, 582], [245, 582], [249, 583], [256, 591], [246, 599], [241, 600], [236, 599]]},
+      {"box": [587, 26, 256, 299], "score": 0.34, "expressions": [["sad", 0.979], ["neutral", 0.021], ["angry", 0], ["happy", 0]], "landmarks": [[593, 101], [584, 128], [580, 157], [583, 182], [584, 209], [591, 235], [596, 262], [606, 288], [627, 311], [661, 319], [698, 313], [731, 306], [761, 291], [788, 268], [808, 242], [826, 212], [841, 183], [603, 78], [618, 77], [634, 84], [648, 95], [662, 108], [709, 130], [731, 132], [755, 136], [778, 147], [794, 165], [672, 153], [661, 174], [650, 194], [640, 214], [627, 211], [634, 222], [643, 230], [657, 232], [671, 233], [614, 115], [625, 120], [642, 126], [653, 137], [638, 136], [622, 128], [715, 165], [731, 164], [748, 172], [761, 182], [744, 183], [727, 173], [610, 238], [618, 239], [631, 245], [639, 252], [648, 254], [669, 267], [687, 278], [662, 287], [642, 287], [627, 282], [618, 273], [610, 260], [613, 240], [627, 251], [637, 258], [649, 265], [681, 277], [646, 273], [633, 268], [623, 261]]},
+    ],
+    classes: [],
+    objects: [
+    ],
+  },
+  {
     slug: "retrievers",
     w: 960,
     h: 720,
@@ -250,22 +266,6 @@ const vision = [
     ],
   },
   {
-    slug: "expressions",
-    w: 960,
-    h: 720,
-    credit: {"author": "B. Cagle, C. Yan, B. White, G. Arnaiz", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Laughing_woman_in_jean_jacket_(Unsplash).jpg"},
-    kind: "faces",
-    faces: [
-      {"box": [201, 123, 80, 125], "score": 0.94, "expressions": [["happy", 1], ["sad", 0], ["angry", 0], ["disgusted", 0]], "landmarks": [[193, 169], [193, 182], [194, 194], [195, 205], [198, 217], [204, 226], [212, 233], [222, 241], [236, 246], [251, 244], [259, 239], [266, 234], [273, 225], [278, 215], [281, 204], [284, 194], [285, 183], [209, 161], [216, 159], [224, 158], [231, 159], [237, 162], [259, 165], [265, 164], [271, 164], [278, 166], [282, 170], [247, 173], [247, 180], [247, 187], [246, 193], [235, 196], [239, 198], [244, 200], [249, 199], [252, 199], [218, 170], [223, 169], [228, 170], [233, 172], [229, 173], [222, 172], [257, 175], [263, 174], [268, 175], [272, 177], [268, 178], [262, 177], [221, 210], [229, 206], [239, 205], [243, 206], [247, 206], [256, 210], [260, 216], [252, 223], [246, 226], [240, 226], [234, 224], [227, 220], [222, 210], [236, 208], [242, 209], [248, 210], [258, 216], [246, 221], [241, 221], [235, 219]]},
-      {"box": [695, 459, 94, 168], "score": 0.78, "expressions": [["neutral", 1], ["happy", 0], ["surprised", 0], ["angry", 0]], "landmarks": [[678, 535], [681, 551], [686, 567], [691, 580], [698, 594], [706, 604], [715, 612], [727, 619], [745, 623], [762, 616], [773, 607], [782, 599], [790, 585], [795, 570], [798, 556], [801, 542], [802, 525], [685, 519], [692, 513], [700, 511], [709, 512], [717, 514], [749, 512], [757, 509], [767, 507], [777, 507], [786, 511], [734, 532], [734, 544], [734, 555], [734, 564], [728, 572], [731, 573], [736, 574], [742, 572], [747, 570], [698, 531], [703, 529], [711, 528], [719, 532], [713, 535], [704, 535], [753, 529], [760, 524], [768, 524], [774, 527], [768, 531], [760, 531], [720, 594], [726, 590], [733, 587], [738, 587], [742, 585], [752, 589], [761, 591], [754, 597], [747, 601], [740, 603], [734, 602], [727, 600], [721, 594], [733, 592], [739, 592], [745, 591], [759, 591], [746, 593], [740, 595], [734, 594]]},
-      {"box": [191, 475, 91, 143], "score": 0.73, "expressions": [["surprised", 1], ["neutral", 0], ["angry", 0], ["fearful", 0]], "landmarks": [[186, 539], [188, 552], [190, 566], [194, 576], [199, 587], [206, 596], [214, 602], [225, 610], [240, 615], [254, 611], [261, 604], [268, 599], [274, 591], [281, 580], [285, 569], [288, 557], [289, 544], [198, 521], [206, 514], [215, 513], [224, 515], [232, 518], [259, 521], [265, 518], [273, 516], [281, 518], [286, 525], [245, 534], [246, 542], [247, 548], [247, 556], [236, 564], [241, 565], [245, 566], [250, 566], [253, 566], [209, 533], [215, 530], [222, 531], [228, 535], [223, 537], [215, 536], [258, 537], [265, 533], [272, 534], [276, 538], [272, 540], [264, 539], [226, 588], [233, 580], [241, 576], [245, 577], [249, 576], [256, 582], [258, 591], [253, 601], [247, 606], [240, 607], [234, 605], [229, 599], [227, 589], [239, 582], [245, 582], [249, 583], [256, 591], [246, 599], [241, 600], [236, 599]]},
-      {"box": [587, 26, 256, 299], "score": 0.34, "expressions": [["sad", 0.979], ["neutral", 0.021], ["angry", 0], ["happy", 0]], "landmarks": [[593, 101], [584, 128], [580, 157], [583, 182], [584, 209], [591, 235], [596, 262], [606, 288], [627, 311], [661, 319], [698, 313], [731, 306], [761, 291], [788, 268], [808, 242], [826, 212], [841, 183], [603, 78], [618, 77], [634, 84], [648, 95], [662, 108], [709, 130], [731, 132], [755, 136], [778, 147], [794, 165], [672, 153], [661, 174], [650, 194], [640, 214], [627, 211], [634, 222], [643, 230], [657, 232], [671, 233], [614, 115], [625, 120], [642, 126], [653, 137], [638, 136], [622, 128], [715, 165], [731, 164], [748, 172], [761, 182], [744, 183], [727, 173], [610, 238], [618, 239], [631, 245], [639, 252], [648, 254], [669, 267], [687, 278], [662, 287], [642, 287], [627, 282], [618, 273], [610, 260], [613, 240], [627, 251], [637, 258], [649, 265], [681, 277], [646, 273], [633, 268], [623, 261]]},
-    ],
-    classes: [],
-    objects: [
-    ],
-  },
-  {
     slug: "pizza",
     w: 960,
     h: 720,
@@ -296,6 +296,591 @@ const vision = [
     classes: [["pizza", 0.918], ["plate", 0.011], ["potpie", 0.004], ["hot pot", 0.004], ["acorn squash", 0.002]],
     objects: [
       ["pizza", 9, 56, 946, 574, 0.95, "pizza", 0.96],
+    ],
+  },
+  {
+    slug: "kite",
+    w: 960,
+    h: 640,
+    credit: {"author": "Denin Williams deninwilliams", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Kite_and_exciting_beach_(Unsplash).jpg"},
+    parts: [
+      ["umbrella", 158, 488, 8, 29, 0.33],
+      ["chair", 109, 517, 20, 15, 0.32],
+      ["umbrella", 133, 491, 5, 19, 0.32],
+      ["chair", 303, 521, 16, 12, 0.31],
+      ["umbrella", 6, 434, 131, 110, 0.31],
+      ["umbrella", 444, 497, 9, 26, 0.29],
+      ["chair", 833, 529, 18, 13, 0.27],
+      ["person", 923, 513, 7, 9, 0.27],
+      ["rope", 631, 217, 187, 93, 0.25],
+      ["table", 72, 516, 30, 23, 0.25],
+    ],
+    classes: [["crane", 0.472], ["seashore", 0.29], ["sandbar", 0.021], ["airship", 0.017], ["airliner", 0.016]],
+    objects: [
+      ["person", 563, 497, 10, 24, 0.94, null, 0],
+      ["person", 555, 498, 10, 23, 0.91, null, 0],
+      ["person", 344, 495, 10, 28, 0.91, null, 0],
+      ["person", 434, 498, 9, 22, 0.88, null, 0],
+      ["person", 315, 496, 9, 25, 0.88, null, 0],
+      ["person", 807, 502, 10, 20, 0.88, null, 0],
+      ["person", 361, 463, 70, 107, 0.78, null, 0],
+      ["person", 334, 498, 8, 22, 0.76, null, 0],
+      ["person", 255, 502, 10, 17, 0.75, null, 0],
+      ["person", 242, 501, 11, 19, 0.75, null, 0],
+      ["person", 439, 500, 12, 25, 0.75, null, 0],
+      ["boat", 807, 517, 44, 17, 0.72, null, 0],
+      ["person", 324, 497, 10, 27, 0.7, null, 0],
+      ["chair", 112, 506, 21, 25, 0.65, null, 0],
+      ["chair", 72, 509, 29, 22, 0.62, null, 0],
+      ["person", 444, 504, 18, 28, 0.62, null, 0],
+      ["boat", 909, 522, 40, 18, 0.61, null, 0],
+      ["chair", 174, 509, 21, 22, 0.49, null, 0],
+      ["chair", 121, 502, 20, 34, 0.49, null, 0],
+      ["person", 251, 502, 9, 14, 0.42, null, 0],
+    ],
+  },
+  {
+    slug: "library",
+    w: 960,
+    h: 636,
+    credit: {"author": "Aleksi Tappura a", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Uppsala_Library_(Unsplash).jpg"},
+    parts: [
+      ["book", 643, 478, 14, 150, 0.33],
+      ["book", 729, 1, 104, 139, 0.32],
+      ["shelf", 404, 160, 542, 498, 0.31],
+      ["book", -16, 220, 438, 209, 0.31],
+      ["book", 113, 7, 39, 135, 0.29],
+      ["book", 482, 199, 498, 228, 0.29],
+      ["shelf", 6, -1, 944, 143, 0.29],
+      ["shelf", -13, 422, 467, 207, 0.28],
+      ["book", 130, -4, 83, 148, 0.28],
+    ],
+    classes: [["bookcase", 0.742], ["bookshop", 0.1], ["library", 0.071], ["comic book", 0.014], ["file", 0.003]],
+    objects: [
+      ["book", -2, 31, 970, 457, 0.85, "bookcase", 0.6],
+      ["book", 27, 470, 343, 166, 0.78, null, 0],
+      ["book", 531, 434, 428, 199, 0.7, null, 0],
+    ],
+  },
+  {
+    slug: "dining",
+    w: 960,
+    h: 640,
+    credit: {"author": "Nirzar Pangarkar nirzar", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Round_table_in_a_bright_room_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["dining table", 0.947], ["restaurant", 0.015], ["table lamp", 0.011], ["lampshade", 0.003], ["desk", 0.002]],
+    objects: [
+      ["chair", 373, 108, 336, 501, 0.95, "dining table", 0.63],
+      ["dining table", 18, 60, 618, 464, 0.91, "dining table", 0.94],
+      ["potted plant", 734, 49, 88, 126, 0.86, null, 0],
+      ["chair", -4, 120, 258, 454, 0.75, null, 0],
+      ["laptop", 285, 76, 150, 70, 0.71, null, 0],
+      ["potted plant", 808, 0, 146, 223, 0.68, null, 0],
+      ["chair", 35, 212, 601, 411, 0.67, null, 0],
+    ],
+  },
+  {
+    slug: "wine",
+    w: 960,
+    h: 640,
+    credit: {"author": "James Harris jharris", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Wine_glasses_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["goblet", 0.363], ["red wine", 0.323], ["wine bottle", 0.028], ["restaurant", 0.026], ["water jug", 0.01]],
+    objects: [
+      ["wine glass", 532, 36, 210, 383, 0.95, "goblet", 0.63],
+      ["wine glass", 532, 215, 229, 324, 0.87, null, 0],
+      ["cup", 168, 298, 191, 268, 0.87, null, 0],
+      ["dining table", 5, 348, 960, 287, 0.86, null, 0],
+      ["wine glass", 284, 78, 213, 500, 0.74, "goblet", 0.91],
+      ["cup", 612, 291, 181, 257, 0.65, null, 0],
+    ],
+  },
+  {
+    slug: "living",
+    w: 960,
+    h: 641,
+    credit: {"author": "Jarosław Ceborski jarson", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Living_room_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["studio couch", 0.474], ["window shade", 0.287], ["home theater", 0.025], ["dining table", 0.024], ["tub", 0.023]],
+    objects: [
+      ["potted plant", 532, 258, 108, 116, 0.97, null, 0],
+      ["chair", 383, 330, 156, 214, 0.93, null, 0],
+      ["couch", -2, 344, 245, 292, 0.83, null, 0],
+      ["tv", 814, 211, 147, 203, 0.75, "television", 0.84],
+      ["vase", 572, 329, 46, 45, 0.55, null, 0],
+    ],
+  },
+  {
+    slug: "bookshelf",
+    w: 960,
+    h: 640,
+    credit: {"author": "kazuend kazuend", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Bookshelf_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["library", 0.287], ["bookcase", 0.251], ["comic book", 0.174], ["bookshop", 0.078], ["cassette", 0.012]],
+    objects: [
+      ["book", 3, 26, 639, 385, 0.94, null, 0],
+      ["book", 321, 38, 623, 353, 0.94, "bookcase", 0.67],
+      ["book", 4, 217, 632, 414, 0.81, null, 0],
+      ["book", 874, 509, 30, 105, 0.66, null, 0],
+      ["book", 884, 385, 23, 95, 0.56, null, 0],
+      ["book", 922, 512, 27, 101, 0.55, null, 0],
+    ],
+  },
+  {
+    slug: "farmers",
+    w: 960,
+    h: 640,
+    credit: {"author": "Vishang Soni vish448", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Saskatoon_Farmers%27_Market_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["bell pepper", 0.965], ["grocery store", 0.006], ["cucumber", 0.004], ["strawberry", 0.004], ["pomegranate", 0.002]],
+    objects: [
+      ["apple", 308, 187, 334, 273, 0.95, "bell pepper", 0.93],
+      ["broccoli", 704, 412, 179, 166, 0.88, "bell pepper", 0.8],
+      ["apple", 641, 182, 306, 253, 0.71, "bell pepper", 0.82],
+      ["apple", 311, 108, 150, 140, 0.7, null, 0],
+    ],
+  },
+  {
+    slug: "piano",
+    w: 960,
+    h: 640,
+    credit: {"author": "Isaac Ibbott wanderingimagery", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Piano_reflection_(Unsplash).jpg"},
+    parts: [
+      ["person", 285, 22, 648, 619, 0.41],
+    ],
+    classes: [["grand piano", 0.367], ["electric guitar", 0.137], ["upright", 0.115], ["acoustic guitar", 0.09], ["accordion", 0.037]],
+    objects: [
+      ["keyboard", 267, 331, 234, 100, 0.84, "upright", 0.79],
+      ["person", 370, 243, 571, 307, 0.83, null, 0],
+      ["keyboard", 362, 308, 270, 141, 0.82, "upright", 0.98],
+    ],
+  },
+  {
+    slug: "keyboard",
+    w: 960,
+    h: 640,
+    credit: {"author": "Grovemade grovemade", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Apple_mouse_and_keyboard_(Unsplash).jpg"},
+    parts: [
+      ["laptop", 3, 63, 540, 311, 0.43],
+    ],
+    classes: [["computer keyboard", 0.39], ["slide rule", 0.062], ["mouse", 0.054], ["waffle iron", 0.048], ["scale", 0.033]],
+    objects: [
+      ["mouse", 544, 403, 278, 184, 1, "mouse", 0.69],
+      ["keyboard", 1, 72, 531, 313, 0.94, null, 0],
+      ["book", -1, 362, 295, 166, 0.93, null, 0],
+    ],
+  },
+  {
+    slug: "fishing",
+    w: 960,
+    h: 641,
+    credit: {"author": "Les Anderson lesanderson", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Going_fishing_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["tub", 0.068], ["cannon", 0.048], ["breakwater", 0.038], ["barrow", 0.034], ["sandbar", 0.031]],
+    objects: [
+      ["person", 477, 321, 161, 275, 0.92, null, 0],
+      ["person", 386, 250, 134, 283, 0.9, null, 0],
+      ["person", 0, 72, 408, 553, 0.86, null, 0],
+      ["boat", 331, 410, 602, 220, 0.77, null, 0],
+      ["bench", 386, 388, 517, 242, 0.77, null, 0],
+    ],
+  },
+  {
+    slug: "beach",
+    w: 960,
+    h: 587,
+    credit: {"author": "Mikael Cho mikael", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Clarity_from_above_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["alp", 0.196], ["seashore", 0.095], ["volcano", 0.071], ["ant", 0.031], ["fountain", 0.031]],
+    objects: [
+      ["kite", 210, 351, 16, 17, 0.83, null, 0],
+      ["person", 242, 317, 14, 18, 0.8, null, 0],
+      ["person", 677, 368, 8, 17, 0.78, null, 0],
+      ["kite", 451, 365, 19, 16, 0.71, null, 0],
+      ["kite", 282, 295, 15, 13, 0.6, null, 0],
+      ["kite", 237, 321, 16, 14, 0.43, null, 0],
+      ["umbrella", 57, 97, 890, 481, 0.4, null, 0],
+    ],
+  },
+  {
+    slug: "airport",
+    w: 960,
+    h: 640,
+    credit: {"author": "Ashim D’Silva randomlies", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Airport_in_the_evening_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["dock", 0.235], ["aircraft carrier", 0.054], ["seashore", 0.048], ["patio", 0.047], ["lakeside", 0.032]],
+    objects: [
+      ["airplane", 342, 241, 438, 247, 0.97, "airliner", 0.77],
+      ["boat", 261, 525, 139, 112, 0.94, "speedboat", 0.61],
+      ["truck", 423, 518, 132, 117, 0.82, null, 0],
+      ["airplane", 253, 283, 171, 60, 0.81, "airliner", 0.95],
+      ["car", 204, 332, 46, 15, 0.69, null, 0],
+      ["boat", 263, 407, 66, 40, 0.43, null, 0],
+    ],
+  },
+  {
+    slug: "dogs",
+    w: 960,
+    h: 641,
+    credit: {"author": "Janko Ferlič thepootphotographer", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Sheep_dog_and_fence_Lipoglav_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["crate", 0.749], ["worm fence", 0.137], ["barn", 0.034], ["wreck", 0.01], ["picket fence", 0.006]],
+    objects: [
+      ["dog", 394, 282, 233, 83, 0.97, "Border collie", 0.83],
+      ["bench", 167, 4, 692, 631, 0.91, "crate", 0.74],
+      ["bench", 0, 283, 206, 349, 0.79, null, 0],
+    ],
+  },
+  {
+    slug: "camping",
+    w: 960,
+    h: 640,
+    credit: {"author": "Sam X samx", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Green_tent_on_a_snow_covered_mountain_(Unsplash).jpg"},
+    parts: [
+      ["rope", 739, 456, 124, 142, 0.28],
+    ],
+    classes: [["tennis ball", 0.859], ["alp", 0.011], ["volleyball", 0.006], ["acorn", 0.006], ["Granny Smith", 0.006]],
+    objects: [
+      ["banana", 454, 319, 347, 269, 0.87, "mountain tent", 0.82],
+      ["surfboard", 465, 321, 316, 238, 0.69, "mountain tent", 0.76],
+    ],
+  },
+  {
+    slug: "zebra",
+    w: 960,
+    h: 640,
+    credit: {"author": "George Brits georgebrits_cableandgrain", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Zebra_squared_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["zebra", 0.433], ["prairie chicken", 0.404], ["cheetah", 0.009], ["leopard", 0.009], ["tiger", 0.005]],
+    objects: [
+      ["zebra", 526, 46, 294, 550, 0.99, "zebra", 0.96],
+      ["zebra", 166, 116, 179, 465, 0.95, "zebra", 0.97],
+    ],
+  },
+  {
+    slug: "picnic",
+    w: 960,
+    h: 640,
+    credit: {"author": "Bonnie Kittle bonniekdesign", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Picnic_basket_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["park bench", 0.63], ["quilt", 0.014], ["hamper", 0.013], ["panpipe", 0.012], ["ashcan", 0.01]],
+    objects: [
+      ["cup", 141, 439, 140, 152, 0.97, "measuring cup", 0.6],
+      ["vase", 402, 200, 259, 226, 0.96, null, 0],
+    ],
+  },
+  {
+    slug: "kitchen",
+    w: 960,
+    h: 577,
+    credit: {"author": "Clem Onojeghuo clemono2", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Kitchen_table_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["drum", 0.376], ["gong", 0.031], ["swab", 0.022], ["mortar", 0.017], ["steel drum", 0.013]],
+    objects: [
+      ["vase", 153, 35, 160, 286, 0.94, null, 0],
+      ["vase", 48, 121, 125, 196, 0.91, "caldron", 0.67],
+      ["knife", 560, 10, 115, 169, 0.47, null, 0],
+      ["vase", 296, 155, 191, 227, 0.43, null, 0],
+    ],
+  },
+  {
+    slug: "chess",
+    w: 960,
+    h: 640,
+    credit: {"author": "Yanni Panesa yannipanini", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Chess_on_the_Run_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["unicycle", 0.322], ["tricycle", 0.101], ["barrow", 0.093], ["shopping cart", 0.069], ["bicycle-built-for-two", 0.023]],
+    objects: [
+      ["person", 390, 238, 220, 203, 1, null, 0],
+      ["person", 681, 186, 155, 263, 0.98, null, 0],
+    ],
+  },
+  {
+    slug: "burger",
+    w: 960,
+    h: 640,
+    credit: {"author": "Markus Spiske markusspiske", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Veggie_burger_on_plate_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["cheeseburger", 0.683], ["plate", 0.061], ["ice cream", 0.041], ["bagel", 0.038], ["guacamole", 0.024]],
+    objects: [
+      ["sandwich", 442, 72, 520, 416, 0.98, "cheeseburger", 0.71],
+      ["dining table", 16, 7, 989, 598, 0.56, "cheeseburger", 0.61],
+    ],
+  },
+  {
+    slug: "surfing",
+    w: 960,
+    h: 641,
+    credit: {"author": "Valentino Funghi iampatrickpilz", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Sunset_surfing_(Unsplash).jpg"},
+    parts: [
+      ["person", 620, 397, 28, 38, 0.3],
+    ],
+    classes: [["breakwater", 0.366], ["seashore", 0.322], ["beacon", 0.078], ["speedboat", 0.017], ["liner", 0.011]],
+    objects: [
+      ["person", 622, 398, 27, 29, 0.87, null, 0],
+    ],
+  },
+  {
+    slug: "street2",
+    w: 960,
+    h: 640,
+    credit: {"author": "Lluís Domingo lluisdomingo", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Street_Food_Sandwich_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["hotdog", 0.198], ["guacamole", 0.075], ["French loaf", 0.049], ["burrito", 0.043], ["acorn squash", 0.032]],
+    objects: [
+      ["hot dog", 247, 170, 411, 450, 0.91, null, 0],
+      ["person", 498, 412, 217, 222, 0.81, null, 0],
+      ["broccoli", 426, 310, 74, 119, 0.71, null, 0],
+    ],
+  },
+  {
+    slug: "rain",
+    w: 960,
+    h: 640,
+    credit: {"author": "freddie marriage fredmarriage", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Clear_Umbrella_Rain_Liverpool_(Unsplash).jpg"},
+    parts: [
+      ["glass", 111, 139, 728, 514, 0.31],
+    ],
+    classes: [["spider web", 0.572], ["umbrella", 0.115], ["fountain", 0.046], ["chainlink fence", 0.044], ["American chameleon", 0.022]],
+    objects: [
+      ["remote", 531, 39, 426, 244, 0.78, null, 0],
+      ["umbrella", 1, 17, 950, 626, 0.44, null, 0],
+    ],
+  },
+  {
+    slug: "motorcycle",
+    w: 960,
+    h: 640,
+    credit: {"author": "Abigail", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Two_people_on_motorcycle_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["moped", 0.249], ["crash helmet", 0.198], ["mountain bike", 0.149], ["unicycle", 0.064], ["motor scooter", 0.032]],
+    objects: [
+      ["person", 268, 110, 324, 443, 1, null, 0],
+      ["motorcycle", 322, 220, 362, 305, 0.97, null, 0],
+      ["person", 221, 85, 145, 234, 0.66, null, 0],
+    ],
+  },
+  {
+    slug: "laptop",
+    w: 960,
+    h: 640,
+    credit: {"author": "Crew crew", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Desks_in_an_open_office_space_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["desk", 0.202], ["dishwasher", 0.084], ["radio", 0.054], ["desktop computer", 0.051], ["moving van", 0.048]],
+    objects: [
+      ["person", 580, 284, 176, 150, 0.99, null, 0],
+      ["laptop", 520, 364, 130, 79, 0.9, null, 0],
+      ["dining table", 8, 387, 357, 245, 0.69, null, 0],
+    ],
+  },
+  {
+    slug: "cows",
+    w: 960,
+    h: 636,
+    credit: {"author": "Kelly Sikkema kelsikkema", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Cows_Feeding_In_The_Field_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["submarine", 0.132], ["worm fence", 0.062], ["ox", 0.055], ["plow", 0.037], ["giant schnauzer", 0.033]],
+    objects: [
+      ["cow", 17, 233, 456, 386, 0.98, null, 0],
+      ["cow", 428, 209, 338, 417, 0.95, null, 0],
+      ["elephant", 52, 119, 70, 65, 0.91, null, 0],
+    ],
+  },
+  {
+    slug: "coffee",
+    w: 960,
+    h: 640,
+    credit: {"author": "Cater Yang rugeli", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Coffee_shop_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["barber chair", 0.126], ["seat belt", 0.064], ["barbershop", 0.039], ["laptop", 0.037], ["studio couch", 0.037]],
+    objects: [
+      ["cell phone", 306, 248, 302, 193, 0.98, null, 0],
+      ["potted plant", 825, 66, 130, 120, 0.8, null, 0],
+      ["chair", 123, 73, 440, 349, 0.78, null, 0],
+    ],
+  },
+  {
+    slug: "bedroom",
+    w: 960,
+    h: 640,
+    credit: {"author": "Markus Spiske markusspiske", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Hotel_bedroom_windows_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["quilt", 0.217], ["studio couch", 0.201], ["four-poster", 0.133], ["window shade", 0.133], ["wardrobe", 0.027]],
+    objects: [
+      ["bed", 156, 380, 794, 249, 0.89, null, 0],
+      ["person", 560, 440, 283, 129, 0.81, null, 0],
+      ["chair", 336, 418, 113, 105, 0.79, "binder", 0.77],
+    ],
+  },
+  {
+    slug: "guitar",
+    w: 960,
+    h: 600,
+    credit: {"author": "Dark Rider darkrider", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Guitar_on_fire_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["electric guitar", 0.347], ["volcano", 0.18], ["acoustic guitar", 0.057], ["fire screen", 0.045], ["pick", 0.019]],
+    objects: [
+      ["vase", 599, 333, 321, 237, 0.73, "volcano", 0.73],
+    ],
+  },
+  {
+    slug: "fruit",
+    w: 960,
+    h: 640,
+    credit: {"author": "Pumpkins pumpkin", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Fruit_collection_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["pineapple", 0.809], ["acorn", 0.049], ["custard apple", 0.027], ["buckeye", 0.007], ["strawberry", 0.003]],
+    objects: [
+      ["banana", 489, 359, 265, 241, 0.99, "banana", 0.66],
+    ],
+  },
+  {
+    slug: "bakery",
+    w: 960,
+    h: 640,
+    credit: {"author": "Rhett Noonan rhett_noonan", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:The_Bakery_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["bakery", 0.504], ["bagel", 0.168], ["pretzel", 0.113], ["French loaf", 0.024], ["hotdog", 0.02]],
+    objects: [
+      ["sandwich", 163, 330, 228, 126, 0.86, "French loaf", 0.87],
+      ["donut", 519, 219, 154, 134, 0.48, "French loaf", 0.9],
+      ["donut", 737, 180, 107, 84, 0.44, "French loaf", 0.91],
+    ],
+  },
+  {
+    slug: "vegetables",
+    w: 960,
+    h: 640,
+    credit: {"author": "Pavan Trikutam ptrikutam", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Decorative_Vegetables_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["altar", 0.375], ["picket fence", 0.082], ["birdhouse", 0.053], ["toyshop", 0.028], ["greenhouse", 0.026]],
+    objects: [
+    ],
+  },
+  {
+    slug: "train",
+    w: 960,
+    h: 640,
+    credit: {"author": "Piron Guillaume gpiron", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Train_Station,_Liege,_Belgium_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["radio telescope", 0.593], ["solar dish", 0.107], ["steel arch bridge", 0.066], ["coil", 0.048], ["planetarium", 0.016]],
+    objects: [
+    ],
+  },
+  {
+    slug: "harbor",
+    w: 960,
+    h: 640,
+    credit: {"author": "Anna Goncharova goanne", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Lahaina_Harbor,_Lahaina,_United_States_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["lakeside", 0.473], ["breakwater", 0.145], ["seashore", 0.056], ["cliff", 0.031], ["promontory", 0.021]],
+    objects: [
+    ],
+  },
+  {
+    slug: "elephant",
+    w: 960,
+    h: 640,
+    credit: {"author": "Jordan Donaldson - @jordi.d jordan", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Elephant_Rock,_Currumbin,_Australia_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["promontory", 0.533], ["cliff", 0.231], ["seashore", 0.055], ["beacon", 0.052], ["volcano", 0.011]],
+    objects: [
+    ],
+  },
+  {
+    slug: "donuts",
+    w: 960,
+    h: 640,
+    credit: {"author": "Web Donut webdonut", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Web_Donut_2015_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["valley", 0.435], ["lakeside", 0.162], ["dam", 0.067], ["alp", 0.026], ["promontory", 0.024]],
+    objects: [
+    ],
+  },
+  {
+    slug: "cat",
+    w: 960,
+    h: 640,
+    credit: {"author": "Linnea Sandbakk linneasandbakk", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Hairless_cat_and_a_plant_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["Mexican hairless", 0.792], ["Italian greyhound", 0.054], ["Chihuahua", 0.037], ["toy terrier", 0.016], ["Boston bull", 0.011]],
+    objects: [
+    ],
+  },
+  {
+    slug: "birds",
+    w: 960,
+    h: 636,
+    credit: {"author": "Shreyas Malavalli shreyasmalavalli", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Bengaluru_birds_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["tick", 0.762], ["parachute", 0.074], ["fly", 0.038], ["ladybug", 0.018], ["balloon", 0.012]],
+    objects: [
+    ],
+  },
+  {
+    slug: "sushi",
+    w: 960,
+    h: 640,
+    credit: {"author": "Kuba Boski kubaboski", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Sashimi_Rolls_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["cleaver", 0.279], ["envelope", 0.079], ["spatula", 0.041], ["paintbrush", 0.022], ["pencil sharpener", 0.019]],
+    objects: [
+      ["cake", 43, 157, 273, 180, 0.84, null, 0],
+    ],
+  },
+  {
+    slug: "horse",
+    w: 960,
+    h: 640,
+    credit: {"author": "Henry Chuy henrysca", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Horse_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["sorrel", 0.248], ["Ibizan hound", 0.199], ["dingo", 0.035], ["basenji", 0.028], ["whippet", 0.024]],
+    objects: [
+      ["horse", 357, 17, 258, 628, 0.98, null, 0],
+    ],
+  },
+  {
+    slug: "flowers",
+    w: 960,
+    h: 636,
+    credit: {"author": "Dominik Martin dominikmartin", "license": "CC0", "source": "https://commons.wikimedia.org/wiki/File:Flowers_in_a_glass_vase_(Unsplash).jpg"},
+    parts: [
+    ],
+    classes: [["tub", 0.142], ["bathtub", 0.105], ["safety pin", 0.038], ["fountain", 0.038], ["pot", 0.027]],
+    objects: [
+      ["vase", 425, 295, 100, 234, 0.98, null, 0],
     ],
   },
 ]
