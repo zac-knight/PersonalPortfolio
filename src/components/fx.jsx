@@ -232,15 +232,6 @@ export function Grain() {
 }
 
 // ── Text ──────────────────────────────────────────────────────────────────────
-// Tints cycled across words, like a tokenizer visualiser highlighting tokens
-const TOKEN_TINTS = [
-  'rgba(240, 136, 62, 0.28)',
-  'rgba(227, 179, 65, 0.26)',
-  'rgba(61, 220, 151, 0.22)',
-  'rgba(201, 162, 240, 0.26)',
-  'rgba(240, 98, 90, 0.24)',
-]
-
 // Types a list of lines out character by character, one line after another,
 // with a caret at the typing position. Untyped text is laid out invisibly so
 // the block keeps its final height while it types. Remount (key) to replay.
@@ -321,7 +312,7 @@ export function SplitText({ text, className = '', play = false, delay = 0, stagg
       {words.map((word, i) => (
         <Fragment key={i}>
           <span aria-hidden className="split-mask">
-            <span className="split-word" style={{ '--d': `${delay + i * stagger}ms`, '--tok': TOKEN_TINTS[(i + word.length) % TOKEN_TINTS.length] }}>
+            <span className="split-word" style={{ '--d': `${delay + i * stagger}ms` }}>
               {word}
             </span>
           </span>

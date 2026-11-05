@@ -301,16 +301,6 @@ html.has-cursor * {
 }
 .split-in .split-word {
   transform: none;
-  /* Each word flashes a token highlight as it lands, like a tokenizer view */
-  animation: token-flash 1.6s ease-out both;
-  animation-delay: var(--d, 0ms);
-}
-.split-intro.split-in .split-word {
-  animation-delay: calc(var(--d, 0ms) + var(--intro, 0ms));
-}
-@keyframes token-flash {
-  0%, 55% { background-color: var(--tok, rgba(240, 136, 62, 0.25)); box-shadow: 0 0 0 0.06em var(--tok, rgba(240, 136, 62, 0.25)); }
-  100% { background-color: transparent; box-shadow: 0 0 0 0.06em transparent; }
 }
 
 /* Classification bars fill in from zero */
@@ -331,6 +321,18 @@ html.has-cursor * {
 .ghost-num {
   -webkit-text-stroke: 1.5px rgba(243, 237, 230, 0.13);
   color: rgba(240, 136, 62, 0.035);
+}
+/* Brightens briefly when its section is entered, then settles back */
+.ghost-glyph {
+  display: inline-block;
+}
+.section-entered .ghost-glyph {
+  animation: ghost-lit 2s ease-out 0.15s both;
+}
+@keyframes ghost-lit {
+  0% { -webkit-text-stroke-color: rgba(243, 237, 230, 0.13); color: rgba(240, 136, 62, 0.035); text-shadow: none; }
+  25% { -webkit-text-stroke-color: rgba(240, 136, 62, 0.8); color: rgba(240, 136, 62, 0.16); text-shadow: 0 0 40px rgba(240, 136, 62, 0.35); }
+  100% { -webkit-text-stroke-color: rgba(243, 237, 230, 0.13); color: rgba(240, 136, 62, 0.035); text-shadow: none; }
 }
 @supports (animation-timeline: view()) {
   .ghost-num {
@@ -358,23 +360,85 @@ html.has-cursor * {
   }
 }
 
-/* Labelled section dividers */
+/* Labelled section dividers: a warm glow, a line drawing out from the centre,
+   one light beam sweeping across, and the label popping in with a ring pulse */
+.hatch-labelled {
+  background-color: rgba(240, 136, 62, 0.025);
+}
+.hatch-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 40% 120% at 50% 50%, rgba(240, 136, 62, 0.16), transparent 70%);
+  opacity: 0;
+  transition: opacity 1.2s ease-out 0.3s;
+}
+.hatch-in .hatch-glow {
+  opacity: 1;
+}
+.hatch-beam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 30%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(246, 238, 231, 0.09), transparent);
+}
+.hatch-in .hatch-beam {
+  animation: hatch-beam 1.6s cubic-bezier(0.45, 0, 0.55, 1) 0.15s both;
+}
+@keyframes hatch-beam {
+  0% { opacity: 1; transform: translateX(-100%); }
+  100% { opacity: 1; transform: translateX(340%); }
+}
 .hatch-line {
   transform: translateY(-50%) scaleX(0);
   transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 10px rgba(240, 136, 62, 0.5);
 }
 .hatch-in .hatch-line {
   transform: translateY(-50%) scaleX(1);
 }
 .hatch-label {
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.8);
-  transition: opacity 0.5s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translate(-50%, -50%) scale(0.7);
+  transition: opacity 0.5s, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   transition-delay: 0.35s;
 }
 .hatch-in .hatch-label {
   opacity: 1;
   transform: translate(-50%, -50%);
+}
+/* Ring pulse that radiates from the label as it lands */
+.hatch-label::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid rgba(240, 136, 62, 0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+.hatch-in .hatch-label::after {
+  animation: hatch-ring 1.1s ease-out 0.75s both;
+}
+@keyframes hatch-ring {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.35, 1.9); }
+}
+/* Section name types in after the label lands */
+.hatch-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(0.65s + var(--c) * 45ms);
+}
+.hatch-in .hatch-char {
+  opacity: 1;
+  transform: none;
 }
 /* Data packets flowing along the divider line, like activations between layers */
 .hatch-packet {
@@ -487,6 +551,8 @@ html.has-cursor * {
   .type-line { clip-path: none !important; }
   .hatch-line { transform: translateY(-50%) !important; transition: none !important; }
   .hatch-label { opacity: 1 !important; transform: translate(-50%, -50%) !important; transition: none !important; }
+  .hatch-char, .hatch-glow { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .hatch-beam, .hatch-label::after, .ghost-glyph { animation: none !important; }
   .chip:hover, .chip:hover svg { transform: none; }
   .lift:hover, .zoom-group:hover img { transform: none; }
   .reveal { transition: none !important; opacity: 1 !important; transform: none !important; translate: none !important; filter: none !important; }

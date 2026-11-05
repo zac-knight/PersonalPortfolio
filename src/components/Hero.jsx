@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { TypeAnimation } from 'react-type-animation'
 import { Button, Eyebrow, Painted, Window } from './ui'
 import { SplitText } from './fx'
-import VisionPipeline from './VisionPipeline'
+// Loaded separately so the rest of the page doesn't wait for the vision demo and its data
+const VisionPipeline = lazy(() => import('./VisionPipeline'))
 import Lightbox from './Lightbox'
 
 const CREDENTIALS = [
@@ -81,10 +82,19 @@ export default function Hero() {
         </div>
 
         {/* Live computer vision pipeline */}
-        <div className="relative flex flex-col items-center justify-center gap-4 lg:gap-5 px-4 sm:px-12 lg:px-10 pt-2 pb-10 lg:py-14 lg:border-l border-line overflow-hidden">
+        <div className="relative flex flex-col items-center justify-center gap-4 lg:gap-5 px-4 sm:px-12 lg:px-10 pt-2 pb-10 lg:py-14 short:lg:py-6 lg:border-l border-line overflow-hidden">
           <div aria-hidden className="absolute w-[70%] aspect-square rounded-full bg-flame/10 blur-[90px] float" />
           <div className="rise relative w-full max-w-[440px]" style={{ '--d': '300ms' }}>
-            <VisionPipeline />
+            <Suspense
+              fallback={
+                <Window title="vision.py" className="w-full">
+                  <div className="aspect-[4/3] bg-[#0f0e0d] animate-pulse" />
+                  <div className="h-[200px] border-t border-line" />
+                </Window>
+              }
+            >
+              <VisionPipeline />
+            </Suspense>
           </div>
           <p className="rise relative font-mono text-[11px] uppercase tracking-[0.2em] text-mute text-center" style={{ '--d': '600ms' }}>
             <span className="hidden lg:inline">hover to pause · pick a stage or photo</span>
