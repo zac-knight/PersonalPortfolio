@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaArrowRight, FaPlay, FaRegFileImage } from 'react-icons/fa'
 import projects from '../data'
 import { SplitText } from './fx'
@@ -12,14 +12,36 @@ function ScreenshotWindow({ project }) {
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const [zoomed, setZoomed] = useState(null) // index open in the lightbox
+  const [onScreen, setOnScreen] = useState(false)
+  const ref = useRef(null)
+
+  // Rotate only while this project is on screen; leaving resets it to the first
+  // screenshot (and clears any manual pause) so returning starts from the top
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setOnScreen(entry.isIntersecting)
+        if (!entry.isIntersecting) {
+          setActive(0)
+          setPaused(false)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   useEffect(() => {
-    if (paused || zoomed !== null) return
+    if (!onScreen || paused || zoomed !== null) return
     const timer = setInterval(() => setActive(i => (i + 1) % project.images.length), 7000)
     return () => clearInterval(timer)
-  }, [paused, zoomed, project.images.length])
+  }, [onScreen, paused, zoomed, project.images.length])
 
   return (
+    <div ref={ref} className="w-full min-w-0">
     <Window title={project.title} className="w-full min-w-0">
       <TabStrip
         items={project.images.map(fileName)}
@@ -39,7 +61,9 @@ function ScreenshotWindow({ project }) {
         onClick={() => setZoomed(active)}
         onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setZoomed(active))}
       >
-        <div key={active} aria-hidden className="absolute left-0 top-0 z-10 h-[2px] bg-flame/80 progress-bar" style={{ animationPlayState: paused ? 'paused' : 'running' }} />
+        {onScreen && (
+          <div key={active} aria-hidden className="absolute left-0 top-0 z-10 h-[2px] bg-flame/80 progress-bar" style={{ animationPlayState: paused || zoomed !== null ? 'paused' : 'running' }} />
+        )}
         {project.images.map((src, i) => (
           <img
             key={src}
@@ -64,6 +88,7 @@ function ScreenshotWindow({ project }) {
         />
       )}
     </Window>
+    </div>
   )
 }
 
