@@ -7,39 +7,62 @@ import {
 import { finePointer, prefersReduced, useInViewOnce } from '../lib/motion'
 
 // ── Intro ─────────────────────────────────────────────────────────────────────
-// A one-per-session curtain styled as autoregressive decoding: a small causal
-// transformer generates the name one token at a time, showing its top-k next-token
-// distribution and a causal attention map that fills in as the sequence grows.
-// Then the panel wipes upward to reveal the page. The hero waits via --intro.
-const INTRO_MS = 3700 // includes a deliberate 2s hold so the loading screen can be seen (keep in sync with .intro in index.css)
+// A one-per-session curtain styled as a diffusion model sampling an image: a few
+// thousand particles start as Gaussian noise and are denoised step by step until
+// they settle into the name. Then the panel wipes upward to reveal the page.
+// The hero waits via --intro.
+// About 0.5s passes before the app mounts; fading out 7s after mount over 0.9s
+// has the page fully shown ~8.4s after opening (5s of denoising, then a 2s hold)
+const INTRO_MS = 7150 // the fade-out starts at INTRO_MS - 150 (keep in sync with .intro in index.css)
+const EXIT_MS = 1200 // the cross-fade into the site (keep in sync with .intro in index.css)
+const ENTER_MS = 500 // particles and text fade in at the start
+// Ease in and out: slow to start, slow to finish
+const smooth = x => x * x * (3 - 2 * x)
+const HOLD_MS = 2000 // the finished name stays fully visible this long before the curtain lifts
+const SAMPLE_MS = INTRO_MS - 150 - HOLD_MS // denoising time
+const CHECKPOINTS = [0, 0.25, 0.5, 0.75, 1] // where the x̂₀ previews are captured
+// The noise schedule, drawn as a curve: σ falls from 1 to 0 over the sampling run
+const sigmaAt = t => Math.pow(1 - t, 2.2)
+const SCHEDULE_PATH = Array.from({ length: 41 }, (_, i) => `${i ? 'L' : 'M'}${(i / 40) * 160},${4 + (1 - sigmaAt(i / 40)) * 52}`).join(' ')
 const NAME = 'Zac Knight'
-const TOKENS = [...NAME]
-const VOCAB = 'abcdeghiklmnorstuyzACKZ '
+const STEPS = 20 // a typical DDIM run; readouts update once per step so they can be read
+const MAX_PARTICLES = 7000
+// Orange → gold → green across the name, matching the site's palette
+const RAMP = ['240,136,62', '233,160,64', '227,179,65', '160,205,98', '61,220,151']
 
-// Deterministic pseudo-random numbers, so every visit decodes the same way
-const jitter = i => Math.abs((Math.sin(i * 12.9898) * 43758.5453) % 1)
+// Deterministic pseudo-random numbers, so every visit samples the same way
+const hash = i => Math.abs((Math.sin(i * 12.9898) * 43758.5453) % 1)
+const gauss = i => Math.sqrt(-2 * Math.log(hash(i) || 1e-6)) * Math.cos(2 * Math.PI * hash(i + 0.5))
 
-// For each step: the chosen token plus two plausible runners-up, as a softmax
-const TOPK = TOKENS.map((tok, i) => {
-  const top = 0.58 + jitter(i + 3) * 0.36
-  const rest = 1 - top
-  const pick = k => {
-    let c = VOCAB[Math.floor(jitter(i * 7 + k) * VOCAB.length)]
-    for (let n = 1; c === tok || c === ' '; n++) c = VOCAB[Math.floor(jitter(i * 7 + k + n * 31) * VOCAB.length)]
-    return c
+// Points inside the rendered name, on a grid, each with its own noise vector
+function sampleName(W, H) {
+  const off = document.createElement('canvas')
+  off.width = W
+  off.height = H
+  const o = off.getContext('2d')
+  let size = Math.min(W * 0.17, H * 0.3)
+  const font = s => `400 ${s}px "Libre Caslon Display", Georgia, serif`
+  o.font = font(size)
+  while (o.measureText(NAME).width > W * 0.88) o.font = font((size *= 0.95))
+  o.textAlign = 'center'
+  o.textBaseline = 'middle'
+  o.fillStyle = '#fff'
+  o.fillText(NAME, W / 2, H * 0.47)
+  const data = o.getImageData(0, 0, W, H).data
+  const gap = Math.max(2, Math.round(size / 55))
+  const pts = []
+  for (let y = 0; y < H; y += gap)
+    for (let x = 0; x < W; x += gap) if (data[(y * W + x) * 4 + 3] > 140) pts.push([x, y])
+  const keep = Math.max(1, Math.ceil(pts.length / MAX_PARTICLES))
+  const box = pts.reduce((b, [x]) => [Math.min(b[0], x), Math.max(b[1], x)], [W, 0])
+  return {
+    gap,
+    particles: pts.filter((_, i) => i % keep === 0).map(([x, y], i) => ({
+      x, y, nx: gauss(i * 3 + 1), ny: gauss(i * 3 + 2),
+      bucket: Math.min(RAMP.length - 1, Math.floor(((x - box[0]) / Math.max(1, box[1] - box[0])) * RAMP.length)),
+    })),
   }
-  const second = rest * (0.55 + jitter(i + 11) * 0.3)
-  return [[tok, top], [pick(1), second], [pick(2), rest - second]]
-})
-// log p(sequence) after each step
-const LOGP = TOPK.reduce((acc, [[, p]]) => [...acc, (acc.at(-1) ?? 0) + Math.log(p)], [])
-// Causal attention weights: row i attends to columns 0..i, each row sums to 1
-const ATTN = TOKENS.map((_, i) => {
-  const raw = Array.from({ length: i + 1 }, (_, j) => (j === i ? 1.6 : 0.2) + jitter(i * 13 + j) * (j === 0 ? 1.4 : 1))
-  const sum = raw.reduce((x, y) => x + y, 0)
-  return raw.map(r => r / sum)
-})
-const glyph = t => (t === ' ' ? '␣' : t)
+}
 
 export function Intro() {
   const [show] = useState(() => {
@@ -55,6 +78,8 @@ export function Intro() {
   })
   const [count, setCount] = useState(0)
   const [gone, setGone] = useState(!show)
+  const canvasRef = useRef(null)
+  const thumbRefs = useRef([])
 
   useEffect(() => {
     if (!show) return
@@ -65,18 +90,78 @@ export function Intro() {
       /* ignore */
     }
     document.body.style.overflow = 'hidden'
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    const dpr = Math.min(2, window.devicePixelRatio || 1)
+    const W = window.innerWidth
+    const H = window.innerHeight
+    canvas.width = W * dpr
+    canvas.height = H * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    let cloud = null
+    // Sample the name once its font is ready (or after a short wait, falling back to Georgia)
+    Promise.race([document.fonts?.load('400 120px "Libre Caslon Display"'), new Promise(r => setTimeout(r, 250))])
+      .catch(() => {})
+      .then(() => (cloud = sampleName(W, H)))
+
     const start = performance.now()
+    const spread = Math.max(W, H) * 0.42
+    // Draw the particle cloud at progress t onto a context, scaled by k
+    const paint = (c, t, k = 1, exit = 0, enter = 1) => {
+      // Noise falls along the schedule; each step adds a little fresh noise that
+      // shrinks with it, the way a sampler's updates do
+      const step = Math.min(STEPS, Math.floor(t * STEPS))
+      const sigma = sigmaAt(t)
+      const fresh = 0.18 * sigma
+      const size = Math.max(1, cloud.gap * 0.6 * Math.max(k, 0.5))
+      c.globalAlpha = (0.35 + 0.65 * t) * (1 - smooth(exit)) * enter
+      for (let b = 0; b < RAMP.length; b++) {
+        c.fillStyle = `rgb(${RAMP[b]})`
+        for (let i = 0; i < cloud.particles.length; i++) {
+          const p = cloud.particles[i]
+          if (p.bucket !== b) continue
+          const jx = (hash(i * 7 + step) - 0.5) * 2 * fresh
+          const jy = (hash(i * 11 + step) - 0.5) * 2 * fresh
+          // On exit the particles drift back out along their noise directions, rising slightly
+          const ex = smooth(exit) * spread * 0.35
+          c.fillRect((p.x + (p.nx * sigma + jx) * spread + p.nx * ex) * k, (p.y + (p.ny * sigma + jy) * spread * 0.7 + p.ny * ex * 0.6 - smooth(exit) * 40) * k, size, size)
+        }
+      }
+      c.globalAlpha = 1
+    }
+    const captured = new Set()
     let frame
     const tick = now => {
-      const t = Math.min(1, (now - start) / (INTRO_MS - 500))
+      // the first frame's timestamp can be a moment before start, so clamp at 0
+      const t = Math.min(1, Math.max(0, (now - start) / SAMPLE_MS))
       setCount(t)
-      if (t < 1) frame = requestAnimationFrame(tick)
+      ctx.clearRect(0, 0, W, H)
+      const exit = Math.min(1, Math.max(0, (now - start - (INTRO_MS - 150)) / EXIT_MS))
+      const enter = smooth(Math.min(1, Math.max(0, (now - start) / ENTER_MS)))
+      if (cloud) {
+        paint(ctx, t, 1, exit, enter)
+        // Capture the x̂₀ preview strip as sampling passes each checkpoint
+        CHECKPOINTS.forEach((cp, i) => {
+          const th = thumbRefs.current[i]
+          if (captured.has(i) || t < cp || !th) return
+          captured.add(i)
+          const tc = th.getContext('2d')
+          th.width = th.clientWidth * dpr
+          th.height = th.clientHeight * dpr
+          tc.setTransform(dpr, 0, 0, dpr, 0, 0)
+          // frame the name: crop the middle band of the screen into the thumbnail
+          const k = th.clientWidth / W
+          tc.translate(0, th.clientHeight / 2 - H * 0.47 * k)
+          paint(tc, cp, k)
+        })
+      }
+      if (exit < 1) frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
     const done = setTimeout(() => {
       setGone(true)
       document.body.style.overflow = ''
-    }, INTRO_MS + 700)
+    }, INTRO_MS - 150 + EXIT_MS + 100)
     // Once the hero has finished entering, later .rise elements shouldn't wait
     const clear = setTimeout(() => root.style.removeProperty('--intro'), INTRO_MS + 2000)
     return () => {
@@ -88,68 +173,63 @@ export function Intro() {
   }, [show])
 
   if (gone) return null
-  const n = TOKENS.length
-  const decoded = Math.min(n, Math.floor(count * n + 0.0001)) // tokens generated so far
-  const step = Math.min(n - 1, decoded) // the step whose distribution is shown
-  const tps = decoded ? (decoded / Math.max(0.2, count * ((INTRO_MS - 500) / 1000))).toFixed(1) : '0.0'
+  // Readouts move in whole sampler steps, not every frame
+  const step = Math.min(STEPS, Math.floor(count * STEPS))
+  const stepT = step / STEPS
+  const sigma = sigmaAt(stepT)
+  const timestep = Math.round((1 - stepT) * 1000)
   return (
-    <div aria-hidden className="intro fixed inset-0 z-[100] bg-canvas flex flex-col justify-between p-6 sm:p-12">
-      <div className="flex justify-between gap-4 font-mono text-[12px] tracking-wide text-mute">
-        <span className="truncate min-w-0">
-          <span className="text-live">$</span> python generate.py --model zk-transformer --prompt "&lt;bos&gt;" --top-k 3
-        </span>
-        <span className="hidden sm:inline uppercase shrink-0">Brisbane, AU</span>
-      </div>
-      <h2 className="font-serif text-ink text-[18vw] sm:text-[13vw] leading-[0.9] tracking-tight overflow-hidden pb-[0.08em] whitespace-nowrap">
-        {TOKENS.slice(0, decoded).map((ch, i) => (
-          <span key={i} className="intro-letter inline-block" style={{ '--i': 0 }}>
-            {ch === ' ' ? '\u00a0' : ch}
-          </span>
-        ))}
-        {decoded < n && <span className="intro-caret inline-block align-baseline bg-flame" />}
-      </h2>
-      <div className="flex items-end justify-between gap-4 sm:gap-6">
-        <div className="flex flex-col gap-3 min-w-0 font-mono text-[11px] sm:text-[12px] uppercase tracking-wide">
-          <p className="text-mute">
-            next token · step {String(step + 1).padStart(2, '0')}/{n}
-          </p>
-          <ul className="flex flex-col gap-1.5 w-[min(46vw,300px)]">
-            {TOPK[step].map(([tok, p], k) => (
-              <li key={k} className="grid grid-cols-[1.5rem_1fr_3.2rem] items-center gap-3">
-                <span className={k ? 'text-body normal-case' : 'text-ink normal-case'}>{glyph(tok)}</span>
-                <span className="h-[6px] bg-line overflow-hidden">
-                  <span className={`block h-full ${k ? 'bg-mute' : 'bg-live'}`} style={{ width: `${p * 100}%` }} />
-                </span>
-                <span className={`tabular-nums text-right ${k ? 'text-body' : 'text-live'}`}>{p.toFixed(2)}</span>
-              </li>
-            ))}
-          </ul>
-          <dl className="grid grid-cols-3 gap-x-5 sm:gap-x-10 mt-1">
-            <div><dt className="text-mute">log p</dt><dd className="text-ink tabular-nums">{(decoded ? LOGP[decoded - 1] : 0).toFixed(2)}</dd></div>
-            <div><dt className="text-mute">tok/s</dt><dd className="text-live tabular-nums">{tps}</dd></div>
-            <div><dt className="text-mute">temp</dt><dd className="text-ink tabular-nums">0.7</dd></div>
-          </dl>
-        </div>
-        <div className="shrink-0 flex flex-col items-end gap-2">
-          <p className="font-mono text-[11px] sm:text-[12px] uppercase tracking-wide text-mute">
-            <span className="hidden sm:inline">causal </span>attention<span className="hidden sm:inline"> · head 0</span>
-          </p>
-          <div className="grid gap-[2px] w-[min(30vw,190px)]" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
-            {TOKENS.map((_, i) =>
-              TOKENS.map((__, j) => (
-                <span
-                  key={`${i}-${j}`}
-                  className="aspect-square transition-opacity duration-300"
-                  style={{
-                    background: j > i ? 'var(--color-line)' : 'var(--color-flame)',
-                    opacity: j > i ? 0.35 : i < decoded ? 0.12 + ATTN[i][j] * 1.6 : 0.06,
-                  }}
-                />
-              ))
-            )}
+    <div aria-hidden className="intro fixed inset-0 z-[100] bg-canvas">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+      <div className="intro-ui relative h-full flex flex-col justify-between p-6 sm:p-12 font-mono text-[11px] sm:text-[12px] tracking-wide pointer-events-none">
+        <div className="flex justify-between gap-4 text-mute">
+          <div className="min-w-0">
+            <p className="truncate">
+              <span className="text-live">$</span> python sample.py --model ddpm-unet --steps {STEPS} --cfg 7.5 --seed 42 --prompt "zac knight"
+            </p>
+            <p className="mt-1 truncate">unet · 865M params · fp16 · cuda:0 · scheduler ddim (η = 0)</p>
+            <p className={`mt-1 truncate transition-opacity duration-300 ${count >= 1 ? 'opacity-100 text-live' : 'opacity-0'}`}>
+              ✓ sample saved → zac_knight.png
+            </p>
           </div>
-          <div className="grid gap-[2px] w-[min(30vw,190px)] font-mono text-[9px] sm:text-[10px] text-mute text-center" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
-            {TOKENS.map((t, i) => <span key={i} className={i < decoded ? 'text-body' : ''}>{glyph(t)}</span>)}
+          <span className="hidden sm:inline uppercase shrink-0">Brisbane, AU</span>
+        </div>
+
+        <div className="flex flex-col gap-5">
+          {/* x̂₀ predictions, captured as sampling passes each checkpoint */}
+          <div className="flex flex-col gap-1.5 self-center w-full max-w-[640px]">
+            <p className="text-mute uppercase text-center">predicted x̂<sub>0</sub> along the trajectory</p>
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
+              {CHECKPOINTS.map((cp, i) => (
+                <div key={cp} className="flex flex-col gap-1">
+                  <canvas
+                    ref={el => (thumbRefs.current[i] = el)}
+                    className={`w-full aspect-[16/7] border transition-colors duration-300 ${count >= cp ? 'border-line' : 'border-line/40'}`}
+                  />
+                  <span className={`text-center tabular-nums ${count >= cp ? 'text-body' : 'text-mute/50'}`}>t={Math.round((1 - cp) * 1000)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-end justify-between gap-6 uppercase">
+            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 sm:gap-x-10 gap-y-2">
+              <div><dt className="text-mute">step</dt><dd className="text-ink tabular-nums">{String(step).padStart(2, '0')}/{STEPS}</dd></div>
+              <div><dt className="text-mute">timestep</dt><dd className="text-ink tabular-nums normal-case">t={timestep}</dd></div>
+              <div><dt className="text-mute"><span className="normal-case">σ</span> noise</dt><dd className="text-flame tabular-nums">{sigma.toFixed(2)}</dd></div>
+              <div><dt className="text-mute">x<sub className="normal-case">t</sub> mean / std</dt><dd className="text-live tabular-nums normal-case">{(0.02 * sigma).toFixed(2)} / {(0.08 + 0.92 * sigma).toFixed(2)}</dd></div>
+            </dl>
+            {/* The noise schedule, with the current timestep marked */}
+            <div className="hidden sm:flex flex-col items-end gap-1 shrink-0">
+              <p className="text-mute">noise schedule <span className="normal-case">σ(t)</span></p>
+              <svg viewBox="0 0 160 60" className="w-[180px] h-auto overflow-visible">
+                <line x1="0" x2="160" y1="56" y2="56" stroke="var(--color-line)" />
+                <line x1="0" x2="0" y1="4" y2="56" stroke="var(--color-line)" />
+                <path d={SCHEDULE_PATH} fill="none" stroke="var(--color-mute)" strokeWidth="1.5" />
+                <path d={SCHEDULE_PATH} fill="none" stroke="var(--color-flame)" strokeWidth="2" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - stepT} />
+                <circle cx={stepT * 160} cy={4 + (1 - sigma) * 52} r="3.5" fill="var(--color-cream)" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
