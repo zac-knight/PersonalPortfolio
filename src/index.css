@@ -21,6 +21,7 @@
   --color-flame: #f0883e;
   --color-gold: #e3b341;
   --color-rose: #f0625a;
+  --color-sky: #60a5fa; /* OCR text boxes in the vision demo */
 }
 
 :root {
@@ -267,14 +268,24 @@ html.has-cursor * {
 
 /* Intro curtain */
 .intro {
-  animation: intro-out 0.9s cubic-bezier(0.77, 0, 0.18, 1) 1.55s both;
+  animation: intro-out 0.9s cubic-bezier(0.77, 0, 0.18, 1) 3.55s both; /* INTRO_MS (fx.jsx) minus 150ms */
 }
 @keyframes intro-out {
   to { clip-path: inset(0 0 100% 0); }
 }
 .intro-letter {
-  animation: letter-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--i) * 45ms + 100ms);
+  animation: letter-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 45ms);
+}
+/* Decoding cursor: a block that blinks where the next token will appear */
+.intro-caret {
+  width: 0.08em;
+  height: 0.72em;
+  margin-left: 0.04em;
+  animation: caret-blink 0.9s steps(1, end) infinite;
+}
+@keyframes caret-blink {
+  50% { opacity: 0; }
 }
 @keyframes letter-up {
   from { transform: translateY(110%) rotate(8deg); }
@@ -545,7 +556,7 @@ html.has-cursor * {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .pixel, .caret, .rise, .overlay-in, .overlay-out, .overlay-in > *, .overlay-out > *, .drop-in, .painted::before,
-  .grain, .intro, .intro-letter, .ghost-num, .float, .typing .type-line, .progress-bar, .lightbox, .lightbox-img, rect,
+  .grain, .intro, .intro-letter, .intro-caret, .ghost-num, .float, .typing .type-line, .progress-bar, .lightbox, .lightbox-img, rect,
   .hatch-packet, .bar-grow { animation: none !important; }
   .split-word { transform: none !important; transition: none !important; animation: none !important; }
   .type-line { clip-path: none !important; }

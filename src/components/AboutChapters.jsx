@@ -50,7 +50,7 @@ const CHAPTERS = [
         cta: 'Read the QUT story',
       },
       {
-        href: 'https://lnkd.in/gEdUy5Pi',
+        href: 'https://theabj.com.au/2026/05/13/australian-ai-innovators-practical-solutions-2026/',
         label: 'Australian Business Journal · 2026',
         title: '10 Australian AI Innovators Delivering Practical Solutions',
         body: "Zac was named among 10 Australian AI innovators for the society's work giving students hands on AI and machine learning experience earlier in their studies.",

@@ -2,14 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import samples from '../data/vision'
 import { canny, gaussian, greyscale, sobel } from '../lib/vision'
 import { prefersReduced } from '../lib/motion'
+import { SUPPORTED } from '../lib/fingerspell'
 import { Window } from './ui'
 import LiveLab from './LiveLab'
 
 // A computer-vision pipeline over public-domain photos. The classic transforms
 // (greyscale, Gaussian blur, Sobel gradients, Canny edges) are computed live in
 // the browser from each photo's pixels; the detection and classification stages
-// show real model output (COCO-SSD, MobileNet v2, CLIP zero-shot, OWLv2 and
-// MediaPipe), precomputed offline so the page stays static (src/data/vision.js).
+// show real model output (COCO-SSD, CLIP zero-shot, OWLv2, Tesseract OCR and
+// MediaPipe), precomputed offline by scripts/vision/build.mjs so the page stays
+// static (src/data/vision.js).
 
 const STAGES = [
   { key: 'rgb', label: 'input', ms: 1100 },
@@ -23,13 +25,24 @@ const STAGES = [
 ]
 // Stages drawn over the original photo (as opposed to a live transform)
 const PHOTO = new Set(['detect', 'parts', 'classify'])
-const hasParts = s => (s.parts?.length ?? 0) > 0
+const hasParts = s => (s.parts?.length ?? 0) + (s.text?.length ?? 0) > 0
+// Sign charts: how many hands were read as the chart's letter
+// Only letters the rules cover are scored; the rest are shown as not covered
+const covered = h => SUPPORTED.includes(h.truth)
+const signScore = s => {
+  const known = (s.hands || []).filter(h => h.truth && covered(h))
+  if (!known.length) return ''
+  const right = known.filter(h => h.letter === h.truth).length
+  return `${right} of the ${known.length} covered letters matched the chart.`
+}
+// The words read from a photo, in reading order
+const textOf = s => (s.text || []).map(t => t[0]).join(' ')
 // Stages a photo has nothing for are skipped and their tabs disabled
 const skips = (st, S) => st === 'parts' && !hasParts(S)
 
 // The best live task for a demo photo
 const liveTaskFor = S =>
-  S.hands?.length || S.slug === 'asl' ? 'hands' : S.faces?.length ? 'face' : S.poses?.length ? 'pose' : S.classifier === 'clip' ? 'zeroshot' : 'objects'
+  S.hands?.length || S.group === 'Sign language' ? 'hands' : S.faces?.length ? 'face' : S.poses?.length ? 'pose' : S.classifier === 'clip' ? 'zeroshot' : 'objects'
 
 const WIPE_MS = 480
 const IDLE_MS = 9000 // after a manual pick, hold before auto-advancing again
@@ -44,10 +57,10 @@ const thumbOf = s => `${base}cv/thumb/${(s.path || s.slug).replace('/', '-')}.jp
 const FAMILY_OF_GROUP = {
   'Eyes open vs closed': 'body', 'Head direction': 'body', 'Mask on vs off': 'body', 'Exercise pose': 'body',
   'Sign language': 'hands',
-  'Recycling types': 'objects', 'Fruits and vegetables': 'objects', 'Fruit ripeness': 'objects', 'Clothing items': 'objects', 'Playing cards and coins': 'objects',
   'Cat breeds': 'nature', 'Dog breeds': 'nature', 'Bird species': 'nature', 'Flower types': 'nature', 'Healthy vs diseased leaves': 'nature', 'Weather conditions': 'nature', 'Satellite land types': 'nature',
   'Handwritten digits': 'writing', 'Alphabet letters': 'writing', 'Road and traffic signs': 'writing', Doodles: 'writing',
   'Cracked vs uncracked concrete': 'industry', 'Defective products': 'industry', 'Circuit boards': 'industry',
+  'Space robotics': 'engineering', 'LEGO parts': 'engineering', 'Lab equipment': 'engineering', 'Corrosion and concrete damage': 'engineering',
 }
 const familiesOf = s => {
   const f = []
@@ -60,10 +73,10 @@ const FAMILIES = [
   { key: 'all', label: 'All' },
   { key: 'body', label: 'Body & people' },
   { key: 'hands', label: 'Hands & signs' },
-  { key: 'objects', label: 'Everyday objects' },
   { key: 'nature', label: 'Animals & nature' },
   { key: 'writing', label: 'Writing & symbols' },
   { key: 'industry', label: 'Industry & quality' },
+  { key: 'engineering', label: 'Engineering & robotics' },
 ].map(f => ({ ...f, members: samples.map((s, i) => i).filter(i => f.key === 'all' || familiesOf(samples[i]).includes(f.key)) }))
 
 // The photo after (or before) index i within a list of visible indices, wrapping
@@ -272,10 +285,14 @@ export default function VisionPipeline({ className = '' }) {
     const drawHands = (S, elapsed) => {
       const { s, ox, oy } = fit(S.w, S.h)
       const P = ([x, y]) => [x * s + ox, y * s + oy]
+      const gap = Math.min(450, 2200 / S.hands.length) // sign charts have many hands
       S.hands.forEach((hand, h) => {
-        const t = Math.min(1, Math.max(0, (elapsed - 250 - h * 450) / 900))
+        const t = Math.min(1, Math.max(0, (elapsed - 250 - h * gap) / 900))
         if (!t) return
-        const col = h === 0 ? '61,220,151' : '227,179,65'
+        // Sign charts: green when the letter read matches the chart, rose when it doesn't
+        const col = 'letter' in hand
+          ? hand.truth && hand.letter === hand.truth ? '61,220,151' : hand.truth && covered(hand) ? '240,98,90' : '227,179,65'
+          : h === 0 ? '61,220,151' : '227,179,65'
         const shown = Math.ceil(t * 21)
         ctx.lineWidth = 2
         ctx.strokeStyle = `rgba(${col},0.9)`
@@ -298,7 +315,10 @@ export default function VisionPipeline({ className = '' }) {
         if (t === 1) {
           const xs = hand.landmarks.map(p => P(p)[0])
           const ys = hand.landmarks.map(p => P(p)[1])
-          const text = hand.gestures.length ? `${pretty(hand.gestures[0][0])} ${conf(hand.gestures[0][1])}` : `hand ${h + 1}`
+          const text = 'letter' in hand
+            ? hand.truth && !covered(hand) ? hand.truth // gold: a letter the rules don't cover
+              : `${hand.letter || '?'}${hand.truth ? (hand.letter === hand.truth ? ' ✓' : ` · is ${hand.truth}`) : ''}`
+            : hand.gestures.length ? `${pretty(hand.gestures[0][0])} ${conf(hand.gestures[0][1])}` : `hand ${h + 1}`
           tag(text, Math.min(...xs), Math.min(...ys) - 4, col)
         }
       })
@@ -389,7 +409,7 @@ export default function VisionPipeline({ className = '' }) {
       if (!hasParts(S)) return
       const { s, ox, oy } = fit(S.w, S.h)
       ctx.font = '600 10px "Geist Mono", ui-monospace, monospace'
-      const parts = [...S.parts].sort((a, b) => b[3] * b[4] - a[3] * a[4])
+      const parts = [...(S.parts || [])].sort((a, b) => b[3] * b[4] - a[3] * a[4])
       const step = Math.min(80, 1600 / parts.length)
       parts.forEach(([label, x, y, w, h, score], i) => {
         const appear = Math.min(1, Math.max(0, (elapsed - 250 - i * step) / 220))
@@ -403,6 +423,23 @@ export default function VisionPipeline({ className = '' }) {
         ctx.fillRect(bx, by, w * s, h * s)
         ctx.strokeRect(bx, by, w * s, h * s)
         if (w * s > 28) tag(`${label} ${conf(score)}`, bx, by, '227,179,65')
+        ctx.globalAlpha = 1
+      })
+      // OCR: each word read from the image, boxed in blue with what it says
+      const words = S.text || []
+      const wstep = Math.min(60, 1400 / Math.max(1, words.length))
+      words.forEach(([word, x, y, w, h], i) => {
+        const appear = Math.min(1, Math.max(0, (elapsed - 400 - parts.length * step * 0.5 - i * wstep) / 220))
+        if (!appear) return
+        const bx = x * s + ox
+        const by = y * s + oy
+        ctx.globalAlpha = appear
+        ctx.lineWidth = 1.5
+        ctx.strokeStyle = 'rgb(96,165,250)'
+        ctx.fillStyle = 'rgba(96,165,250,0.14)'
+        ctx.fillRect(bx, by, w * s, h * s)
+        ctx.strokeRect(bx, by, w * s, h * s)
+        if (words.length <= 24 || w * s > 22) tag(word, bx, by, '96,165,250')
         ctx.globalAlpha = 1
       })
     }
@@ -716,6 +753,14 @@ export default function VisionPipeline({ className = '' }) {
                 <p className="uppercase tracking-wide text-mute">mediapipe pose landmarker · 33 keypoints × {S.poses.length}</p>
                 <p className="mt-1.5 text-ink leading-relaxed">Shoulders, elbows, wrists, hips, knees and ankles located on the body, then joined into a skeleton.</p>
               </>
+            ) : S.hands?.some(h => 'letter' in h) ? (
+              <>
+                <p className="uppercase tracking-wide text-mute">owlv2 hands → mediapipe hand landmarker · {S.hands.length} of {S.handsFound} hands read</p>
+                <p className="mt-1.5 text-ink leading-relaxed">
+                  Each hand OWLv2 found is cropped and given 21 keypoints, then the finger states are matched to ASL letters.{' '}
+                  {signScore(S)}
+                </p>
+              </>
             ) : S.hands?.length ? (
               <>
                 <p className="uppercase tracking-wide text-mute">mediapipe hand landmarker · 21 keypoints × {S.hands.length} hands</p>
@@ -761,11 +806,11 @@ export default function VisionPipeline({ className = '' }) {
                   ))}
                 </ul>
               </>
-            ) : S.slug === 'asl' ? (
+            ) : S.group === 'Sign language' ? (
               <>
-                <p className="uppercase tracking-wide text-mute">mediapipe hand landmarker · 1 of 25 drawn hands found</p>
+                <p className="uppercase tracking-wide text-mute">mediapipe hand landmarker · drawn hands, not photos</p>
                 <p className="mt-1.5 text-ink leading-relaxed">
-                  Trained on real hands, so it can’t read 1918 engravings.{' '}
+                  Trained on real hands, so it can’t read drawn charts.{' '}
                   <button onClick={() => goLive('webcam')} className="text-flame hover:text-ink underline underline-offset-2">Decode your own signs live</button>.
                 </p>
               </>
@@ -791,13 +836,25 @@ export default function VisionPipeline({ className = '' }) {
                 <p className="mt-1.5 text-ink leading-relaxed">Nothing here is one of COCO's 80 everyday objects, which is why the open-vocabulary parts stage and CLIP do the work for this photo.</p>
               </>
             )}
+            {S.text?.length > 0 && (
+              <p className="mt-1.5 text-ink leading-relaxed">
+                <span className="text-mute uppercase tracking-wide">text found · </span>
+                {S.text.length} word{S.text.length > 1 ? 's' : ''}, read in the parts stage
+              </p>
+            )}
           </div>
         )}
         {stage.key === 'parts' && hasParts(S) && (
           <div key="parts" className="pixel">
-            <p className="uppercase tracking-wide text-mute">
+            {S.text?.length > 0 && (
+              <>
+                <p className="uppercase tracking-wide text-mute">tesseract ocr · {S.text.length} words read</p>
+                <p className="mt-1 mb-2 text-sky leading-relaxed break-words">“{textOf(S)}”</p>
+              </>
+            )}
+            {S.parts?.length > 0 && <p className="uppercase tracking-wide text-mute">
               owlv2 · open-vocabulary, text-prompted · {S.parts.length} parts
-            </p>
+            </p>}
             <ul className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1">
               {partGroups.slice(0, compact ? 4 : 6).map(g => (
                 <li key={g.label} className="flex justify-between gap-2 text-ink min-w-0">
@@ -817,18 +874,36 @@ export default function VisionPipeline({ className = '' }) {
             <p className="flex justify-between gap-3 uppercase tracking-wide text-mute">
               <span className="truncate">
                 {S.tiles && S.tileMode !== 'grid' ? 'clip zero-shot · per panel'
+                  : S.hands?.some(h => 'letter' in h) ? 'fingerspelling rules · chart letter → letter read'
                   : S.hands?.some(h => h.gestures.length) ? 'gesture recognizer · per-hand classification'
                   : S.faces && !S.classifier ? 'expression net · 7 classes · top per face'
                   : S.classifier === 'clip' ? `clip zero-shot · ${S.group?.toLowerCase()}`
-                  : 'mobilenet v2 · imagenet top 3'}
+                  : 'coco-ssd · top classes'}
               </span>
               {(S.truth || S.tiles?.some(t => t.truth)) && <span className="normal-case shrink-0">{SCORE_TEXT}</span>}
             </p>
-            <ul className={`mt-1.5 ${(S.tiles && S.tileMode !== 'grid') || (S.faces && !S.classifier) ? 'grid grid-cols-2 gap-x-3 gap-y-1' : 'flex flex-col gap-1'}`}>
+            {S.hands?.some(h => 'letter' in h) && (
+              <p className="mt-1 text-body leading-relaxed">
+                {signScore(S)} Rules cover static letters only: J and Z need motion, and M/N/S/T/E differ by thumb details they don’t guess at.
+              </p>
+            )}
+            <ul className={`mt-1.5 ${(S.tiles && S.tileMode !== 'grid') || (S.faces && !S.classifier) || S.hands?.some(h => 'letter' in h) ? 'grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-1' : 'flex flex-col gap-1'}`}>
               {S.tiles && S.tileMode !== 'grid'
                 ? S.tiles.map((t, i) => (
                     <Bar key={i} name={`${i + 1} · ${short(t.classes[0][0])}${t.truth ? (correct(t.classes[0][0], t.truth) ? ' ✓' : ' ✗') : ''}`} p={t.classes[0][1]} i={i} bad={t.truth && !correct(t.classes[0][0], t.truth)} />
                   ))
+                : S.hands?.some(h => 'letter' in h)
+                  ? S.hands.map((h, i) => (
+                      <li key={i} className="flex justify-between gap-2 text-ink min-w-0" title={h.why}>
+                        <span className="truncate">
+                          {h.truth ? `${h.truth} → ` : ''}
+                          {h.truth && !covered(h)
+                            ? <span className="text-gold">not covered</span>
+                            : <span className={h.truth ? (h.letter === h.truth ? 'text-live' : 'text-rose') : 'text-gold'}>{h.letter || 'no letter'}</span>}
+                        </span>
+                        <span className="text-mute shrink-0">{h.truth && covered(h) ? (h.letter === h.truth ? '✓' : '✗') : ''}</span>
+                      </li>
+                    ))
                 : S.hands?.some(h => h.gestures.length)
                   ? S.hands.map((h, i) => <Bar key={i} name={`${h.handedness.toLowerCase()} · ${pretty(h.gestures[0][0])}`} p={h.gestures[0][1]} i={i} />)
                   : S.faces && !S.classifier
@@ -837,6 +912,12 @@ export default function VisionPipeline({ className = '' }) {
                         <Bar key={name} name={`${short(name)}${i === 0 && S.truth ? (correct(name, S.truth) ? ' ✓' : ` ✗ · expected ${short(S.truth)}`) : ''}`} p={p} i={i} dim={i > 0} bad={i === 0 && S.truth && !correct(name, S.truth)} />
                       ))}
             </ul>
+            {S.text?.length > 0 && (
+              <p className="mt-1.5 text-body leading-relaxed truncate">
+                <span className="text-mute">reads </span>
+                <span className="text-sky">“{textOf(S)}”</span>
+              </p>
+            )}
           </div>
         )}
       </div>

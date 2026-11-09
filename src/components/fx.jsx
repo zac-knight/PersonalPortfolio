@@ -7,20 +7,39 @@ import {
 import { finePointer, prefersReduced, useInViewOnce } from '../lib/motion'
 
 // ── Intro ─────────────────────────────────────────────────────────────────────
-// A one-per-session curtain styled as a training run: epochs tick up while the
-// loss curve falls and accuracy climbs, then the panel wipes upward to reveal
-// the page. The hero waits via --intro.
-const INTRO_MS = 1700
-const EPOCHS = 100
+// A one-per-session curtain styled as autoregressive decoding: a small causal
+// transformer generates the name one token at a time, showing its top-k next-token
+// distribution and a causal attention map that fills in as the sequence grows.
+// Then the panel wipes upward to reveal the page. The hero waits via --intro.
+const INTRO_MS = 3700 // includes a deliberate 2s hold so the loading screen can be seen (keep in sync with .intro in index.css)
+const NAME = 'Zac Knight'
+const TOKENS = [...NAME]
+const VOCAB = 'abcdeghiklmnorstuyzACKZ '
 
-// Deterministic jitter so the curve looks like a real (noisy) run
-const jitter = i => ((Math.sin(i * 12.9898) * 43758.5453) % 1)
-const lossAt = t => 2.4 * Math.exp(-4.2 * t) + 0.035
-const CURVE_PATH = Array.from({ length: 61 }, (_, i) => {
-  const t = i / 60
-  const l = lossAt(t) * (1 + jitter(i + 1) * 0.12 * (1 - t * 0.7))
-  return `${i ? 'L' : 'M'}${(t * 300).toFixed(1)},${(100 - (l / 2.6) * 96).toFixed(1)}`
-}).join(' ')
+// Deterministic pseudo-random numbers, so every visit decodes the same way
+const jitter = i => Math.abs((Math.sin(i * 12.9898) * 43758.5453) % 1)
+
+// For each step: the chosen token plus two plausible runners-up, as a softmax
+const TOPK = TOKENS.map((tok, i) => {
+  const top = 0.58 + jitter(i + 3) * 0.36
+  const rest = 1 - top
+  const pick = k => {
+    let c = VOCAB[Math.floor(jitter(i * 7 + k) * VOCAB.length)]
+    for (let n = 1; c === tok || c === ' '; n++) c = VOCAB[Math.floor(jitter(i * 7 + k + n * 31) * VOCAB.length)]
+    return c
+  }
+  const second = rest * (0.55 + jitter(i + 11) * 0.3)
+  return [[tok, top], [pick(1), second], [pick(2), rest - second]]
+})
+// log p(sequence) after each step
+const LOGP = TOPK.reduce((acc, [[, p]]) => [...acc, (acc.at(-1) ?? 0) + Math.log(p)], [])
+// Causal attention weights: row i attends to columns 0..i, each row sums to 1
+const ATTN = TOKENS.map((_, i) => {
+  const raw = Array.from({ length: i + 1 }, (_, j) => (j === i ? 1.6 : 0.2) + jitter(i * 13 + j) * (j === 0 ? 1.4 : 1))
+  const sum = raw.reduce((x, y) => x + y, 0)
+  return raw.map(r => r / sum)
+})
+const glyph = t => (t === ' ' ? '␣' : t)
 
 export function Intro() {
   const [show] = useState(() => {
@@ -50,7 +69,7 @@ export function Intro() {
     let frame
     const tick = now => {
       const t = Math.min(1, (now - start) / (INTRO_MS - 500))
-      setCount(1 - Math.pow(1 - t, 3))
+      setCount(t)
       if (t < 1) frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
@@ -69,54 +88,69 @@ export function Intro() {
   }, [show])
 
   if (gone) return null
-  const name = 'Zac Knight'
-  const epoch = Math.round(count * EPOCHS)
-  const loss = lossAt(count)
-  const acc = 99.1 * (1 - Math.exp(-4.6 * count))
+  const n = TOKENS.length
+  const decoded = Math.min(n, Math.floor(count * n + 0.0001)) // tokens generated so far
+  const step = Math.min(n - 1, decoded) // the step whose distribution is shown
+  const tps = decoded ? (decoded / Math.max(0.2, count * ((INTRO_MS - 500) / 1000))).toFixed(1) : '0.0'
   return (
     <div aria-hidden className="intro fixed inset-0 z-[100] bg-canvas flex flex-col justify-between p-6 sm:p-12">
-      <div className="flex justify-between font-mono text-[12px] tracking-wide text-mute">
-        <span>
-          <span className="text-live">$</span> python train.py --model zac
+      <div className="flex justify-between gap-4 font-mono text-[12px] tracking-wide text-mute">
+        <span className="truncate min-w-0">
+          <span className="text-live">$</span> python generate.py --model zk-transformer --prompt "&lt;bos&gt;" --top-k 3
         </span>
-        <span className="hidden sm:inline uppercase">Brisbane, AU</span>
+        <span className="hidden sm:inline uppercase shrink-0">Brisbane, AU</span>
       </div>
-      <h2 className="font-serif text-ink text-[18vw] sm:text-[13vw] leading-[0.9] tracking-tight overflow-hidden pb-[0.08em]">
-        {[...name].map((ch, i) => (
-          <span key={i} className="intro-letter inline-block" style={{ '--i': i }}>
-            {ch === ' ' ? ' ' : ch}
+      <h2 className="font-serif text-ink text-[18vw] sm:text-[13vw] leading-[0.9] tracking-tight overflow-hidden pb-[0.08em] whitespace-nowrap">
+        {TOKENS.slice(0, decoded).map((ch, i) => (
+          <span key={i} className="intro-letter inline-block" style={{ '--i': 0 }}>
+            {ch === ' ' ? '\u00a0' : ch}
           </span>
         ))}
+        {decoded < n && <span className="intro-caret inline-block align-baseline bg-flame" />}
       </h2>
-      <div className="flex items-end justify-between gap-6">
-        <div className="flex flex-col gap-4 min-w-0">
-          <svg viewBox="0 0 300 100" className="w-[min(52vw,320px)] h-auto overflow-visible">
-            {[25, 50, 75].map(y => (
-              <line key={y} x1="0" x2="300" y1={y} y2={y} stroke="var(--color-line)" strokeDasharray="2 4" />
+      <div className="flex items-end justify-between gap-4 sm:gap-6">
+        <div className="flex flex-col gap-3 min-w-0 font-mono text-[11px] sm:text-[12px] uppercase tracking-wide">
+          <p className="text-mute">
+            next token · step {String(step + 1).padStart(2, '0')}/{n}
+          </p>
+          <ul className="flex flex-col gap-1.5 w-[min(46vw,300px)]">
+            {TOPK[step].map(([tok, p], k) => (
+              <li key={k} className="grid grid-cols-[1.5rem_1fr_3.2rem] items-center gap-3">
+                <span className={k ? 'text-body normal-case' : 'text-ink normal-case'}>{glyph(tok)}</span>
+                <span className="h-[6px] bg-line overflow-hidden">
+                  <span className={`block h-full ${k ? 'bg-mute' : 'bg-live'}`} style={{ width: `${p * 100}%` }} />
+                </span>
+                <span className={`tabular-nums text-right ${k ? 'text-body' : 'text-live'}`}>{p.toFixed(2)}</span>
+              </li>
             ))}
-            <path
-              d={CURVE_PATH}
-              fill="none"
-              stroke="var(--color-flame)"
-              strokeWidth="2"
-              pathLength="1"
-              strokeDasharray="1"
-              strokeDashoffset={1 - count}
-            />
-            <circle cx={count * 300} cy={100 - (loss / 2.6) * 96} r="3.5" fill="var(--color-cream)" />
-          </svg>
-          <dl className="grid grid-cols-3 gap-x-5 sm:gap-x-10 font-mono text-[11px] sm:text-[12px] uppercase tracking-wide">
-            <div><dt className="text-mute">loss</dt><dd className="text-ink tabular-nums">{loss.toFixed(3)}</dd></div>
-            <div><dt className="text-mute">acc</dt><dd className="text-live tabular-nums">{acc.toFixed(1)}%</dd></div>
-            <div><dt className="text-mute">lr</dt><dd className="text-ink tabular-nums">3e-4</dd></div>
+          </ul>
+          <dl className="grid grid-cols-3 gap-x-5 sm:gap-x-10 mt-1">
+            <div><dt className="text-mute">log p</dt><dd className="text-ink tabular-nums">{(decoded ? LOGP[decoded - 1] : 0).toFixed(2)}</dd></div>
+            <div><dt className="text-mute">tok/s</dt><dd className="text-live tabular-nums">{tps}</dd></div>
+            <div><dt className="text-mute">temp</dt><dd className="text-ink tabular-nums">0.7</dd></div>
           </dl>
         </div>
-        <div className="text-right shrink-0">
-          <p className="font-mono text-[11px] sm:text-[12px] uppercase tracking-wide text-mute mb-2">epoch</p>
-          <p className="font-serif text-ink text-5xl sm:text-8xl tabular-nums leading-none">
-            {String(epoch).padStart(3, '0')}
-            <span className="text-mute text-xl sm:text-4xl">/{EPOCHS}</span>
+        <div className="shrink-0 flex flex-col items-end gap-2">
+          <p className="font-mono text-[11px] sm:text-[12px] uppercase tracking-wide text-mute">
+            <span className="hidden sm:inline">causal </span>attention<span className="hidden sm:inline"> · head 0</span>
           </p>
+          <div className="grid gap-[2px] w-[min(30vw,190px)]" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+            {TOKENS.map((_, i) =>
+              TOKENS.map((__, j) => (
+                <span
+                  key={`${i}-${j}`}
+                  className="aspect-square transition-opacity duration-300"
+                  style={{
+                    background: j > i ? 'var(--color-line)' : 'var(--color-flame)',
+                    opacity: j > i ? 0.35 : i < decoded ? 0.12 + ATTN[i][j] * 1.6 : 0.06,
+                  }}
+                />
+              ))
+            )}
+          </div>
+          <div className="grid gap-[2px] w-[min(30vw,190px)] font-mono text-[9px] sm:text-[10px] text-mute text-center" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+            {TOKENS.map((t, i) => <span key={i} className={i < decoded ? 'text-body' : ''}>{glyph(t)}</span>)}
+          </div>
         </div>
       </div>
       <div className="absolute left-0 bottom-0 h-[3px] bg-gradient-to-r from-flame via-gold to-live" style={{ width: `${count * 100}%` }} />
