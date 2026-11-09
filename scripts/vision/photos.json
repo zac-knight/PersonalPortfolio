@@ -1,0 +1,829 @@
+[
+  {
+    "slug": "expressions",
+    "keep": true
+  },
+  {
+    "slug": "eyes",
+    "path": "cat/eyes",
+    "credit": {
+      "author": "Foto, Priscilla Du Preez",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File:Gray-haired_man_portrait_(Unsplash).jpg"
+    },
+    "group": "Eyes open vs closed",
+    "labels": [
+      "eyes open",
+      "eyes closed"
+    ],
+    "prompts": [
+      "eye"
+    ],
+    "faces": true,
+    "tiles": {
+      "mode": "panels",
+      "n": 2,
+      "truths": [
+        "eyes open",
+        "eyes closed"
+      ]
+    },
+    "template": "a photo of a person with {}."
+  },
+  {
+    "slug": "eyes-closed",
+    "path": "cat/eyes-closed",
+    "file": "File:Closed Eyes (Unsplash).jpg",
+    "group": "Eyes open vs closed",
+    "labels": [
+      "eyes open",
+      "eyes closed"
+    ],
+    "prompts": [
+      "closed eye",
+      "eyebrow",
+      "beard",
+      "hand",
+      "wristwatch",
+      "wristband",
+      "dreadlocks",
+      "shirt collar",
+      "shirt button"
+    ],
+    "faces": true,
+    "truth": "eyes closed",
+    "template": "a photo of a person with {}.",
+    "ocr": "regions",
+    "textPrompts": [
+      "text",
+      "logo"
+    ]
+  },
+  {
+    "slug": "yoga",
+    "path": "cat/yoga",
+    "credit": {
+      "author": "Andressa Voltolini",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File:Woman_yoga_pose_sunrise_(Unsplash).jpg"
+    },
+    "truth": "a person doing a yoga pose",
+    "group": "Exercise pose",
+    "labels": [
+      "a person dancing",
+      "a person doing a yoga pose",
+      "a person running",
+      "a person sitting",
+      "a person lifting weights"
+    ],
+    "prompts": [
+      "sun",
+      "grass"
+    ],
+    "pose": true
+  },
+  {
+    "slug": "deadlift",
+    "path": "cat/deadlift",
+    "file": "File:U.S. Army recruiter demonstrates correct way to properly lift deadlift, Gaithersburg, Maryland (2020), 1.jpg",
+    "group": "Exercise pose",
+    "labels": [
+      "a person dancing",
+      "a person doing a yoga pose",
+      "a person running",
+      "a person sitting",
+      "a person lifting weights"
+    ],
+    "prompts": [
+      "barbell",
+      "weight plate",
+      "flag",
+      "boot",
+      "hand",
+      "cabinet"
+    ],
+    "pose": true,
+    "truth": "a person lifting weights"
+  },
+  {
+    "slug": "thumbsup",
+    "keep": true
+  },
+  {
+    "slug": "asl",
+    "path": "cat/asl",
+    "credit": {
+      "author": "J. Schuyler Long",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Sign_alphabet,_Page_12_(The_Sign_Language_2nd_ed._1918).png"
+    },
+    "truth": "a chart of sign language hand signs",
+    "group": "Sign language",
+    "labels": [
+      "a chart of sign language hand signs",
+      "a page of printed text",
+      "a photograph of people",
+      "a map"
+    ],
+    "prompts": [
+      "hand",
+      "finger"
+    ],
+    "signs": true
+  },
+  {
+    "slug": "asl-hands",
+    "path": "cat/asl-hands",
+    "file": "File:ABC pict just hands.png",
+    "group": "Sign language",
+    "labels": [
+      "a chart of sign language hand signs",
+      "a page of printed text",
+      "a photograph of people",
+      "a map"
+    ],
+    "prompts": [
+      "hand",
+      "finger"
+    ],
+    "truth": "a chart of sign language hand signs",
+    "fit": "pad",
+    "signs": true,
+    "signLayout": [
+      [
+        "A",
+        0.086,
+        0.104
+      ],
+      [
+        "B",
+        0.3,
+        0.104
+      ],
+      [
+        "C",
+        0.493,
+        0.104
+      ],
+      [
+        "D",
+        0.7,
+        0.104
+      ],
+      [
+        "E",
+        0.893,
+        0.104
+      ],
+      [
+        "F",
+        0.114,
+        0.263
+      ],
+      [
+        "G",
+        0.343,
+        0.263
+      ],
+      [
+        "H",
+        0.629,
+        0.263
+      ],
+      [
+        "I",
+        0.871,
+        0.263
+      ],
+      [
+        "J",
+        0.1,
+        0.417
+      ],
+      [
+        "K",
+        0.3,
+        0.417
+      ],
+      [
+        "L",
+        0.514,
+        0.417
+      ],
+      [
+        "M",
+        0.7,
+        0.417
+      ],
+      [
+        "N",
+        0.893,
+        0.417
+      ],
+      [
+        "O",
+        0.107,
+        0.582
+      ],
+      [
+        "P",
+        0.371,
+        0.582
+      ],
+      [
+        "Q",
+        0.643,
+        0.582
+      ],
+      [
+        "R",
+        0.914,
+        0.582
+      ],
+      [
+        "S",
+        0.129,
+        0.757
+      ],
+      [
+        "T",
+        0.329,
+        0.757
+      ],
+      [
+        "U",
+        0.529,
+        0.757
+      ],
+      [
+        "V",
+        0.729,
+        0.757
+      ],
+      [
+        "W",
+        0.914,
+        0.757
+      ],
+      [
+        "X",
+        0.107,
+        0.906
+      ],
+      [
+        "Y",
+        0.371,
+        0.906
+      ],
+      [
+        "Z",
+        0.6,
+        0.906
+      ],
+      [
+        "I love you",
+        0.879,
+        0.906
+      ]
+    ]
+  },
+  {
+    "slug": "dog",
+    "path": "cat/dog",
+    "credit": {
+      "author": "Karen Arnold",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File:Border-collie-dog-1365525954Aa6.jpg"
+    },
+    "truth": "Border Collie",
+    "group": "Dog breeds",
+    "labels": [
+      "Border Collie",
+      "Labrador Retriever",
+      "Dalmatian",
+      "Beagle",
+      "Golden Retriever"
+    ],
+    "prompts": [
+      "dog",
+      "wave"
+    ]
+  },
+  {
+    "slug": "dalmatian",
+    "path": "cat/dalmatian",
+    "file": "File:Dalmatian dog.jpg",
+    "group": "Dog breeds",
+    "labels": [
+      "Border Collie",
+      "Labrador Retriever",
+      "Dalmatian",
+      "Beagle",
+      "Golden Retriever"
+    ],
+    "prompts": [
+      "dog",
+      "nose",
+      "eye",
+      "ear",
+      "collar",
+      "grass"
+    ],
+    "truth": "Dalmatian"
+  },
+  {
+    "slug": "bird1",
+    "path": "cat/bird1",
+    "credit": {
+      "author": "Frank-2.0",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File:Eisvogel_kingfisher.jpg"
+    },
+    "truth": "kingfisher",
+    "group": "Bird species",
+    "labels": [
+      "kingfisher",
+      "parrot",
+      "robin",
+      "sparrow",
+      "rainbow lorikeet"
+    ],
+    "prompts": [
+      "beak",
+      "wing",
+      "branch"
+    ]
+  },
+  {
+    "slug": "lorikeet",
+    "path": "cat/lorikeet",
+    "file": "File:Australia Parrot (Unsplash).jpg",
+    "group": "Bird species",
+    "labels": [
+      "kingfisher",
+      "parrot",
+      "robin",
+      "sparrow",
+      "rainbow lorikeet"
+    ],
+    "prompts": [
+      "beak",
+      "eye",
+      "wing",
+      "tail",
+      "leaf",
+      "flower"
+    ],
+    "truth": "rainbow lorikeet"
+  },
+  {
+    "slug": "satellite",
+    "path": "cat/satellite",
+    "credit": {
+      "author": "NASA",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:2010_Pakistan_flood_Khewali_by_Landsat-5_2010-08-09_small.jpg"
+    },
+    "group": "Satellite land types",
+    "labels": [
+      "flooded land",
+      "farmland",
+      "bare desert",
+      "water",
+      "forest",
+      "city"
+    ],
+    "prompts": [],
+    "tiles": {
+      "mode": "grid",
+      "cols": 4,
+      "rows": 3
+    }
+  },
+  {
+    "slug": "phoenix",
+    "path": "cat/phoenix",
+    "file": "File:Landsat 7 Captures Super Bowl Cities – Phoenix.jpg",
+    "group": "Satellite land types",
+    "labels": [
+      "flooded land",
+      "farmland",
+      "bare desert",
+      "water",
+      "forest",
+      "city"
+    ],
+    "prompts": [],
+    "tiles": {
+      "mode": "grid",
+      "cols": 4,
+      "rows": 3
+    }
+  },
+  {
+    "slug": "digits",
+    "path": "cat/digits",
+    "credit": {
+      "author": "NIST",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:NIST_SD-19_f1002_33.png"
+    },
+    "truth": "handwritten digits on a form",
+    "group": "Handwritten digits",
+    "labels": [
+      "handwritten digits on a form",
+      "a printed page of text",
+      "a photograph",
+      "a drawing"
+    ],
+    "prompts": [
+      "handwritten digit",
+      "handwritten number"
+    ],
+    "ocr": "page"
+  },
+  {
+    "slug": "letters",
+    "path": "cat/letters",
+    "credit": {
+      "author": "Geoalex",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Sami_alphabet_1933.jpg"
+    },
+    "truth": "a chart of alphabet letters",
+    "group": "Alphabet letters",
+    "labels": [
+      "a chart of alphabet letters",
+      "handwritten digits",
+      "a painting",
+      "a photograph of a street"
+    ],
+    "prompts": [],
+    "ocr": "page"
+  },
+  {
+    "slug": "alphabet",
+    "path": "cat/alphabet",
+    "file": "File:The Capital Letters & Small Letters, Marion Richardson, Writing and Writing Patterns, 1946.png",
+    "group": "Alphabet letters",
+    "labels": [
+      "a chart of alphabet letters",
+      "handwritten digits",
+      "a painting",
+      "a photograph of a street"
+    ],
+    "prompts": [],
+    "ocr": "page",
+    "truth": "a chart of alphabet letters",
+    "fit": "pad"
+  },
+  {
+    "slug": "signs",
+    "path": "cat/signs",
+    "credit": {
+      "author": "Dori",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Stop_sign_us.jpg"
+    },
+    "truth": "a stop sign",
+    "group": "Road and traffic signs",
+    "labels": [
+      "a stop sign",
+      "a speed limit sign",
+      "a give way sign",
+      "a pedestrian crossing sign",
+      "a no entry sign"
+    ],
+    "prompts": [
+      "sign",
+      "pole"
+    ],
+    "ocr": "regions"
+  },
+  {
+    "slug": "speed-sign",
+    "path": "cat/speed-sign",
+    "file": "File:Speed Limit 20 sign on Commercial Drive, Southbridge, Massachusetts.jpg",
+    "group": "Road and traffic signs",
+    "labels": [
+      "a stop sign",
+      "a speed limit sign",
+      "a give way sign",
+      "a pedestrian crossing sign",
+      "a no entry sign"
+    ],
+    "prompts": [
+      "sign",
+      "pole",
+      "road",
+      "tree",
+      "guard rail"
+    ],
+    "ocr": "regions",
+    "truth": "a speed limit sign"
+  },
+  {
+    "slug": "crack",
+    "path": "cat/crack",
+    "credit": {
+      "author": "Tobias van Schneider, Dimitrios Savva",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File:Level_D1_Concrete_Staircase_(Unsplash).jpg"
+    },
+    "group": "Cracked vs uncracked concrete",
+    "labels": [
+      "cracked concrete",
+      "smooth concrete"
+    ],
+    "prompts": [
+      "crack",
+      "wall",
+      "stairs"
+    ],
+    "tiles": {
+      "mode": "panels",
+      "n": 2,
+      "truths": [
+        "smooth concrete",
+        "cracked concrete"
+      ]
+    }
+  },
+  {
+    "slug": "concrete",
+    "path": "cat/concrete",
+    "file": "File:Ref 1 - cracked concrete (Dimitrios Savva via Poly Haven).webp",
+    "group": "Cracked vs uncracked concrete",
+    "labels": [
+      "cracked concrete",
+      "smooth concrete"
+    ],
+    "prompts": [
+      "crack",
+      "painted line",
+      "grass"
+    ],
+    "truth": "cracked concrete"
+  },
+  {
+    "slug": "pcb",
+    "path": "cat/pcb",
+    "credit": {
+      "author": "DiscoA340",
+      "license": "CC0",
+      "source": "https://commons.wikimedia.org/wiki/File:Close-up_of_a_VHS_Player_Circuit_Board_2.jpg"
+    },
+    "group": "Circuit boards",
+    "labels": [
+      "a circuit board with burnt components",
+      "a circuit board with corrosion",
+      "a clean undamaged circuit board"
+    ],
+    "prompts": [
+      "resistor",
+      "capacitor",
+      "chip",
+      "solder joint"
+    ],
+    "ocr": "regions",
+    "textPrompts": [
+      "text",
+      "printed label"
+    ]
+  },
+  {
+    "slug": "etched-pcb",
+    "path": "cat/etched-pcb",
+    "file": "File:Circuit board after manual etching.jpg",
+    "group": "Circuit boards",
+    "labels": [
+      "a blotchy, stained bare circuit board",
+      "a clean, shiny bare circuit board",
+      "an assembled circuit board with components",
+      "a circuit board with burnt components"
+    ],
+    "prompts": [
+      "copper trace",
+      "solder pad",
+      "plastic tray",
+      "drilled hole"
+    ],
+    "truth": "a blotchy, stained bare circuit board"
+  },
+  {
+    "slug": "defect",
+    "path": "cat/defect",
+    "credit": {
+      "author": "Win Henderson",
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:FEMA_-_44376_-_truck_windshield_with_hail_damage_in_OK.jpg"
+    },
+    "truth": "a shattered windscreen with a crack",
+    "group": "Defective products",
+    "labels": [
+      "a shattered windscreen with a crack",
+      "an intact clean windscreen",
+      "a scratched car",
+      "a dented car door"
+    ],
+    "prompts": [
+      "windscreen wiper",
+      "crack"
+    ]
+  },
+  {
+    "slug": "cracked-phone",
+    "path": "cat/cracked-phone",
+    "file": "File:Broken Samsung Galaxy A7 (2018).JPG",
+    "group": "Defective products",
+    "labels": [
+      "a smartphone with a cracked screen",
+      "an intact smartphone",
+      "a scratched phone case",
+      "a dented phone"
+    ],
+    "prompts": [
+      "crack",
+      "screen",
+      "camera lens",
+      "button",
+      "phone case"
+    ],
+    "ocr": "regions",
+    "truth": "a smartphone with a cracked screen"
+  },
+  {
+    "slug": "perseverance",
+    "path": "cat/perseverance",
+    "file": "File:PIA24836 Perseverance's Selfie at Rochette.jpg",
+    "group": "Space robotics",
+    "labels": [
+      "a humanoid robot",
+      "a robotic arm",
+      "a wheeled planetary rover",
+      "a helicopter drone",
+      "a space telescope"
+    ],
+    "prompts": [
+      "wheel",
+      "robotic arm",
+      "camera mast",
+      "rock",
+      "antenna"
+    ],
+    "truth": "a wheeled planetary rover"
+  },
+  {
+    "slug": "canadarm",
+    "path": "cat/canadarm",
+    "file": "File:ISS-50 Canadarm2 with Dextre robot (ISS050-E-029710, crop).jpg",
+    "group": "Space robotics",
+    "labels": [
+      "a humanoid robot",
+      "a robotic arm",
+      "a wheeled planetary rover",
+      "a helicopter drone",
+      "a space telescope"
+    ],
+    "prompts": [
+      "robotic arm",
+      "solar panel",
+      "joint",
+      "robot hand",
+      "camera"
+    ],
+    "ocr": "regions",
+    "textPrompts": [
+      "text",
+      "logo"
+    ],
+    "truth": "a robotic arm"
+  },
+  {
+    "slug": "lego-bricks",
+    "path": "cat/lego-bricks",
+    "file": "File:LEGO-02.jpg",
+    "group": "LEGO parts",
+    "labels": [
+      "LEGO bricks on a baseplate",
+      "LEGO Technic gears",
+      "a single LEGO brick",
+      "a LEGO minifigure",
+      "a LEGO car"
+    ],
+    "prompts": [
+      "red LEGO brick",
+      "blue LEGO brick",
+      "white LEGO brick",
+      "black LEGO brick",
+      "grey LEGO baseplate"
+    ],
+    "truth": "LEGO bricks on a baseplate"
+  },
+  {
+    "slug": "lego-gears",
+    "path": "cat/lego-gears",
+    "file": "File:Lego technic gears.jpg",
+    "group": "LEGO parts",
+    "labels": [
+      "LEGO bricks on a baseplate",
+      "LEGO Technic gears",
+      "a single LEGO brick",
+      "a LEGO minifigure",
+      "a LEGO car"
+    ],
+    "prompts": [
+      "gear",
+      "cog",
+      "axle"
+    ],
+    "truth": "LEGO Technic gears"
+  },
+  {
+    "slug": "pipette",
+    "path": "cat/pipette",
+    "file": "File:Cdc-wDxFn dBEC0-unsplash.jpg",
+    "group": "Lab equipment",
+    "labels": [
+      "a pipette and a test tube rack",
+      "a conical flask",
+      "a beaker",
+      "a graduated measuring cylinder",
+      "a microscope"
+    ],
+    "prompts": [
+      "pipette",
+      "test tube",
+      "glove",
+      "tube rack",
+      "lab coat",
+      "bottle"
+    ],
+    "truth": "a pipette and a test tube rack"
+  },
+  {
+    "slug": "glassware",
+    "path": "cat/glassware",
+    "file": "File:Graduated chemical glassware (Alessandri 1895.1).png",
+    "group": "Lab equipment",
+    "labels": [
+      "a pipette and a test tube rack",
+      "a conical flask",
+      "a beaker",
+      "a graduated measuring cylinder",
+      "a microscope"
+    ],
+    "prompts": [
+      "flask",
+      "measuring cylinder",
+      "stopper",
+      "scale markings"
+    ],
+    "ocr": "regions",
+    "textPrompts": [
+      "text",
+      "number",
+      "label"
+    ],
+    "fit": "pad"
+  },
+  {
+    "slug": "rusted-deck",
+    "path": "cat/rusted-deck",
+    "file": "File:Rusted steel deck grid below bascule span - Arlington Memorial Bridge 2013.jpg",
+    "group": "Corrosion and concrete damage",
+    "labels": [
+      "rusted corroded steel",
+      "spalling concrete with exposed rebar",
+      "clean painted steel",
+      "sound intact concrete"
+    ],
+    "prompts": [
+      "rust",
+      "steel beam",
+      "peeling paint",
+      "bolt"
+    ],
+    "truth": "rusted corroded steel"
+  },
+  {
+    "slug": "spalling",
+    "path": "cat/spalling",
+    "file": "File:Lewis River Bridge - Spalling concrete (42223630094).jpg",
+    "group": "Corrosion and concrete damage",
+    "labels": [
+      "rusted corroded steel",
+      "spalling concrete with exposed rebar",
+      "clean painted steel",
+      "sound intact concrete"
+    ],
+    "prompts": [
+      "spalled concrete",
+      "exposed rebar",
+      "bridge pier",
+      "rust stain",
+      "water"
+    ],
+    "truth": "spalling concrete with exposed rebar"
+  }
+]

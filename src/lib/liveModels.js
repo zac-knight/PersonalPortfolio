@@ -96,3 +96,59 @@ export const loadExpressions = () =>
     await faceapi.nets.faceExpressionNet.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/model')
     return faceapi
   })
+
+// Object naming: COCO-SSD only knows 80 classes, so a pen or a multimeter held up
+// to the camera comes back as "remote". This names each region from a ~300-label
+// vocabulary (everyday items plus workshop, electronics and robotics, chemical lab
+// and civil/construction gear) with CLIP. The label text embeddings are computed
+// offline (scripts/build-object-vocab.mjs), so only CLIP's image half downloads.
+const CLIP_MODEL = 'Xenova/clip-vit-base-patch32'
+
+export const loadObjectNamer = onProgress =>
+  once('namer', async () => {
+    const t = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2')
+    t.env.allowLocalModels = false
+    const files = {}
+    const progress_callback = p => {
+      if (p.status !== 'progress' || !p.total) return
+      files[p.file] = [p.loaded, p.total]
+      const [l, tot] = Object.values(files).reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0])
+      onProgress?.(l / tot)
+    }
+    const [processor, model, vocab] = await Promise.all([
+      t.AutoProcessor.from_pretrained(CLIP_MODEL),
+      t.CLIPVisionModelWithProjection.from_pretrained(CLIP_MODEL, { progress_callback }),
+      fetch(`${import.meta.env.BASE_URL}models/object-vocab.json`).then(r => {
+        if (!r.ok) throw new Error('Could not load the object vocabulary')
+        return r.json()
+      }),
+    ])
+    const { dim, scale, labels, groups } = vocab
+    const weights = Int8Array.from(atob(vocab.data), c => c.charCodeAt(0))
+
+    // Name each canvas: top 3 labels with softmax probabilities (CLIP's logit scale is 100)
+    const name = async canvases => {
+      if (!canvases.length) return []
+      const images = canvases.map(c => t.RawImage.fromCanvas(c))
+      const { image_embeds } = await model(await processor(images))
+      return canvases.map((_, r) => {
+        const v = image_embeds.data.subarray(r * dim, (r + 1) * dim)
+        let norm = 0
+        for (let d = 0; d < dim; d++) norm += v[d] * v[d]
+        norm = Math.sqrt(norm) * scale
+        const logits = labels.map((_, i) => {
+          let s = 0
+          for (let d = 0; d < dim; d++) s += weights[i * dim + d] * v[d]
+          return (100 * s) / norm
+        })
+        const top = Math.max(...logits)
+        const exps = logits.map(l => Math.exp(l - top))
+        const sum = exps.reduce((a, b) => a + b, 0)
+        return exps
+          .map((e, i) => ({ label: labels[i], group: groups[i], score: e / sum }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3)
+      })
+    }
+    return { name, size: labels.length }
+  })

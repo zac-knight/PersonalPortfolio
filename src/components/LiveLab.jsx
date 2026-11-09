@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { loadClip, loadExpressions, loadFace, loadHands, loadObjects, loadPose } from '../lib/liveModels'
+import { loadClip, loadExpressions, loadFace, loadHands, loadObjectNamer, loadObjects, loadPose } from '../lib/liveModels'
 import { SUPPORTED, fingerspell } from '../lib/fingerspell'
 
 // Live, in-browser computer vision. Pick a source (the current demo photo, an
@@ -7,7 +7,7 @@ import { SUPPORTED, fingerspell } from '../lib/fingerspell'
 // every result comes with the evidence it was based on.
 
 const TASKS = [
-  { key: 'objects', label: 'Objects', model: 'COCO-SSD · 80 everyday classes' },
+  { key: 'objects', label: 'Objects', model: 'COCO-SSD boxes + CLIP naming · ~300 labels incl. engineering & robotics' },
   { key: 'zeroshot', label: 'Zero-shot', model: 'CLIP ViT-B/32 · your own labels' },
   { key: 'hands', label: 'Sign letters', model: 'MediaPipe hands · 21 keypoints + fingerspelling rules' },
   { key: 'face', label: 'Face', model: 'MediaPipe face mesh + face-api expressions' },
@@ -28,6 +28,39 @@ const PRESETS = {
 const DEFAULT_LABELS = PRESETS.Everyday
 const POSE_EDGES = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24], [23, 25], [25, 27], [24, 26], [26, 28]]
 const HAND_EDGES = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [17, 18], [18, 19], [19, 20], [0, 17]]
+
+// ── Object naming helpers ──────────────────────────────────────────────────────
+// Overlap of two [x, y, w, h] boxes as intersection over union
+const iou = (a, b) => {
+  const ix = Math.max(0, Math.min(a[0] + a[2], b[0] + b[2]) - Math.max(a[0], b[0]))
+  const iy = Math.max(0, Math.min(a[1] + a[3], b[1] + b[3]) - Math.max(a[1], b[1]))
+  const inter = ix * iy
+  return inter / (a[2] * a[3] + b[2] * b[3] - inter || 1)
+}
+// A square 224px crop around a box, with a little context, for CLIP
+const cropOf = (src, [x, y, w, h], pad = 0.12) => {
+  const size = Math.max(w, h) * (1 + pad * 2)
+  const c = document.createElement('canvas')
+  c.width = c.height = 224
+  const ctx = c.getContext('2d')
+  ctx.fillStyle = '#000'
+  ctx.fillRect(0, 0, 224, 224)
+  ctx.drawImage(src, x + w / 2 - size / 2, y + h / 2 - size / 2, size, size, 0, 0, 224, 224)
+  return c
+}
+// The area a hand is likely holding something in: the hand's box grown around its
+// palm and fingers, kept square and inside the frame
+const heldBox = (lm, W, H) => {
+  const xs = lm.map(p => p.x * W)
+  const ys = lm.map(p => p.y * H)
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2
+  const cy = (Math.min(...ys) + Math.max(...ys)) / 2
+  const size = Math.min(W, H, Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) * 2)
+  const x = Math.max(0, Math.min(W - size, cx - size / 2))
+  const y = Math.max(0, Math.min(H - size, cy - size / 2))
+  return [x, y, size, size]
+}
+const pct = p => `${(p * 100).toFixed(0)}%`
 
 // Which MediaPipe blendshapes (facial muscle scores) support each expression,
 // used to explain the expression network's answer in readable terms
@@ -121,6 +154,8 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
   const [status, setStatus] = useState('')
   const [result, setResult] = useState(null)
   const [labels, setLabels] = useState(DEFAULT_LABELS.join(', '))
+  const namesRef = useRef([]) // the latest CLIP names: [{ bbox, held, fine }]
+  const namingRef = useRef(false)
 
   const labelList = labels.split(',').map(s => s.trim()).filter(Boolean)
 
@@ -175,7 +210,19 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
         const x0 = Math.min(X(x), X(x + w))
         ctx.strokeStyle = 'rgb(240,136,62)'
         ctx.strokeRect(x0, Y(y), w * s, h * s)
-        tag(`${d.class} ${(d.score * 100).toFixed(0)}%`, x0, Y(y), '240,136,62')
+        tag(d.fine ? `${d.fine[0].label} ${pct(d.fine[0].score)}` : `${d.class} ${pct(d.score)}`, x0, Y(y), '240,136,62')
+      }
+      // Whatever a hand is holding, named by CLIP
+      for (const h of res.held || []) {
+        if (!h.fine) continue
+        const [x, y, w, hh] = h.bbox
+        const x0 = Math.min(X(x), X(x + w))
+        ctx.save()
+        ctx.setLineDash([6, 4])
+        ctx.strokeStyle = 'rgb(61,220,151)'
+        ctx.strokeRect(x0, Y(y), w * s, hh * s)
+        ctx.restore()
+        tag(`holding · ${h.fine[0].label} ${pct(h.fine[0].score)}`, x0, Y(y))
       }
     }
     if (res.kind === 'pose') {
@@ -230,9 +277,18 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
   const analyse = useCallback(async (src, t, opts = {}) => {
     const ts = performance.now()
     if (t === 'objects') {
-      const m = await loadObjects()
+      const [m, hands] = await Promise.all([loadObjects(), loadHands().catch(() => null)])
+      const W = src.videoWidth || src.naturalWidth
+      const H = src.videoHeight || src.naturalHeight
       const items = await m.detect(src, 20, 0.45)
-      return { kind: 'objects', items }
+      // Regions around hands, unless COCO-SSD already boxed something there
+      const things = items.filter(d => d.class !== 'person')
+      const held = hands
+        ? hands.detectForVideo(src, ts).landmarks
+            .map(lm => ({ bbox: heldBox(lm, W, H) }))
+            .filter(h => !things.some(d => iou(d.bbox, h.bbox) > 0.15))
+        : []
+      return { kind: 'objects', items, held }
     }
     if (t === 'pose') {
       const m = await loadPose()
@@ -282,6 +338,38 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
     return null
   }, [])
 
+  // ── Naming objects with CLIP ──────────────────────────────────────────────
+  // Crops are taken straight away (so they match this frame), then named. Person
+  // boxes are left as "person"; only the four most confident other boxes are named.
+  const nameRegions = useCallback(async (src, res) => {
+    const regions = [
+      ...res.items.filter(d => d.class !== 'person').sort((a, b) => b.score - a.score).slice(0, 4),
+      ...(res.held || []).map(h => ({ ...h, held: true })),
+    ]
+    if (!regions.length) return []
+    const crops = regions.map(r => cropOf(src, r.bbox))
+    const namer = await loadObjectNamer(p => setStatus(`Downloading CLIP to name objects… ${(p * 100).toFixed(0)}%`))
+    const names = await namer.name(crops)
+    return regions.map((r, i) => ({ bbox: r.bbox, held: !!r.held, fine: names[i] }))
+  }, [])
+
+  // Give each current box the name of the best-overlapping named box from the last pass
+  const attachNames = res => {
+    const match = (bbox, held) => {
+      let best = null
+      let bestIou = 0.3
+      for (const n of namesRef.current) {
+        if (n.held !== held) continue
+        const o = iou(n.bbox, bbox)
+        if (o > bestIou) [best, bestIou] = [n, o]
+      }
+      return best?.fine
+    }
+    for (const d of res.items) if (d.class !== 'person') d.fine = match(d.bbox, false)
+    for (const h of res.held || []) h.fine = match(h.bbox, true)
+    return res
+  }
+
   // ── Source handling ───────────────────────────────────────────────────────
   const stopLoop = () => {
     cancelAnimationFrame(loopRef.current)
@@ -293,6 +381,7 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
     const counter = runId
     const video = videoRef.current
     stopLoop()
+    namesRef.current = []
     let stream
     const start = async () => {
       try {
@@ -325,11 +414,22 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
           setResult(res)
           draw(res)
           setStatus('')
+          if (task === 'objects') {
+            // Show COCO-SSD's boxes at once, then replace their labels with CLIP's names
+            setStatus('Naming objects…')
+            namesRef.current = await nameRegions(sourceRef.current, res)
+            if (id !== runId.current) return
+            const named = attachNames({ ...res })
+            setResult(named)
+            draw(named)
+            setStatus('')
+          }
           if (source === 'webcam') liveZeroShot(id)
           return
         }
         // Webcam: run every frame for MediaPipe, a few times a second for COCO-SSD
         let last = 0
+        let lastNamed = -Infinity
         let busy = false
         const loop = async now => {
           if (id !== runId.current) return
@@ -340,9 +440,26 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
           try {
             const res = await analyse(videoRef.current, task)
             if (id === runId.current) {
+              if (task === 'objects') {
+                attachNames(res)
+                // Re-name roughly once a second in the background; boxes keep their last names meanwhile
+                if (!namingRef.current && now - lastNamed > 900) {
+                  namingRef.current = true
+                  lastNamed = now
+                  nameRegions(videoRef.current, res)
+                    .then(n => {
+                      if (id === runId.current) {
+                        namesRef.current = n
+                        setStatus('')
+                      }
+                    })
+                    .catch(e => id === runId.current && setStatus(`Could not name objects: ${e.message}`))
+                    .finally(() => (namingRef.current = false))
+                }
+              }
               setResult(res)
               draw(res)
-              setStatus('')
+              if (task !== 'objects' || namesRef.current.length) setStatus('')
             }
           } finally {
             busy = false
@@ -374,7 +491,7 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
     }
     // labelList is read at run time; re-running on every keystroke would be wasteful
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [task, source, upload, analyse, draw])
+  }, [task, source, upload, analyse, draw, nameRegions])
 
   // Redraw on resize
   useEffect(() => {
@@ -516,12 +633,29 @@ export default function LiveLab({ initialTask = 'objects', initialSource = 'uplo
         )}
 
         {result?.kind === 'objects' && (
-          <p className="mt-2 text-ink leading-relaxed">
-            {result.items.length
-              ? result.items.map(d => `${d.class} ${(d.score * 100).toFixed(0)}%`).join(' · ')
-              : 'No objects found from COCO’s 80 classes.'}
-            <span className="block mt-1 text-body">Why: each box is a region whose features score above 45% for one of 80 trained classes; the percentage is that score.</span>
-          </p>
+          <div className="mt-2 text-ink leading-relaxed">
+            {result.items.length || result.held?.some(h => h.fine) ? (
+              <ul className="flex flex-col gap-0.5">
+                {(result.held || []).filter(h => h.fine).map((h, i) => (
+                  <li key={`h${i}`}>
+                    <span className="text-live">holding</span> {h.fine[0].label} {pct(h.fine[0].score)}
+                    <span className="text-body"> · then {h.fine.slice(1).map(f => `${f.label} ${pct(f.score)}`).join(', ')}</span>
+                  </li>
+                ))}
+                {result.items.map((d, i) => (
+                  <li key={i}>
+                    {d.fine ? `${d.fine[0].label} ${pct(d.fine[0].score)}` : `${d.class} ${pct(d.score)}`}
+                    {d.fine && <span className="text-body"> · COCO-SSD said {d.class} {pct(d.score)}</span>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              'Nothing found yet. Hold an object up near the camera, or try a closer photo.'
+            )}
+            <span className="block mt-1 text-body">
+              Why: COCO-SSD finds where things are (80 classes). Each box, and the area around any hand, is then cropped and compared by CLIP against ~300 labels, including tools, electronics, robotics parts, lab glassware and construction gear. The percentage is CLIP’s confidence among those labels.
+            </span>
+          </div>
         )}
 
         {result?.kind === 'pose' && (

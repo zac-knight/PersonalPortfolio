@@ -26,7 +26,7 @@ const courses = [
   'IFB240 Cyber Security',
   'MZB125 Introductory Engineering Mathematics',
   'CAB403 Systems Programming',
-  'IFB399 IT Capstone Project (Phase 2)',
+  'IFB399 Capstone Project (Phase 2)',
   'EGB101 Engineering Design and Prof. Practice',
   'EGB120 Foundations of Electrical Engineering',
   'IFB452 Blockchain Technology',
@@ -50,11 +50,13 @@ const MASTER_UNITS = [
   { code: 'MXN500', title: 'Introduction to Statistics for Data Science', done: true },
   { code: 'INN700', title: 'Introduction to Research', done: true },
   { code: 'IFN521', title: 'Trust and Artificial Intelligence', done: true },
-  { title: 'Industry Project (Phases 1 and 2)', status: 'now' },
+  { title: 'Advanced Machine Learning', status: 'now' },
+  { title: 'Industry Project (Phase 1)', status: 'now' },
+  { title: 'Human Centred Design of IT Systems', status: 'now' },
+  { title: 'Cyber Security and Governance', status: 'now' },
+  { title: 'Industry Project (Phase 2)' },
   { title: 'Machine Learning for NLP' },
-  { title: 'Advanced Machine Learning' },
-  { title: 'Cyber Security, Risk and Governance' },
-  { title: 'Human Centred Design of IT Systems' },
+  { title: 'Software Lifecycle Management' },
 ]
 
 const byCode = (a, b) => a.localeCompare(b)
