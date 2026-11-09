@@ -7,61 +7,117 @@ import {
 import { finePointer, prefersReduced, useInViewOnce } from '../lib/motion'
 
 // ── Intro ─────────────────────────────────────────────────────────────────────
-// A one-per-session curtain styled as a diffusion model sampling an image: a few
-// thousand particles start as Gaussian noise and are denoised step by step until
-// they settle into the name. Then the panel wipes upward to reveal the page.
+// A one-per-session curtain styled as a progressively grown GAN generating an
+// image: the name is produced as a tiny, noisy block image, then the resolution
+// doubles stage by stage, each new layer sweeping in over the last, until the
+// full-resolution name glows. Then the panel cross-fades into the page.
 // The hero waits via --intro.
-// About 0.5s passes before the app mounts; fading out 7s after mount over 0.9s
-// has the page fully shown ~8.4s after opening (5s of denoising, then a 2s hold)
+// About 0.5s passes before the app mounts; fading out 7s after mount over 1.2s
+// has the page fully shown ~8.7s after opening (5s of generation, then a 2s hold)
 const INTRO_MS = 7150 // the fade-out starts at INTRO_MS - 150 (keep in sync with .intro in index.css)
 const EXIT_MS = 1200 // the cross-fade into the site (keep in sync with .intro in index.css)
-const ENTER_MS = 500 // particles and text fade in at the start
+const HOLD_MS = 2000 // the finished name stays fully visible this long before the fade
+const SAMPLE_MS = INTRO_MS - 150 - HOLD_MS // generation time
 // Ease in and out: slow to start, slow to finish
 const smooth = x => x * x * (3 - 2 * x)
-const HOLD_MS = 2000 // the finished name stays fully visible this long before the curtain lifts
-const SAMPLE_MS = INTRO_MS - 150 - HOLD_MS // denoising time
-const CHECKPOINTS = [0, 0.25, 0.5, 0.75, 1] // where the x̂₀ previews are captured
-// The noise schedule, drawn as a curve: σ falls from 1 to 0 over the sampling run
-const sigmaAt = t => Math.pow(1 - t, 2.2)
-const SCHEDULE_PATH = Array.from({ length: 41 }, (_, i) => `${i ? 'L' : 'M'}${(i / 40) * 160},${4 + (1 - sigmaAt(i / 40)) * 52}`).join(' ')
 const NAME = 'Zac Knight'
-const STEPS = 20 // a typical DDIM run; readouts update once per step so they can be read
-const MAX_PARTICLES = 7000
+// Blocks across the name at each stage; the last stage is the full-resolution image
+const RES = [6, 9, 12, 16, 24, 32, 48, 64, 96, 128]
+const STAGES = RES.length + 1
+const CHECKPOINTS = [0, 3, 6, 8, 10] // stages shown in the output strip
+// Noise added at each stage, falling as the resolution grows
+const sigmaAt = x => Math.pow(1 - x, 1.6)
+const SCHEDULE_PATH = Array.from({ length: 41 }, (_, i) => `${i ? 'L' : 'M'}${(i / 40) * 160},${4 + (1 - sigmaAt(i / 40)) * 52}`).join(' ')
 // Orange → gold → green across the name, matching the site's palette
-const RAMP = ['240,136,62', '233,160,64', '227,179,65', '160,205,98', '61,220,151']
+const RAMP = [[240, 136, 62], [233, 160, 64], [227, 179, 65], [160, 205, 98], [61, 220, 151]]
+const rampAt = f => {
+  const x = Math.min(0.999, Math.max(0, f)) * (RAMP.length - 1)
+  const i = Math.floor(x)
+  const k = x - i
+  return RAMP[i].map((c, j) => Math.round(c + (RAMP[i + 1][j] - c) * k))
+}
 
-// Deterministic pseudo-random numbers, so every visit samples the same way
+// Deterministic pseudo-random numbers, so every visit generates the same way
 const hash = i => Math.abs((Math.sin(i * 12.9898) * 43758.5453) % 1)
 const gauss = i => Math.sqrt(-2 * Math.log(hash(i) || 1e-6)) * Math.cos(2 * Math.PI * hash(i + 0.5))
 
-// Points inside the rendered name, on a grid, each with its own noise vector
-function sampleName(W, H) {
+// Render the name once, then build one image per resolution stage: each block is
+// the average coverage of the name in that cell plus that stage's noise
+function buildStages(W, H, dpr) {
   const off = document.createElement('canvas')
   off.width = W
   off.height = H
-  const o = off.getContext('2d')
+  const o = off.getContext('2d', { willReadFrequently: true })
   let size = Math.min(W * 0.17, H * 0.3)
   const font = s => `400 ${s}px "Libre Caslon Display", Georgia, serif`
   o.font = font(size)
-  while (o.measureText(NAME).width > W * 0.88) o.font = font((size *= 0.95))
+  while (o.measureText(NAME).width > W * 0.86) o.font = font((size *= 0.95))
   o.textAlign = 'center'
   o.textBaseline = 'middle'
   o.fillStyle = '#fff'
-  o.fillText(NAME, W / 2, H * 0.47)
-  const data = o.getImageData(0, 0, W, H).data
-  const gap = Math.max(2, Math.round(size / 55))
-  const pts = []
-  for (let y = 0; y < H; y += gap)
-    for (let x = 0; x < W; x += gap) if (data[(y * W + x) * 4 + 3] > 140) pts.push([x, y])
-  const keep = Math.max(1, Math.ceil(pts.length / MAX_PARTICLES))
-  const box = pts.reduce((b, [x]) => [Math.min(b[0], x), Math.max(b[1], x)], [W, 0])
-  return {
-    gap,
-    particles: pts.filter((_, i) => i % keep === 0).map(([x, y], i) => ({
-      x, y, nx: gauss(i * 3 + 1), ny: gauss(i * 3 + 2),
-      bucket: Math.min(RAMP.length - 1, Math.floor(((x - box[0]) / Math.max(1, box[1] - box[0])) * RAMP.length)),
-    })),
+  o.fillText(NAME, W / 2, H * 0.45)
+  const alpha = o.getImageData(0, 0, W, H).data
+  // the name's bounds, padded so noise has somewhere to live
+  let x0 = W, x1 = 0, y0 = H, y1 = 0
+  for (let y = 0; y < H; y += 2)
+    for (let x = 0; x < W; x += 2)
+      if (alpha[(y * W + x) * 4 + 3] > 60) {
+        x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y)
+      }
+  const pad = (x1 - x0) * 0.05
+  x0 = Math.max(0, Math.floor(x0 - pad)); x1 = Math.min(W, Math.ceil(x1 + pad))
+  y0 = Math.max(0, Math.floor(y0 - pad)); y1 = Math.min(H, Math.ceil(y1 + pad))
+  const bw = x1 - x0, bh = y1 - y0
+  // summed-area table of coverage, so any block's average is four lookups
+  const sat = new Float32Array((bw + 1) * (bh + 1))
+  for (let y = 1; y <= bh; y++) {
+    let row = 0
+    for (let x = 1; x <= bw; x++) {
+      row += alpha[((y0 + y - 1) * W + (x0 + x - 1)) * 4 + 3] / 255
+      sat[y * (bw + 1) + x] = sat[(y - 1) * (bw + 1) + x] + row
+    }
   }
+  const cover = (ax, ay, bx, by) => {
+    const S = (x, y) => sat[Math.min(bh, y) * (bw + 1) + Math.min(bw, x)]
+    const area = Math.max(1, (Math.min(bw, bx) - ax) * (Math.min(bh, by) - ay))
+    return (S(bx, by) - S(ax, by) - S(bx, ay) + S(ax, ay)) / area
+  }
+  const stages = RES.map((n, li) => {
+    const cell = bw / n
+    const rows = Math.ceil(bh / cell)
+    const c = document.createElement('canvas')
+    c.width = Math.round(bw * dpr)
+    c.height = Math.round(bh * dpr)
+    const g = c.getContext('2d')
+    g.scale(dpr, dpr)
+    const sigma = sigmaAt(li / (STAGES - 1))
+    const gap = cell > 10 ? 1.5 : cell > 5 ? 0.75 : 0
+    for (let r = 0; r < rows; r++)
+      for (let q = 0; q < n; q++) {
+        const ax = Math.floor(q * cell), ay = Math.floor(r * cell)
+        const v = Math.min(1, Math.max(0, cover(ax, ay, Math.ceil((q + 1) * cell), Math.ceil((r + 1) * cell)) * (1 + 0.4 * sigma) + gauss(li * 9973 + r * 211 + q) * 0.32 * sigma))
+        if (v < 0.05) continue
+        const [R, G, B] = rampAt((q + 0.5) / n)
+        g.fillStyle = `rgba(${R},${G},${B},${v})`
+        g.fillRect(q * cell, r * cell, cell - gap, cell - gap)
+      }
+    return { c, n, rows, sigma }
+  })
+  // final stage: the crisp name, filled with the same gradient
+  const c = document.createElement('canvas')
+  c.width = Math.round(bw * dpr)
+  c.height = Math.round(bh * dpr)
+  const g = c.getContext('2d')
+  g.scale(dpr, dpr)
+  const grad = g.createLinearGradient(0, 0, bw, 0)
+  RAMP.forEach((rgb, i) => grad.addColorStop(i / (RAMP.length - 1), `rgb(${rgb})`))
+  g.fillStyle = grad
+  g.font = o.font
+  g.textAlign = 'center'
+  g.textBaseline = 'middle'
+  g.fillText(NAME, W / 2 - x0, H * 0.45 - y0)
+  stages.push({ c, n: 0, rows: 0, sigma: 0 })
+  return { x0, y0, bw, bh, stages }
 }
 
 export function Intro() {
@@ -78,6 +134,7 @@ export function Intro() {
   })
   const [count, setCount] = useState(0)
   const [gone, setGone] = useState(!show)
+  const [res, setRes] = useState(null) // resolution of each stage, for the readouts
   const canvasRef = useRef(null)
   const thumbRefs = useRef([])
 
@@ -98,64 +155,83 @@ export function Intro() {
     canvas.width = W * dpr
     canvas.height = H * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    let cloud = null
-    // Sample the name once its font is ready (or after a short wait, falling back to Georgia)
+    let img = null
+    // Build the stages once the name's font is ready (or after a short wait)
     Promise.race([document.fonts?.load('400 120px "Libre Caslon Display"'), new Promise(r => setTimeout(r, 250))])
       .catch(() => {})
-      .then(() => (cloud = sampleName(W, H)))
+      .then(() => {
+        img = buildStages(W, H, dpr)
+        setRes(img.stages.map(s => (s.n ? `${s.n}×${s.rows}` : 'full')))
+      })
 
     const start = performance.now()
-    const spread = Math.max(W, H) * 0.42
-    // Draw the particle cloud at progress t onto a context, scaled by k
-    const paint = (c, t, k = 1, exit = 0, enter = 1) => {
-      // Noise falls along the schedule; each step adds a little fresh noise that
-      // shrinks with it, the way a sampler's updates do
-      const step = Math.min(STEPS, Math.floor(t * STEPS))
-      const sigma = sigmaAt(t)
-      const fresh = 0.18 * sigma
-      const size = Math.max(1, cloud.gap * 0.6 * Math.max(k, 0.5))
-      c.globalAlpha = (0.35 + 0.65 * t) * (1 - smooth(exit)) * enter
-      for (let b = 0; b < RAMP.length; b++) {
-        c.fillStyle = `rgb(${RAMP[b]})`
-        for (let i = 0; i < cloud.particles.length; i++) {
-          const p = cloud.particles[i]
-          if (p.bucket !== b) continue
-          const jx = (hash(i * 7 + step) - 0.5) * 2 * fresh
-          const jy = (hash(i * 11 + step) - 0.5) * 2 * fresh
-          // On exit the particles drift back out along their noise directions, rising slightly
-          const ex = smooth(exit) * spread * 0.35
-          c.fillRect((p.x + (p.nx * sigma + jx) * spread + p.nx * ex) * k, (p.y + (p.ny * sigma + jy) * spread * 0.7 + p.ny * ex * 0.6 - smooth(exit) * 40) * k, size, size)
-        }
-      }
-      c.globalAlpha = 1
-    }
+    let formedAt = null
     const captured = new Set()
     let frame
     const tick = now => {
       // the first frame's timestamp can be a moment before start, so clamp at 0
-      const t = Math.min(1, Math.max(0, (now - start) / SAMPLE_MS))
+      const ms = Math.max(0, now - start)
+      const t = Math.min(1, ms / SAMPLE_MS)
       setCount(t)
       ctx.clearRect(0, 0, W, H)
-      const exit = Math.min(1, Math.max(0, (now - start - (INTRO_MS - 150)) / EXIT_MS))
-      const enter = smooth(Math.min(1, Math.max(0, (now - start) / ENTER_MS)))
-      if (cloud) {
-        paint(ctx, t, 1, exit, enter)
-        // Capture the x̂₀ preview strip as sampling passes each checkpoint
-        CHECKPOINTS.forEach((cp, i) => {
+      if (img) {
+        const { x0, y0, bw, bh, stages } = img
+        const f = t * (STAGES - 1)
+        const s = Math.min(STAGES - 1, Math.floor(f))
+        const a = s === STAGES - 1 ? 1 : smooth(f - s)
+        // a slow push-in, for scale
+        const zoom = 1.06 - 0.06 * smooth(t)
+        ctx.save()
+        ctx.translate(W / 2, H * 0.45)
+        ctx.scale(zoom, zoom)
+        ctx.translate(-W / 2, -H * 0.45)
+        ctx.imageSmoothingEnabled = false
+        if (s === STAGES - 1) {
+          // the finished name: a soft glow that breathes while it holds
+          if (formedAt === null) formedAt = ms
+          const since = ms - formedAt
+          ctx.imageSmoothingEnabled = true
+          ctx.shadowColor = 'rgba(240,136,62,0.45)'
+          ctx.shadowBlur = 18 + 10 * Math.sin(since / 380)
+          ctx.drawImage(stages[s].c, x0, y0, bw, bh)
+          ctx.shadowBlur = 0
+        } else {
+          // the current stage, with the next sweeping in left to right over it
+          ctx.drawImage(stages[s].c, x0, y0, bw, bh)
+          const edge = bw * a
+          ctx.save()
+          ctx.beginPath()
+          ctx.rect(x0, y0, edge, bh)
+          ctx.clip()
+          ctx.clearRect(x0, y0, edge, bh)
+          ctx.imageSmoothingEnabled = s + 1 === STAGES - 1
+          ctx.drawImage(stages[s + 1].c, x0, y0, bw, bh)
+          ctx.restore()
+          // a bright scanline at the sweep front
+          const grad = ctx.createLinearGradient(x0 + edge - 40, 0, x0 + edge + 4, 0)
+          grad.addColorStop(0, 'rgba(246,238,231,0)')
+          grad.addColorStop(1, 'rgba(246,238,231,0.35)')
+          ctx.fillStyle = grad
+          ctx.fillRect(x0 + edge - 40, y0, 44, bh)
+          ctx.fillStyle = 'rgba(246,238,231,0.9)'
+          ctx.fillRect(x0 + edge, y0, 1.5, bh)
+        }
+        ctx.restore()
+        // Capture the output strip as generation reaches each checkpoint stage
+        CHECKPOINTS.forEach((cs, i) => {
           const th = thumbRefs.current[i]
-          if (captured.has(i) || t < cp || !th) return
+          if (captured.has(i) || s < cs || !th) return
           captured.add(i)
-          const tc = th.getContext('2d')
           th.width = th.clientWidth * dpr
           th.height = th.clientHeight * dpr
-          tc.setTransform(dpr, 0, 0, dpr, 0, 0)
-          // frame the name: crop the middle band of the screen into the thumbnail
-          const k = th.clientWidth / W
-          tc.translate(0, th.clientHeight / 2 - H * 0.47 * k)
-          paint(tc, cp, k)
+          const tc = th.getContext('2d')
+          tc.imageSmoothingEnabled = cs === STAGES - 1
+          const k = Math.min(th.width / (bw * dpr), th.height / (bh * dpr))
+          const dw = bw * dpr * k, dh = bh * dpr * k
+          tc.drawImage(stages[cs].c, (th.width - dw) / 2, (th.height - dh) / 2, dw, dh)
         })
       }
-      if (exit < 1) frame = requestAnimationFrame(tick)
+      if (ms < INTRO_MS - 150 + EXIT_MS) frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
     const done = setTimeout(() => {
@@ -173,11 +249,13 @@ export function Intro() {
   }, [show])
 
   if (gone) return null
-  // Readouts move in whole sampler steps, not every frame
-  const step = Math.min(STEPS, Math.floor(count * STEPS))
-  const stepT = step / STEPS
-  const sigma = sigmaAt(stepT)
-  const timestep = Math.round((1 - stepT) * 1000)
+  // Readouts move stage by stage
+  const f = count * (STAGES - 1)
+  const stage = Math.min(STAGES - 1, Math.floor(f))
+  const fade = stage === STAGES - 1 ? 1 : smooth(f - stage)
+  const stageT = stage / (STAGES - 1)
+  const sigma = sigmaAt(stageT)
+  const label = i => res?.[i] ?? (i === STAGES - 1 ? 'full' : `${RES[i]}×…`)
   return (
     <div aria-hidden className="intro fixed inset-0 z-[100] bg-canvas">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
@@ -185,28 +263,28 @@ export function Intro() {
         <div className="flex justify-between gap-4 text-mute">
           <div className="min-w-0">
             <p className="truncate">
-              <span className="text-live">$</span> python sample.py --model ddpm-unet --steps {STEPS} --cfg 7.5 --seed 42 --prompt "zac knight"
+              <span className="text-live">$</span> python generate.py --model progressive-gan --grow {RES[0]}→full --seed 42 --prompt "zac knight"
             </p>
-            <p className="mt-1 truncate">unet · 865M params · fp16 · cuda:0 · scheduler ddim (η = 0)</p>
+            <p className="mt-1 truncate">generator · 23.1M params · fp16 · cuda:0 · new layers faded in with α</p>
             <p className={`mt-1 truncate transition-opacity duration-300 ${count >= 1 ? 'opacity-100 text-live' : 'opacity-0'}`}>
-              ✓ sample saved → zac_knight.png
+              ✓ image saved → zac_knight.png
             </p>
           </div>
           <span className="hidden sm:inline uppercase shrink-0">Brisbane, AU</span>
         </div>
 
         <div className="flex flex-col gap-5">
-          {/* x̂₀ predictions, captured as sampling passes each checkpoint */}
+          {/* Generator output at a few resolutions, captured as each stage is reached */}
           <div className="flex flex-col gap-1.5 self-center w-full max-w-[640px]">
-            <p className="text-mute uppercase text-center">predicted x̂<sub>0</sub> along the trajectory</p>
+            <p className="text-mute uppercase text-center">generator output as resolution grows</p>
             <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
-              {CHECKPOINTS.map((cp, i) => (
-                <div key={cp} className="flex flex-col gap-1">
+              {CHECKPOINTS.map((cs, i) => (
+                <div key={cs} className="flex flex-col gap-1">
                   <canvas
                     ref={el => (thumbRefs.current[i] = el)}
-                    className={`w-full aspect-[16/7] border transition-colors duration-300 ${count >= cp ? 'border-line' : 'border-line/40'}`}
+                    className={`w-full aspect-[16/7] border transition-colors duration-300 ${stage >= cs ? 'border-line' : 'border-line/40'}`}
                   />
-                  <span className={`text-center tabular-nums ${count >= cp ? 'text-body' : 'text-mute/50'}`}>t={Math.round((1 - cp) * 1000)}</span>
+                  <span className={`text-center tabular-nums ${stage >= cs ? 'text-body' : 'text-mute/50'}`}>{label(cs)}</span>
                 </div>
               ))}
             </div>
@@ -214,20 +292,20 @@ export function Intro() {
 
           <div className="flex items-end justify-between gap-6 uppercase">
             <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 sm:gap-x-10 gap-y-2">
-              <div><dt className="text-mute">step</dt><dd className="text-ink tabular-nums">{String(step).padStart(2, '0')}/{STEPS}</dd></div>
-              <div><dt className="text-mute">timestep</dt><dd className="text-ink tabular-nums normal-case">t={timestep}</dd></div>
+              <div><dt className="text-mute">stage</dt><dd className="text-ink tabular-nums">{String(stage + 1).padStart(2, '0')}/{STAGES}</dd></div>
+              <div><dt className="text-mute">resolution</dt><dd className="text-ink tabular-nums normal-case">{label(stage)}</dd></div>
+              <div><dt className="text-mute">fade-in <span className="normal-case">α</span></dt><dd className="text-live tabular-nums">{fade.toFixed(2)}</dd></div>
               <div><dt className="text-mute"><span className="normal-case">σ</span> noise</dt><dd className="text-flame tabular-nums">{sigma.toFixed(2)}</dd></div>
-              <div><dt className="text-mute">x<sub className="normal-case">t</sub> mean / std</dt><dd className="text-live tabular-nums normal-case">{(0.02 * sigma).toFixed(2)} / {(0.08 + 0.92 * sigma).toFixed(2)}</dd></div>
             </dl>
-            {/* The noise schedule, with the current timestep marked */}
+            {/* Noise per stage, with the current stage marked */}
             <div className="hidden sm:flex flex-col items-end gap-1 shrink-0">
-              <p className="text-mute">noise schedule <span className="normal-case">σ(t)</span></p>
+              <p className="text-mute">noise per stage <span className="normal-case">σ</span></p>
               <svg viewBox="0 0 160 60" className="w-[180px] h-auto overflow-visible">
                 <line x1="0" x2="160" y1="56" y2="56" stroke="var(--color-line)" />
                 <line x1="0" x2="0" y1="4" y2="56" stroke="var(--color-line)" />
                 <path d={SCHEDULE_PATH} fill="none" stroke="var(--color-mute)" strokeWidth="1.5" />
-                <path d={SCHEDULE_PATH} fill="none" stroke="var(--color-flame)" strokeWidth="2" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - stepT} />
-                <circle cx={stepT * 160} cy={4 + (1 - sigma) * 52} r="3.5" fill="var(--color-cream)" />
+                <path d={SCHEDULE_PATH} fill="none" stroke="var(--color-flame)" strokeWidth="2" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - stageT} />
+                <circle cx={stageT * 160} cy={4 + (1 - sigma) * 52} r="3.5" fill="var(--color-cream)" />
               </svg>
             </div>
           </div>
