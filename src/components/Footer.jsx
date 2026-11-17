@@ -1,5 +1,4 @@
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
-import { MdEmail } from 'react-icons/md'
 import { Logo } from './Navbar'
 
 const SECTIONS = ['About', 'Experience', 'Education', 'Skills', 'Projects', 'Contact']
@@ -7,7 +6,6 @@ const SECTIONS = ['About', 'Experience', 'Education', 'Skills', 'Projects', 'Con
 const SOCIALS = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/zac-knight/', Icon: FaLinkedin },
   { label: 'GitHub', href: 'https://github.com/zac-knight', Icon: FaGithub },
-  { label: 'Email', href: 'mailto:zknight03@outlook.com', Icon: MdEmail },
 ]
 
 export default function Footer() {

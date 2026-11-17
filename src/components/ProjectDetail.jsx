@@ -369,7 +369,7 @@ export default function ProjectDetail({ project, onBack }) {
             </Button>
           )}
           {!project.link && !project.repo && (
-            <Button href="mailto:zknight03@outlook.com">Get in touch</Button>
+            <Button href="https://www.linkedin.com/in/zac-knight/" target="_blank" rel="noopener noreferrer">Get in touch</Button>
           )}
           <Button variant="ghost" onClick={onBack}>
             <FaArrowLeft size={11} /> Back to portfolio

@@ -159,7 +159,7 @@ export default function Navbar() {
             <FaLinkedin size={19} />
           </a>
           <span className="hidden sm:inline-flex">
-            <Button href="mailto:zknight03@outlook.com">Get in touch</Button>
+            <Button href="https://www.linkedin.com/in/zac-knight/" target="_blank" rel="noopener noreferrer">Get in touch</Button>
           </span>
           <button
             onClick={() => setOpen(o => !o)}
@@ -199,7 +199,7 @@ export default function Navbar() {
           </ul>
 
           <div className="rise mt-auto pt-10 flex flex-col gap-6" style={{ '--d': '420ms' }}>
-            <Button href="mailto:zknight03@outlook.com" className="w-full sm:w-fit" onClick={() => setOpen(false)}>
+            <Button href="https://www.linkedin.com/in/zac-knight/" target="_blank" rel="noopener noreferrer" className="w-full sm:w-fit" onClick={() => setOpen(false)}>
               Get in touch
             </Button>
             <div className="flex items-center justify-between text-body">

@@ -1,12 +1,10 @@
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
-import { MdEmail } from 'react-icons/md'
 import { Button, Eyebrow, Expandable, LiveMeta, Painted, Reveal, Window } from './ui'
 import roles from '../data/roles'
 import { SplitText } from './fx'
 import { useInViewOnce } from '../lib/motion'
 
 const CHANNELS = [
-  { key: 'email', value: 'zknight03@outlook.com', href: 'mailto:zknight03@outlook.com' },
   { key: 'linkedin', value: 'in/zac-knight', href: 'https://www.linkedin.com/in/zac-knight/' },
   { key: 'github', value: 'zac-knight', href: 'https://github.com/zac-knight' },
   { key: 'location', value: 'Brisbane, QLD, Australia' },
@@ -26,15 +24,12 @@ export default function Contact() {
         </h2>
         <p className="text-body text-lg lg:text-base leading-relaxed max-w-lg">
           Whether you have a role, a project in mind, a question, or just want to connect,
-          my inbox is always open.
+          my LinkedIn messages are always open.
         </p>
         <LiveMeta label="Open">to AI, data, software &amp; systems roles</LiveMeta>
         <div className="flex flex-wrap gap-3 sm:gap-4">
-          <Button href="mailto:zknight03@outlook.com">
-            <MdEmail size={15} /> Say hello
-          </Button>
-          <Button href="https://www.linkedin.com/in/zac-knight/" target="_blank" rel="noopener noreferrer" variant="ghost">
-            <FaLinkedin size={14} /> LinkedIn
+          <Button href="https://www.linkedin.com/in/zac-knight/" target="_blank" rel="noopener noreferrer">
+            <FaLinkedin size={14} /> Say hello on LinkedIn
           </Button>
           <Button href="https://github.com/zac-knight" target="_blank" rel="noopener noreferrer" variant="ghost">
             <FaGithub size={14} /> GitHub
