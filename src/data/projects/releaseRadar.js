@@ -87,6 +87,7 @@ It is deliberately private: no analytics, no tracking and no server. The API key
   ],
   link: 'https://zac-knight.github.io/ReleaseRadar/',
   linkLabel: 'Open live app',
+  repo: 'https://github.com/zac-knight/ReleaseRadar',
   skills: [SiJavascript, FaHtml5, SiHuggingface, SiThemoviedatabase, SiPwa],
   skillLabels: ['Vanilla JS', 'HTML + CSS', 'Transformers.js', 'TMDB API', 'Service worker'],
   images: [
