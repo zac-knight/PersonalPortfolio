@@ -77,7 +77,7 @@ export default function Hero() {
           </p>
           <div style={{ '--d': '460ms' }} className="rise flex flex-wrap gap-3 sm:gap-4">
             <Button href="#projects">View projects</Button>
-            <Button href="#contact" variant="ghost">Get in touch</Button>
+            <Button href="https://www.linkedin.com/in/zac-knight/" target="_blank" rel="noopener noreferrer" variant="ghost">Get in touch</Button>
           </div>
         </div>
 
