@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaPlay, FaRegFileImage, FaTimes } from 'react-icons/fa'
+import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaDownload, FaGithub, FaPlay, FaRegFileImage, FaTimes } from 'react-icons/fa'
 import { Button, Eyebrow, Hatch, LiveMeta, Painted, StatRow, TabStrip, Window } from './ui'
 
 // Tab labels show the file name with any hyphens turned into spaces
@@ -178,11 +178,18 @@ export default function ProjectDetail({ project, onBack }) {
           <FaArrowLeft size={12} />
           Back to portfolio
         </button>
-        {project.link && (
-          <Button href={project.link} target="_blank" rel="noopener noreferrer">
-            <FaPlay size={10} /> Watch demo
-          </Button>
-        )}
+        <div className="flex items-center gap-3">
+          {project.repo && (
+            <Button href={project.repo} target="_blank" rel="noopener noreferrer" variant="ghost" className="hidden sm:inline-flex">
+              <FaGithub size={12} /> View code
+            </Button>
+          )}
+          {project.link && (
+            <Button href={project.link} target="_blank" rel="noopener noreferrer">
+              <FaPlay size={10} /> {project.linkLabel || 'Watch demo'}
+            </Button>
+          )}
+        </div>
       </nav>
 
       <header className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-16 px-6 sm:px-12 lg:px-20 xl:px-28 pt-14 sm:pt-20 pb-12">
@@ -343,14 +350,25 @@ export default function ProjectDetail({ project, onBack }) {
 
       <section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-6 sm:px-12 lg:px-20 xl:px-28 py-12 border-t border-line">
         <p className="font-serif text-ink text-2xl sm:text-3xl">
-          {project.link ? 'Want to see it in action?' : 'Want to talk through the details?'}
+          {project.link ? 'Want to see it in action?' : project.repo ? 'Want to look at the code?' : 'Want to talk through the details?'}
         </p>
         <div className="flex flex-wrap gap-3">
-          {project.link ? (
+          {project.link && (
             <Button href={project.link} target="_blank" rel="noopener noreferrer">
-              <FaPlay size={10} /> Watch demo
+              <FaPlay size={10} /> {project.linkLabel || 'Watch demo'}
             </Button>
-          ) : (
+          )}
+          {project.download && (
+            <Button href={project.download.href} download variant="ghost">
+              <FaDownload size={11} /> {project.download.label}
+            </Button>
+          )}
+          {project.repo && (
+            <Button href={project.repo} target="_blank" rel="noopener noreferrer" variant={project.link ? 'ghost' : 'primary'}>
+              <FaGithub size={12} /> View code
+            </Button>
+          )}
+          {!project.link && !project.repo && (
             <Button href="mailto:zknight03@outlook.com">Get in touch</Button>
           )}
           <Button variant="ghost" onClick={onBack}>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { FaArrowRight, FaPlay, FaRegFileImage } from 'react-icons/fa'
+import { FaArrowRight, FaDownload, FaGithub, FaPlay, FaRegFileImage } from 'react-icons/fa'
 import projects from '../data'
 import { SplitText } from './fx'
 import Lightbox from './Lightbox'
@@ -137,7 +137,17 @@ function ProjectBlock({ project, onMoreDetail }) {
             </Button>
             {project.link && (
               <Button href={project.link} target="_blank" rel="noopener noreferrer" variant="ghost">
-                <FaPlay size={10} /> Watch demo
+                <FaPlay size={10} /> {project.linkLabel || 'Watch demo'}
+              </Button>
+            )}
+            {project.download && (
+              <Button href={project.download.href} download variant="ghost">
+                <FaDownload size={11} /> {project.download.label}
+              </Button>
+            )}
+            {project.repo && (
+              <Button href={project.repo} target="_blank" rel="noopener noreferrer" variant="ghost">
+                <FaGithub size={12} /> View code
               </Button>
             )}
           </div>
@@ -168,7 +178,7 @@ export default function Projects({ onSelectProject }) {
         tag="05"
         label="Projects"
         title="Real software, for real users."
-        description="Case studies from real systems built with teams, from reverse engineering and testing a retrieval augmented generation assistant to delivering a full stack platform end to end."
+        description="Case studies from real systems built with teams, from reverse engineering and testing a retrieval augmented generation assistant to delivering a full stack platform end to end, plus personal projects built solo from idea to working product."
         meta={<LiveMeta label="Featured">{projects.length} case {projects.length === 1 ? 'study' : 'studies'}</LiveMeta>}
       />
 
