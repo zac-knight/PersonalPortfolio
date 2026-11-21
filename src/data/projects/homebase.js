@@ -11,7 +11,7 @@ const homebase = {
   status: 'Try the browser demo (sample bookmarks) · Extension, API and evaluation working',
   tagline: 'A new tab page that turns your bookmarks into something you actually use, with search by meaning and answers that only quote what you saved.',
   description:
-    'Homebase replaces Chrome\'s new tab page with a clean, searchable home for bookmarks: folders as tabs, pinned favourites, a to-do list and seventeen themes. It works fully offline, and nothing leaves the browser unless sync is turned on. An optional FastAPI server adds hybrid search by meaning, extractive answers with sources, link health checks and suggested folders. Every ML feature is measured against a simple baseline, and the repo states plainly what has and has not been verified. The live demo runs the real new tab page in your browser with a sample library; the server features need the backend, so they are not in it.',
+    'Homebase replaces Chrome\'s new tab page with a clean, searchable home for bookmarks: folders as tabs, pinned favourites, a Tasks page, animated waves and seventeen themes. It works fully offline, and nothing leaves the browser unless sync is turned on. An optional FastAPI server adds hybrid search by meaning, extractive answers with sources, link health checks and suggested folders. Every ML feature is measured against a simple baseline, and the repo states plainly what has and has not been verified. The live demo runs the real new tab page in your browser with a sample library; the server features need the backend, so they are not in it.',
   fullDescription: `Most people save far more bookmarks than they ever open again. The browser gives them a flat list and a search box that only matches exact words, so the useful link is saved and then effectively lost. Homebase tries to fix that at the place people see most often, the new tab page.
 The extension is the product. It is a Manifest V3 Chrome extension built with TypeScript, React, Vite and Tailwind: your bookmark folders become tabs, favourites are one click away, there is a Tasks page for the day, a command palette on Ctrl or Cmd K that tolerates typos, and an Insights view of what you use and what you ignore, including exact duplicates. It is local first. Sync is off until you turn it on, optional permissions such as page text and history are requested only when a feature needs them, and everything can be exported or deleted in one click.
 The optional backend is where the machine learning lives. A FastAPI service stores bookmarks in PostgreSQL with pgvector and adds hybrid search that fuses BM25 and embedding results by rank, an "ask your bookmarks" feature that returns quoted sentences with their sources (or an honest "nothing relevant"), a link checker, and clustering and tagging that suggest folders. I chose extractive answers on purpose: quoting is less fluent than a generative model, but it cannot invent anything and no bookmark text goes to a third party.
@@ -97,7 +97,8 @@ To try the real extension: download the zip, unzip it, open chrome://extensions,
     `${base}projects/homebase/Search.png`,
     `${base}projects/homebase/Tasks.png`,
     `${base}projects/homebase/Insights.png`,
-    `${base}projects/homebase/Settings.png`,
+    `${base}projects/homebase/Themes.png`,
+    `${base}projects/homebase/Stargazer.png`,
   ],
 
 }
