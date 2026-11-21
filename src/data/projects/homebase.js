@@ -96,8 +96,9 @@ To try the real extension: download the zip, unzip it, open chrome://extensions,
     `${base}projects/homebase/Home.png`,
     `${base}projects/homebase/Search.png`,
     `${base}projects/homebase/Insights.png`,
-    `${base}projects/homebase/Themes.png`,
-    `${base}projects/homebase/Stargazer.png`,
+    `${base}projects/homebase/PSP.png`,
+    `${base}projects/homebase/BeachBlack.png`,
+    `${base}projects/homebase/AIML.png`,
   ],
 
 }
