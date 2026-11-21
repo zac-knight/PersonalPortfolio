@@ -8,15 +8,17 @@ const homebase = {
   aspect: '1440 / 900',
   category: 'Personal project · Chrome extension with an optional ML backend',
   role: 'Designer and developer · Solo build',
-  status: 'Try the browser demo (sample bookmarks) · Extension, API and evaluation working',
-  tagline: 'A new tab page that turns your bookmarks into something you actually use, with search by meaning and answers that only quote what you saved.',
+  status: 'Try the browser demo (sample bookmarks) · Extension, API and evaluation working · Latest build available to download',
+  tagline: 'A new tab page that turns your bookmarks into something you actually use, in looks as different as PSP, Beach and AIML, with search by meaning and answers that only quote what you saved.',
   description:
-    'Homebase replaces Chrome\'s new tab page with a clean, searchable home for bookmarks: folders as tabs, pinned favourites, a to-do list and seventeen themes. It works fully offline, and nothing leaves the browser unless sync is turned on. An optional FastAPI server adds hybrid search by meaning, extractive answers with sources, link health checks and suggested folders. Every ML feature is measured against a simple baseline, and the repo states plainly what has and has not been verified. The live demo runs the real new tab page in your browser with a sample library; the server features need the backend, so they are not in it.',
+    'Homebase replaces Chrome\'s new tab page with a calm, searchable home for bookmarks: your folders in a panel beside a search bar, pinned favourites, a pick up where you left off row, a scratchpad, optional weather and one-click looks including PSP, Beach and AIML. It works fully offline, and nothing leaves the browser unless a feature is switched on. An optional FastAPI server adds hybrid search by meaning, extractive answers with sources, link health checks and suggested folders. Every ML feature is measured against a simple baseline, and the repo states plainly what has and has not been verified. The live demo runs the real new tab page in your browser with a sample library; the server features need the backend, so they are not in it.',
   fullDescription: `Most people save far more bookmarks than they ever open again. The browser gives them a flat list and a search box that only matches exact words, so the useful link is saved and then effectively lost. Homebase tries to fix that at the place people see most often, the new tab page.
-The extension is the product. It is a Manifest V3 Chrome extension built with TypeScript, React, Vite and Tailwind: your bookmark folders become tabs, favourites are one click away, there is a Tasks page for the day, a command palette on Ctrl or Cmd K that tolerates typos, and an Insights view of what you use and what you ignore, including exact duplicates. It is local first. Sync is off until you turn it on, optional permissions such as page text and history are requested only when a feature needs them, and everything can be exported or deleted in one click.
+The extension is the product. It is a Manifest V3 Chrome extension built with TypeScript, React, Vite and Tailwind. The home page is exactly one screen: a greeting, search bar and pinned favourites on the left, and on the right your folders with the links of the open one, which you can reorder, rename, sort and open all at once. Beneath the favourites sit a Pick up where you left off row of recently closed tabs and a scratchpad that saves as you type. A command palette on Ctrl or Cmd K tolerates typos, and an Insights view shows what you use and what you ignore, including exact duplicates. It is local first. Sync is off until you turn it on, optional permissions such as page text, history and weather are requested only when a feature needs them, and everything can be exported or deleted in one click.
+Appearance is a big part of the latest version. One click on a Look sets the theme, background, card style and typeface together: AIML is a magenta neural network breathing behind glass cards, PSP is silky ribbons of light over a deep blue gradient in the style of the handheld console's home screen, and Beach is sky, sea and sand in bands, with a day and a night version. An opening sequence of waves rises over the page and dissolves into it, and it is skipped when reduced motion is on.
 The optional backend is where the machine learning lives. A FastAPI service stores bookmarks in PostgreSQL with pgvector and adds hybrid search that fuses BM25 and embedding results by rank, an "ask your bookmarks" feature that returns quoted sentences with their sources (or an honest "nothing relevant"), a link checker, and clustering and tagging that suggest folders. I chose extractive answers on purpose: quoting is less fluent than a generative model, but it cannot invent anything and no bookmark text goes to a third party.
 I treated the ML as something to be tested, not assumed. Each feature has a dependency free baseline (keyword search, a hashing embedder, "most recent" and "most frequent" for the recommender), a labelled dataset of made up bookmarks and queries, and an evaluation script that reports intervals rather than bare averages. The write up includes results that went against my expectations, and a status document lists what is verified, what is written but untested, and what is not built.
-To try the real extension: download the zip, unzip it, open chrome://extensions, turn on Developer mode, choose Load unpacked and pick the unzipped folder, then open a new tab. It reads your own Chrome bookmarks and keeps everything on your device (the server features stay off unless you run the backend and turn sync on).`,
+As the product changed I kept the documentation honest. When I removed the Organise page from the extension, the server endpoints behind it stayed and stayed tested, and the status document says what the extension no longer shows.
+To try the real extension: download the zip, unzip it, open chrome://extensions, turn on Developer mode, choose Load unpacked and pick the unzipped folder, then open a new tab. It reads your own Chrome bookmarks and keeps everything on your device (the server features stay off unless you run the backend and turn sync on). The zip is the latest build from the repository; the source, backend and evaluation are on GitHub.`,
   problemStatement:
     'Bookmarks are write mostly. People save links with good intentions, the folders grow, and finding one later means remembering its exact title. Smart features that fix this usually mean sending your browsing data to a server, which many people do not want. People needed a home page that works fully offline and privately, with optional, honest intelligence that is only turned on by choice and that shows its evidence.',
   architecture: [
@@ -28,7 +30,7 @@ To try the real extension: download the zip, unzip it, open chrome://extensions,
     {
       layer: 'Local intelligence',
       detail:
-        'Typo tolerant search and a small recommender run on the device with no embeddings, so the new tab is instant and private. Appearance is only CSS variables and data attributes, so adding a theme is a single line.',
+        'Typo tolerant search and a small recommender run on the device with no embeddings, so the new tab is instant and private. Appearance is only CSS variables and data attributes, so adding a theme is a single line, and a Look such as PSP, Beach or AIML is just a saved combination of those settings.',
     },
     {
       layer: 'Backend',
@@ -43,13 +45,13 @@ To try the real extension: download the zip, unzip it, open chrome://extensions,
     {
       layer: 'Quality',
       detail:
-        '20 extension unit tests, 36 browser tests in Playwright (keyboard only search, undoable deletes, an axe accessibility audit of every view and all 17 themes in light and dark, a 5,000 bookmark run), a test that loads the real built extension into Chromium, and 36 backend API tests.',
+        '28 extension unit tests, Playwright browser tests (keyboard only search, undoable deletes, an axe accessibility audit of every view and every colour theme in light and dark, a 5,000 bookmark run), a test that loads the real built extension into Chromium, and backend API, ML and pipeline tests.',
     },
   ],
   keyFeatures: [
     {
       title: 'A home you actually use',
-      body: 'Folders as tabs, pinned favourites with drag and drop, one click removal with undo that restores the bookmark to its exact place, and a page that fits the window so there is nothing to scroll.',
+      body: 'A folder panel beside search and pinned favourites, drag and drop, one click removal with undo that restores the bookmark to its exact place, recently closed tabs to pick up from, a scratchpad, and a page that fits the window so there is nothing to scroll.',
     },
     {
       title: 'Search by meaning',
@@ -73,7 +75,7 @@ To try the real extension: download the zip, unzip it, open chrome://extensions,
     },
     {
       title: 'Make it yours',
-      body: 'Seventeen colour themes in light and dark, custom accents, eight backgrounds including your own picture with optional animated waves, five typefaces, three corner styles and animations you can turn down or off.',
+      body: 'Sixteen one-click looks including PSP, Beach (day and night) and AIML, black or white colour pairs, custom accents, backgrounds from aurora to a neural network or your own picture, animated waves, glass, solid or outline cards, five typefaces and animations you can turn down or off.',
     },
     {
       title: 'Honest documentation',
@@ -81,21 +83,22 @@ To try the real extension: download the zip, unzip it, open chrome://extensions,
     },
   ],
   businessImpact: [
-    { stat: '93', label: 'Automated tests' },
-    { stat: '17', label: 'Accessible themes audited' },
+    { stat: '80+', label: 'Automated tests' },
+    { stat: '16', label: 'One-click looks' },
     { stat: '0.68', label: 'Folder tagging macro F1' },
     { stat: '100%', label: 'Offline capable' },
   ],
   link: `${base}homebase-demo/`,
   linkLabel: 'Try live demo',
-  download: { href: `${base}downloads/homebase-extension.zip`, label: 'Get the extension' },
+  download: { href: `${base}downloads/homebase-extension.zip`, label: 'Download the extension' },
   repo: 'https://github.com/zac-knight/Homebase',
   skills: [SiTypescript, FaReact, SiVite, SiTailwindcss, SiGooglechrome, FaPython, SiFastapi, SiPostgresql],
   skillLabels: ['TypeScript', 'React', 'Vite', 'Tailwind', 'Chrome MV3', 'Python', 'FastAPI', 'Postgres + pgvector'],
   images: [
     `${base}projects/homebase/Home.png`,
+    `${base}projects/homebase/PSP.png`,
+    `${base}projects/homebase/Beach.png`,
     `${base}projects/homebase/Search.png`,
-    `${base}projects/homebase/Tasks.png`,
     `${base}projects/homebase/Insights.png`,
     `${base}projects/homebase/Settings.png`,
   ],
