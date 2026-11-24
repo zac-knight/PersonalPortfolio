@@ -2,68 +2,72 @@ import { useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { LiveMeta, Painted, Reveal, SectionHeader, Window } from './ui'
 
+// Ordered by relevance to an AI/ML engineering path, then software
+// development and data analytics.
 const courses = [
-  'IFB102 Introduction to Computer Systems',
-  'IFB103 IT Systems Design',
-  'IFB104 Building IT Systems',
+  'CAB420 Machine Learning',
+  'CAB320 Artificial Intelligence',
+  'CAB401 High Performance & Parallel Computing',
+  'CAB301 Algorithms and Complexity',
+  'MZB127 Engineering Mathematics and Statistics',
+  'CAB432 Cloud Computing',
+  'CAB302 Software Development',
+  'IFB398 Capstone Project (Phase 1)',
+  'IFB399 Capstone Project (Phase 2)',
   'IFB105 Database Management',
   'CAB201 Programming Principles',
-  'CAB202 Microprocessors and Digital Systems',
-  'CAB210 User Experience Fundamentals',
-  'IAB207 Rapid Web Application Development',
   'CAB203 Discrete Structures',
-  'CAB230 Web Computing',
-  'CAB302 Software Development',
-  'IAB230 Design of Enterprise IoT',
-  'CAB222 Networks',
-  'CAB432 Cloud Computing',
-  'IFB295 IT Project Management',
   'MXB103 Introductory Computational Mathematics',
-  'CAB301 Algorithms and Complexity',
-  'CAB320 Artificial Intelligence',
-  'CAB420 Machine Learning',
-  'IFB398 Capstone Project (Phase 1)',
-  'IFB240 Cyber Security',
-  'MZB125 Introductory Engineering Mathematics',
   'CAB403 Systems Programming',
-  'IFB399 Capstone Project (Phase 2)',
+  'CAB230 Web Computing',
+  'IAB207 Rapid Web Application Development',
+  'IFB104 Building IT Systems',
+  'IFB240 Cyber Security',
+  'CAB222 Networks',
+  'IFB295 IT Project Management',
+  'CAB210 User Experience Fundamentals',
+  'IFB103 IT Systems Design',
+  'IAB230 Design of Enterprise IoT',
+  'IFB452 Blockchain Technology',
+  'MZB125 Introductory Engineering Mathematics',
+  'MZB221 Electrical Engineering Mathematics',
+  'IFB102 Introduction to Computer Systems',
+  'CAB202 Microprocessors and Digital Systems',
   'EGB101 Engineering Design and Prof. Practice',
   'EGB120 Foundations of Electrical Engineering',
-  'IFB452 Blockchain Technology',
-  'MZB127 Engineering Mathematics and Statistics',
-  'CAB401 High Performance & Parallel Computing',
-  'MZB221 Electrical Engineering Mathematics',
 ]
 
-// Master of Artificial Intelligence units completed so far
+// Master of Artificial Intelligence units completed so far, ordered by relevance
 const masterCourses = [
-  'MXN500 Introduction to Statistics for Data Science',
+  'IFN680 Advanced Machine Learning',
   'IFN500 Introduction to Data Science',
-  'INN700 Introduction to Research',
+  'MXN500 Introduction to Statistics for Data Science',
+  'IFN735 Industry Project (Phase 1)',
   'IFN521 Trust and Artificial Intelligence',
+  'IFN637 Human Centred Design of IT Systems',
+  'IFN635 Cyber Security and Governance',
+  'INN700 Introduction to Research',
 ]
 
-// The full Master of AI unit set. Completed units carry their QUT code; the rest
-// show a status instead.
+// The full Master of AI unit set. Completed units carry their QUT code and are
+// ordered by relevance; future units show a dot instead.
 const MASTER_UNITS = [
+  { code: 'IFN680', title: 'Advanced Machine Learning', done: true },
   { code: 'IFN500', title: 'Introduction to Data Science', done: true },
   { code: 'MXN500', title: 'Introduction to Statistics for Data Science', done: true },
-  { code: 'INN700', title: 'Introduction to Research', done: true },
+  { code: 'IFN735', title: 'Industry Project (Phase 1)', done: true },
   { code: 'IFN521', title: 'Trust and Artificial Intelligence', done: true },
-  { title: 'Advanced Machine Learning', status: 'now' },
-  { title: 'Industry Project (Phase 1)', status: 'now' },
-  { title: 'Human Centred Design of IT Systems', status: 'now' },
-  { title: 'Cyber Security and Governance', status: 'now' },
+  { code: 'IFN637', title: 'Human Centred Design of IT Systems', done: true },
+  { code: 'IFN635', title: 'Cyber Security and Governance', done: true },
+  { code: 'INN700', title: 'Introduction to Research', done: true },
   { title: 'Industry Project (Phase 2)' },
   { title: 'Machine Learning for NLP' },
   { title: 'Software Lifecycle Management' },
 ]
 
-const byCode = (a, b) => a.localeCompare(b)
-
 const UNIT_GROUPS = [
-  { path: '~/master_of_ai/', label: 'Master of Artificial Intelligence', units: [...masterCourses].sort(byCode) },
-  { path: '~/bit/', label: 'Bachelor of Information Technology', units: [...courses].sort(byCode) },
+  { path: '~/master_of_ai/', label: 'Master of Artificial Intelligence', units: masterCourses },
+  { path: '~/bit/', label: 'Bachelor of Information Technology', units: courses },
 ]
 
 const totalUnits = courses.length + masterCourses.length
